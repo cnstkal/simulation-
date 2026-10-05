@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>비공개 수사: 아이돌 실종 사건</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .phone-mockup { width: 375px; height: 812px; background-color: #000; border-radius: 40px; border: 12px solid #333; overflow: hidden; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+        .notch { width: 150px; height: 30px; background-color: #333; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 50; }
+        .app-icon { border-radius: 18px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; justify-content: center; align-items: center; color: white; font-size: 2rem; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .bubble-left { background-color: #ffffff; color: #000; border-radius: 15px 15px 15px 0; padding: 10px; margin: 5px 0; max-width: 75%; align-self: flex-start; }
+        .bubble-right { background-color: #fef01b; color: #000; border-radius: 15px 15px 0 15px; padding: 10px; margin: 5px 0; max-width: 75%; align-self: flex-end; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // 게임 데이터 정의
+        const DATA = {
+            contacts: [
+                { id: 'manager', name: '매니저형', profile: '👤' },
+                { id: 'sponsor', name: '김이사님(VIP)', profile: '🍷' },
+                { id: 'san', name: '최산', profile: '⛰️' },
+                { id: 'wooyoung', name: '정우영', profile: '🦊' },
+                { id: 'hongjoong', name: '김홍중(리더)', profile: '🎧' },
+                { id: 'yeosang', name: '강여상(룸메)', profile: '👑' },
+                { id: 'mingi', name: '송민기', profile: '🐥' },
+            ],
+            messages: {
+                manager: [
+                    { sender: 'manager', text: '윤호야 어디야!! 샵 안 오고 뭐해!', time: '17:00' },
+                    { sender: 'manager', text: '김이사님 화나셨어!! 스케줄 펑크내면 우리 다 죽어!! 빨리 연락해!!', time: '17:05' },
+                    { sender: 'manager', text: '전화 왜 안받아 미치겠네 진짜', time: '17:30' }
+                ],
+                sponsor: [
+                    { sender: 'sponsor', text: '정윤호. 오늘 밤 8시까지 W호텔 펜트하우스로 와.', time: '14:00' },
+                    { sender: 'sponsor', text: '저번에 내가 사준 초커랑 수갑 꼭 챙겨오고. 오늘은 얌전하게 굴어야 할거야.', time: '14:02' },
+                    { sender: 'me', text: '이사님.. 오늘은 몸이 안 좋아서요. 죄송합니다.', time: '14:10' },
+                    { sender: 'sponsor', text: '몸이 안 좋아? 니네 그룹 광고 끊기고 싶어? 기어와.', time: '14:15' }
+                ],
+                wooyoung: [
+                    { sender: 'wooyoung', text: '형. 진짜 오늘 그 늙은 스폰서 새끼한테 갈거야?', time: '15:30' },
+                    { sender: 'me', text: '어쩔 수 없어. 리더 형이랑 멤버들한테 피해 갈 순 없잖아.', time: '15:32' },
+                    { sender: 'wooyoung', text: '미쳤어? 형 몸엔 내 흔적 가득한데 거길 간다고?', time: '15:33' },
+                    { sender: 'wooyoung', text: '진짜 가면 다리몽둥이를 부러뜨려서라도 내 침대에 묶어둘거야. 가지마.', time: '15:35' }
+                ],
+                san: [
+                    { sender: 'san', text: '형. 울지마. 내가 다 해결할게.', time: '16:00' },
+                    { sender: 'me', text: '산아 나 너무 무서워. 우영이도 무섭고 이사님도 무서워...', time: '16:05' },
+                    { sender: 'san', text: '매니저 형 몰래 뒷문으로 나와. 내가 차단기 내려둘게.', time: '16:10' },
+                    { sender: 'san', text: '아무도 모르는 우리만의 은밀한 \'그곳\'으로 가자. 형은 나만 보면 돼.', time: '16:12' },
+                    { sender: 'san', text: '차단기 내렸어. 당장 나와. - 16:45', time: '16:45' }
+                ],
+                hongjoong: [
+                    { sender: 'hongjoong', text: '윤호야, 요즘 힘든 일 있지? 리더한테는 말해도 돼.', time: '어제' },
+                    { sender: 'me', text: '아니에요 형. 괜찮아요. 신경 쓰게 해서 미안해요.', time: '어제' }
+                ],
+                yeosang: [
+                    { sender: 'yeosang', text: '야 정윤호. 너 밤마다 산이 방에서 뭐하냐? 소리 다 들려.', time: '2일 전' },
+                    { sender: 'yeosang', text: '그리고 김이사라는 사람한테 오는 선물들 다 버려. 기분 나빠.', time: '2일 전' }
+                ]
+            },
+            memos: [
+                { id: 1, title: '7월 5일', content: '곧 7월 10일 최산 생일이다. 0710... 비밀번호도 죄다 이걸로 해놨는데, 생일선물로 뭘 줘야 좋아할까. 요즘 산이 눈빛이 너무 끈적해서 가끔 소름이 돋는다.' },
+                { id: 2, title: '7월 12일', content: '김이사님의 요구가 점점 수위를 넘는다. 스폰을 끊고 싶지만 위약금과 그룹의 미래가 발목을 잡는다. 어제는 산이가 내 방에 들어와서 강제로 입을 맞췄다. 밀어낼 수가 없었다. 내 비밀 사진들도 산이가 다 가지고 있다.' },
+                { id: 3, title: '비밀번호', content: '갤러리 시크릿 폴더 비번: 산이 생일 (4자리)' }
+            ],
+            photos: [
+                { id: 1, src: '📸 콘서트 대기실 단체사진', locked: false },
+                { id: 2, src: '📸 홍중 형과 카페에서', locked: false },
+                { id: 3, src: '🔒 [비밀 폴더]', locked: true, isFolder: true },
+            ],
+            secretPhotos: [
+                { id: 101, src: '🔞 침대에 알몸으로 묶여 잠든 윤호 (산이 몰래 촬영함)' },
+                { id: 102, src: '🎁 스폰서가 보낸 SM 플레이용 수갑과 가죽 목줄' },
+                { id: 103, src: '🗺️ 네비게이션 캡처: 도착지 [가평 히든포레스트 독채 별장]' }
+            ]
+        };
+
+        const CustomAlert = ({ isOpen, message, onClose }) => {
+            if (!isOpen) return null;
+            return (
+                <div className="absolute inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+                    <div className="bg-gray-800 p-5 rounded-2xl w-3/4 text-center border border-gray-600 shadow-2xl">
+                        <p className="text-white mb-4 text-sm font-medium">{message}</p>
+                        <button onClick={onClose} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold w-full">확인</button>
+                    </div>
+                </div>
+            );
+        };
+
+        const TopBar = () => (
+            <div className="flex justify-between items-center px-6 pt-3 pb-1 text-white text-xs font-bold relative z-40 bg-black">
+                <div>16:50</div>
+                <div className="flex space-x-1 items-center">
+                    <span>LTE</span>
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11.5a.5.5 0 01.5-.5h14a.5.5 0 01.5.5v7a.5.5 0 01-.5.5h-14a.5.5 0 01-.5-.5v-7zm0-4a.5.5 0 01.5-.5h14a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-14a.5.5 0 01-.5-.5v-2zm0-4a.5.5 0 01.5-.5h14a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-14a.5.5 0 01-.5-.5v-2z"></path></svg>
+                    <span>100%</span>
+                </div>
+            </div>
+        );
+
+        const KTalkScreen = ({ onBack }) => {
+            const [activeChat, setActiveChat] = useState(null);
+
+            if (activeChat) {
+                const messages = DATA.messages[activeChat] || [];
+                const contact = DATA.contacts.find(c => c.id === activeChat);
+                return (
+                    <div className="h-full flex flex-col bg-[#b2c7d9]">
+                        <div className="bg-[#b2c7d9] p-4 flex items-center border-b border-gray-400">
+                            <button onClick={() => setActiveChat(null)} className="text-black font-bold mr-3">◀</button>
+                            <h2 className="font-bold text-lg text-black">{contact.name}</h2>
+                        </div>
+                        <div className="flex-1 overflow-y-auto p-4 flex flex-col hide-scrollbar">
+                            {messages.map((msg, idx) => (
+                                <div key={idx} className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
+                                    {msg.sender !== 'me' && <span className="text-xs text-gray-700 mb-1">{contact.name}</span>}
+                                    <div className={msg.sender === 'me' ? 'bubble-right' : 'bubble-left'}>
+                                        {msg.text}
+                                    </div>
+                                    <span className="text-[10px] text-gray-600 mb-3">{msg.time}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="h-full bg-white flex flex-col">
+                    <div className="p-4 bg-white border-b flex items-center">
+                        <button onClick={onBack} className="text-black mr-3">◀</button>
+                        <h2 className="font-bold text-xl text-black">채팅</h2>
+                    </div>
+                    <div className="flex-1 overflow-y-auto hide-scrollbar">
+                        {DATA.contacts.map(contact => (
+                            DATA.messages[contact.id] && (
+                                <div key={contact.id} onClick={() => setActiveChat(contact.id)} className="flex items-center p-3 border-b border-gray-100 active:bg-gray-200 cursor-pointer">
+                                    <div className="w-12 h-12 bg-gray-300 rounded-2xl flex justify-center items-center text-2xl mr-3">{contact.profile}</div>
+                                    <div className="flex-1">
+                                        <h3 className="font-bold text-black">{contact.name}</h3>
+                                        <p className="text-sm text-gray-500 truncate">
+                                            {DATA.messages[contact.id][DATA.messages[contact.id].length - 1].text}
+                                        </p>
+                                    </div>
+                                </div>
+                            )
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const MemoScreen = ({ onBack }) => {
+            const [activeMemo, setActiveMemo] = useState(null);
+
+            if (activeMemo) {
+                return (
+                    <div className="h-full bg-yellow-50 flex flex-col text-black">
+                        <div className="p-4 border-b flex items-center border-yellow-200">
+                            <button onClick={() => setActiveMemo(null)} className="font-bold mr-3 text-yellow-700">◀</button>
+                            <h2 className="font-bold">{activeMemo.title}</h2>
+                        </div>
+                        <div className="p-5 text-sm leading-relaxed whitespace-pre-wrap">
+                            {activeMemo.content}
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="h-full bg-white flex flex-col text-black">
+                    <div className="p-4 border-b flex items-center">
+                        <button onClick={onBack} className="mr-3">◀</button>
+                        <h2 className="font-bold text-xl">메모장</h2>
+                    </div>
+                    <div className="flex-1 overflow-y-auto hide-scrollbar p-2">
+                        {DATA.memos.map(memo => (
+                            <div key={memo.id} onClick={() => setActiveMemo(memo)} className="bg-yellow-100 p-4 mb-2 rounded-xl active:bg-yellow-200 cursor-pointer">
+                                <h3 className="font-bold mb-1">{memo.title}</h3>
+                                <p className="text-xs text-gray-600 truncate">{memo.content}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const PhotosScreen = ({ onBack, isUnlocked, setUnlocked }) => {
+            const [pwdInput, setPwdInput] = useState('');
+            const [showPwdModal, setShowPwdModal] = useState(false);
+            const [alertData, setAlertData] = useState({ isOpen: false, msg: '' });
+
+            const handleFolderClick = () => {
+                if (isUnlocked) return;
+                setShowPwdModal(true);
+            };
+
+            const checkPassword = () => {
+                if (pwdInput === '0710') {
+                    setUnlocked(true);
+                    setShowPwdModal(false);
+                    setAlertData({ isOpen: true, msg: '시크릿 폴더가 해제되었습니다.' });
+                } else {
+                    setAlertData({ isOpen: true, msg: '비밀번호가 틀렸습니다.' });
+                    setPwdInput('');
+                }
+            };
+
+            return (
+                <div className="h-full bg-white flex flex-col text-black relative">
+                    <CustomAlert isOpen={alertData.isOpen} message={alertData.msg} onClose={() => setAlertData({ isOpen: false, msg: '' })} />
+                    
+                    {showPwdModal && (
+                        <div className="absolute inset-0 bg-black bg-opacity-80 flex justify-center items-center z-40">
+                            <div className="bg-white p-5 rounded-xl w-3/4 text-center">
+                                <h3 className="font-bold mb-3">비밀번호 입력</h3>
+                                <input type="password" value={pwdInput} onChange={(e)=>setPwdInput(e.target.value)} maxLength={4} className="border p-2 w-full text-center tracking-[1em] mb-4 bg-gray-100 rounded" placeholder="****" />
+                                <div className="flex space-x-2">
+                                    <button onClick={()=>setShowPwdModal(false)} className="flex-1 bg-gray-300 py-2 rounded font-bold">취소</button>
+                                    <button onClick={checkPassword} className="flex-1 bg-blue-500 text-white py-2 rounded font-bold">확인</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="p-4 border-b flex items-center">
+                        <button onClick={onBack} className="mr-3">◀</button>
+                        <h2 className="font-bold text-xl">갤러리</h2>
+                    </div>
+                    <div className="flex-1 overflow-y-auto hide-scrollbar p-2 grid grid-cols-2 gap-2 content-start">
+                        {DATA.photos.map(photo => (
+                            <div key={photo.id} onClick={photo.isFolder ? handleFolderClick : undefined} className={`aspect-square rounded-lg flex items-center justify-center p-2 text-center text-xs font-bold text-white shadow-inner ${photo.isFolder ? (isUnlocked ? 'hidden' : 'bg-gray-800') : 'bg-gray-400'}`}>
+                                {photo.src}
+                            </div>
+                        ))}
+                        {isUnlocked && DATA.secretPhotos.map(sPhoto => (
+                            <div key={sPhoto.id} className="aspect-square bg-red-900 rounded-lg flex items-center justify-center p-2 text-center text-xs font-bold text-white border-2 border-red-500">
+                                {sPhoto.src}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        };
+
+        const DeductionModal = ({ onClose, onSuccess }) => {
+            const [suspect, setSuspect] = useState('');
+            const [location, setLocation] = useState('');
+            const [alertData, setAlertData] = useState({ isOpen: false, msg: '' });
+
+            const handleSubmit = () => {
+                if (suspect.includes('최산') || suspect.includes('산')) {
+                    if (location.includes('가평') || location.includes('별장')) {
+                        onSuccess();
+                        return;
+                    }
+                }
+                setAlertData({ isOpen: true, msg: '추리가 틀렸습니다. 단서를 다시 확인하세요. (범인 이름과 장소 키워드 포함 필요)' });
+            };
+
+            return (
+                <div className="absolute inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50 p-6">
+                    <CustomAlert isOpen={alertData.isOpen} message={alertData.msg} onClose={() => setAlertData({ isOpen: false, msg: '' })} />
+                    <h2 className="text-red-500 text-2xl font-bold mb-6">최종 추리 보고서</h2>
+                    <p className="text-gray-300 text-sm mb-4 text-center">정윤호는 누구에 의해, 어디로 빼돌려졌습니까?</p>
+                    
+                    <input type="text" placeholder="용의자 이름 (예: 김철수)" value={suspect} onChange={e=>setSuspect(e.target.value)} className="w-full bg-gray-800 text-white border border-gray-600 rounded p-3 mb-4 outline-none focus:border-red-500"/>
+                    <input type="text" placeholder="은신 장소 (예: 제주도 호텔)" value={location} onChange={e=>setLocation(e.target.value)} className="w-full bg-gray-800 text-white border border-gray-600 rounded p-3 mb-6 outline-none focus:border-red-500"/>
+                    
+                    <div className="flex w-full space-x-3">
+                        <button onClick={onClose} className="flex-1 bg-gray-600 text-white py-3 rounded-lg font-bold">수사 보류</button>
+                        <button onClick={handleSubmit} className="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold">결론 제출</button>
+                    </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [currentApp, setCurrentApp] = useState(null);
+            const [isGalleryUnlocked, setIsGalleryUnlocked] = useState(false);
+            const [showDeduction, setShowDeduction] = useState(false);
+            const [isSolved, setIsSolved] = useState(false);
+            const [introAlert, setIntroAlert] = useState(true);
+
+            useEffect(() => {
+                // Prevent scrolling on body
+                document.body.style.overflow = 'hidden';
+            }, []);
+
+            if (isSolved) {
+                return (
+                    <div className="phone-mockup flex flex-col items-center justify-center bg-black text-white p-6 text-center">
+                        <h1 className="text-3xl font-bold text-red-500 mb-4">사건 해결</h1>
+                        <p className="text-sm text-gray-300 leading-relaxed mb-6">
+                            경감님의 추리가 맞았습니다.<br/><br/>
+                            최산은 스폰서 김이사에게 불려갈 위기에 처한 정윤호를 보호한다는 명목 하에, 강제로 가평의 가족 소유 별장으로 납치해 감금했습니다.<br/><br/>
+                            현장에 출동하여 정윤호를 무사히 구출하고 최산을 체포했습니다. 우영과 김이사 역시 별건으로 조사 중입니다.
+                        </p>
+                        <button onClick={() => window.location.reload()} className="bg-white text-black px-6 py-2 rounded-full font-bold">다시 플레이</button>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="phone-mockup bg-cover bg-center" style={{backgroundImage: 'url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop")'}}>
+                    <div className="notch"></div>
+                    <TopBar />
+                    
+                    <CustomAlert 
+                        isOpen={introAlert} 
+                        message="[비공개 수사 지령] 인기 아이돌 '정윤호'가 실종되었습니다. 입수한 그의 핸드폰에서 비밀스러운 단서를 찾아 그가 어디로, 누구와 사라졌는지 알아내십시오." 
+                        onClose={() => setIntroAlert(false)} 
+                    />
+
+                    {showDeduction && <DeductionModal onClose={() => setShowDeduction(false)} onSuccess={() => setIsSolved(true)} />}
+
+                    {/* App Render Area */}
+                    <div className="absolute top-[44px] bottom-0 w-full overflow-hidden bg-transparent z-30">
+                        {currentApp === 'talk' && <KTalkScreen onBack={() => setCurrentApp(null)} />}
+                        {currentApp === 'memo' && <MemoScreen onBack={() => setCurrentApp(null)} />}
+                        {currentApp === 'photos' && <PhotosScreen onBack={() => setCurrentApp(null)} isUnlocked={isGalleryUnlocked} setUnlocked={setIsGalleryUnlocked} />}
+                        
+                        {/* Home Screen */}
+                        {!currentApp && (
+                            <div className="h-full p-6 pt-12 flex flex-col">
+                                <div className="grid grid-cols-4 gap-4 mt-10">
+                                    <div onClick={() => setCurrentApp('talk')} className="flex flex-col items-center cursor-pointer transform hover:scale-105 transition">
+                                        <div className="w-14 h-14 bg-yellow-400 app-icon text-black font-black">K</div>
+                                        <span className="text-white text-[10px] mt-1 font-medium shadow-black drop-shadow-md">채팅</span>
+                                    </div>
+                                    <div onClick={() => setCurrentApp('photos')} className="flex flex-col items-center cursor-pointer transform hover:scale-105 transition">
+                                        <div className="w-14 h-14 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 app-icon text-white">❀</div>
+                                        <span className="text-white text-[10px] mt-1 font-medium shadow-black drop-shadow-md">갤러리</span>
+                                    </div>
+                                    <div onClick={() => setCurrentApp('memo')} className="flex flex-col items-center cursor-pointer transform hover:scale-105 transition">
+                                        <div className="w-14 h-14 bg-white app-icon text-yellow-500 text-3xl">📝</div>
+                                        <span className="text-white text-[10px] mt-1 font-medium shadow-black drop-shadow-md">메모장</span>
+                                    </div>
+                                </div>
+
+                                <div className="mt-auto mb-8 w-full flex justify-center">
+                                    <button onClick={() => setShowDeduction(true)} className="bg-red-600/90 text-white font-bold py-3 px-8 rounded-full shadow-lg border-2 border-red-400 animate-pulse">
+                                        🔍 수사 결론 내기
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
