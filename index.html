@@ -3,368 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>비공개 수사: 아이돌 실종 사건</title>
+    <title>밤의 이면 : Smartphone Detective</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; background-color: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .phone-mockup { width: 375px; height: 812px; background-color: #000; border-radius: 40px; border: 12px solid #333; overflow: hidden; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
-        .notch { width: 150px; height: 30px; background-color: #333; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 50; }
-        .app-icon { border-radius: 18px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: flex; justify-content: center; align-items: center; color: white; font-size: 2rem; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .bubble-left { background-color: #ffffff; color: #000; border-radius: 15px 15px 15px 0; padding: 10px; margin: 5px 0; max-width: 75%; align-self: flex-start; }
-        .bubble-right { background-color: #fef01b; color: #000; border-radius: 15px 15px 0 15px; padding: 10px; margin: 5px 0; max-width: 75%; align-self: flex-end; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        body{font-family:'Inter','Noto Sans KR',sans-serif;background:#0a0a0a;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;overflow:hidden}
+        .phone-container{width:375px;height:812px;background:#000;border-radius:40px;border:8px solid #2a2a2a;box-shadow:0 0 50px rgba(0,0,0,.8),inset 0 0 20px rgba(255,255,255,.05);position:relative;overflow:hidden;display:flex;flex-direction:column}
+        .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:30px;background:#2a2a2a;border-bottom-left-radius:20px;border-bottom-right-radius:20px;z-index:50}
+        ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+        .app-icon{filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));transition:transform .1s}.app-icon:active{transform:scale(.9)}
+        .slide-in{animation:slideIn .3s cubic-bezier(.16,1,.3,1) forwards}.fade-in{animation:fadeIn .3s ease-out forwards}
+        @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+        .home-bg{background:linear-gradient(to bottom,rgba(15,23,42,.8),rgba(0,0,0,.9)),url('https://placehold.co/375x812/1a1a2e/ffffff?text=Night+City') center/cover}
     </style>
 </head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
 
-    <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+const CHARACTERS={
+ hongjoong:{id:'hongjoong',name:'김홍중',avatar:'https://placehold.co/100/3b82f6/fff?text=HJ',desc:'과거를 아는 프로듀서 형'},
+ seonghwa:{id:'seonghwa',name:'박성화 형님',avatar:'https://placehold.co/100/ef4444/fff?text=SH',desc:'가게 관리자 (조직)'},
+ mingi:{id:'mingi',name:'송민기',avatar:'https://placehold.co/100/eab308/fff?text=MG',desc:'오랜 친구'},
+ san:{id:'san',name:'최산',avatar:'https://placehold.co/100/22c55e/fff?text=S',desc:'전직 가드, 평범한 회사원'},
+ wooyoung:{id:'wooyoung',name:'정우영',avatar:'https://placehold.co/100/a855f7/fff?text=WY',desc:'경쟁자 에이스'},
+ yeosang:{id:'yeosang',name:'강여상',avatar:'https://placehold.co/100/ec4899/fff?text=YS',desc:'전 룸메이트'}
+};
 
-        // 게임 데이터 정의
-        const DATA = {
-            contacts: [
-                { id: 'manager', name: '매니저형', profile: '👤' },
-                { id: 'sponsor', name: '김이사님(VIP)', profile: '🍷' },
-                { id: 'san', name: '최산', profile: '⛰️' },
-                { id: 'wooyoung', name: '정우영', profile: '🦊' },
-                { id: 'hongjoong', name: '김홍중(리더)', profile: '🎧' },
-                { id: 'yeosang', name: '강여상(룸메)', profile: '👑' },
-                { id: 'mingi', name: '송민기', profile: '🐥' },
-            ],
-            messages: {
-                manager: [
-                    { sender: 'manager', text: '윤호야 어디야!! 샵 안 오고 뭐해!', time: '17:00' },
-                    { sender: 'manager', text: '김이사님 화나셨어!! 스케줄 펑크내면 우리 다 죽어!! 빨리 연락해!!', time: '17:05' },
-                    { sender: 'manager', text: '전화 왜 안받아 미치겠네 진짜', time: '17:30' }
-                ],
-                sponsor: [
-                    { sender: 'sponsor', text: '정윤호. 오늘 밤 8시까지 W호텔 펜트하우스로 와.', time: '14:00' },
-                    { sender: 'sponsor', text: '저번에 내가 사준 초커랑 수갑 꼭 챙겨오고. 오늘은 얌전하게 굴어야 할거야.', time: '14:02' },
-                    { sender: 'me', text: '이사님.. 오늘은 몸이 안 좋아서요. 죄송합니다.', time: '14:10' },
-                    { sender: 'sponsor', text: '몸이 안 좋아? 니네 그룹 광고 끊기고 싶어? 기어와.', time: '14:15' }
-                ],
-                wooyoung: [
-                    { sender: 'wooyoung', text: '형. 진짜 오늘 그 늙은 스폰서 새끼한테 갈거야?', time: '15:30' },
-                    { sender: 'me', text: '어쩔 수 없어. 리더 형이랑 멤버들한테 피해 갈 순 없잖아.', time: '15:32' },
-                    { sender: 'wooyoung', text: '미쳤어? 형 몸엔 내 흔적 가득한데 거길 간다고?', time: '15:33' },
-                    { sender: 'wooyoung', text: '진짜 가면 다리몽둥이를 부러뜨려서라도 내 침대에 묶어둘거야. 가지마.', time: '15:35' }
-                ],
-                san: [
-                    { sender: 'san', text: '형. 울지마. 내가 다 해결할게.', time: '16:00' },
-                    { sender: 'me', text: '산아 나 너무 무서워. 우영이도 무섭고 이사님도 무서워...', time: '16:05' },
-                    { sender: 'san', text: '매니저 형 몰래 뒷문으로 나와. 내가 차단기 내려둘게.', time: '16:10' },
-                    { sender: 'san', text: '아무도 모르는 우리만의 은밀한 \'그곳\'으로 가자. 형은 나만 보면 돼.', time: '16:12' },
-                    { sender: 'san', text: '차단기 내렸어. 당장 나와. - 16:45', time: '16:45' }
-                ],
-                hongjoong: [
-                    { sender: 'hongjoong', text: '윤호야, 요즘 힘든 일 있지? 리더한테는 말해도 돼.', time: '어제' },
-                    { sender: 'me', text: '아니에요 형. 괜찮아요. 신경 쓰게 해서 미안해요.', time: '어제' }
-                ],
-                yeosang: [
-                    { sender: 'yeosang', text: '야 정윤호. 너 밤마다 산이 방에서 뭐하냐? 소리 다 들려.', time: '2일 전' },
-                    { sender: 'yeosang', text: '그리고 김이사라는 사람한테 오는 선물들 다 버려. 기분 나빠.', time: '2일 전' }
-                ]
-            },
-            memos: [
-                { id: 1, title: '7월 5일', content: '곧 7월 10일 최산 생일이다. 0710... 비밀번호도 죄다 이걸로 해놨는데, 생일선물로 뭘 줘야 좋아할까. 요즘 산이 눈빛이 너무 끈적해서 가끔 소름이 돋는다.' },
-                { id: 2, title: '7월 12일', content: '김이사님의 요구가 점점 수위를 넘는다. 스폰을 끊고 싶지만 위약금과 그룹의 미래가 발목을 잡는다. 어제는 산이가 내 방에 들어와서 강제로 입을 맞췄다. 밀어낼 수가 없었다. 내 비밀 사진들도 산이가 다 가지고 있다.' },
-                { id: 3, title: '비밀번호', content: '갤러리 시크릿 폴더 비번: 산이 생일 (4자리)' }
-            ],
-            photos: [
-                { id: 1, src: '📸 콘서트 대기실 단체사진', locked: false },
-                { id: 2, src: '📸 홍중 형과 카페에서', locked: false },
-                { id: 3, src: '🔒 [비밀 폴더]', locked: true, isFolder: true },
-            ],
-            secretPhotos: [
-                { id: 101, src: '🔞 침대에 알몸으로 묶여 잠든 윤호 (산이 몰래 촬영함)' },
-                { id: 102, src: '🎁 스폰서가 보낸 SM 플레이용 수갑과 가죽 목줄' },
-                { id: 103, src: '🗺️ 네비게이션 캡처: 도착지 [가평 히든포레스트 독채 별장]' }
-            ]
-        };
+const INITIAL_CHATS={
+ hongjoong:[
+  {sender:'me',text:'형 잘 지내요?',time:'2026.09.15 14:20'},
+  {sender:'hongjoong',text:'어 뭐, 늘 똑같지. 곡 작업하고.',time:'2026.09.15 14:30'},
+  {sender:'hongjoong',text:'너는? 아직도 밤에 일해?',time:'2026.09.15 14:31'}
+ ],
+ seonghwa:[
+  {sender:'seonghwa',text:'오늘 손님 없으면 나랑 술이나 한잔할래?',time:'어제 22:10'},
+  {sender:'me',text:'형이 사주는 거면 생각해볼게요.',time:'어제 22:15'},
+  {sender:'seonghwa',text:'생각만 하지 말고 와.',time:'어제 22:16'}
+ ],
+ mingi:[
+  {sender:'mingi',text:'야 정윤호 얼굴 까먹겠다',time:'2026.09.28 21:00'},
+  {sender:'me',text:'나 오늘 집이야. 피곤해서 잔다.',time:'2026.09.28 23:24'},
+  {sender:'mingi',text:'어휴 ㅉㅉ 푹 쉬어라',time:'2026.09.28 23:30'}
+ ],
+ san:[
+  {sender:'san',text:'너 웃는 거 보니까 아직도 손님들한테 잘하긴 하나 보다.',time:'오늘 01:10'},
+  {sender:'me',text:'질투해요?',time:'오늘 01:12'},
+  {sender:'san',text:'......미쳤냐?',time:'오늘 01:13'},
+  {sender:'san',text:'돈 때문에 목숨 걸 필요는 없잖아. 언제까지 할 건데.',time:'오늘 01:15'}
+ ]
+};
 
-        const CustomAlert = ({ isOpen, message, onClose }) => {
-            if (!isOpen) return null;
-            return (
-                <div className="absolute inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-                    <div className="bg-gray-800 p-5 rounded-2xl w-3/4 text-center border border-gray-600 shadow-2xl">
-                        <p className="text-white mb-4 text-sm font-medium">{message}</p>
-                        <button onClick={onClose} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold w-full">확인</button>
-                    </div>
-                </div>
-            );
-        };
+const PHOTOS_DATA=[
+ {id:'p1',url:'https://placehold.co/400x600/222/aaa?text=Selfie\nToday',date:'오늘 01:05',desc:'출근 전 거울 샷'},
+ {id:'p2',url:'https://placehold.co/400x600/1a1a1a/eab308?text=Drink\nWith+Mingi',date:'2026.10.01',desc:'민기랑 술집에서'},
+ {id:'p3',url:'https://placehold.co/400x600/331a1a/ef4444?text=VVIP+Room\nSan+%26+...',date:'2026.09.28 23:15',desc:'산이 형이랑 브이아이피 룸에서. 뒤 거울에 용 문신이 비친다.',isKeyEvidence:true},
+ {id:'p4',url:'https://placehold.co/400x600/112233/3b82f6?text=Practice+Room\n2018',date:'2018.05.12',desc:'연습생 시절 홍중이 형이랑'}
+];
 
-        const TopBar = () => (
-            <div className="flex justify-between items-center px-6 pt-3 pb-1 text-white text-xs font-bold relative z-40 bg-black">
-                <div>16:50</div>
-                <div className="flex space-x-1 items-center">
-                    <span>LTE</span>
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11.5a.5.5 0 01.5-.5h14a.5.5 0 01.5.5v7a.5.5 0 01-.5.5h-14a.5.5 0 01-.5-.5v-7zm0-4a.5.5 0 01.5-.5h14a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-14a.5.5 0 01-.5-.5v-2zm0-4a.5.5 0 01.5-.5h14a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-14a.5.5 0 01-.5-.5v-2z"></path></svg>
-                    <span>100%</span>
-                </div>
-            </div>
-        );
+const BANK_HISTORY=[
+ {id:1,date:'2026.10.05 23:50',amount:'+ 3,500,000',desc:'입금 (가게 정산)'},
+ {id:2,date:'2026.10.05 20:10',amount:'- 15,000',desc:'스타벅스'},
+ {id:3,date:'2026.09.28 23:45',amount:'- 28,000',desc:'카카오T 택시 (도착: 송민기 자취방 앞)'},
+ {id:4,date:'2026.09.28 23:22',amount:'+ 10,000,000',desc:'입금 (박성화)'}
+];
 
-        const KTalkScreen = ({ onBack }) => {
-            const [activeChat, setActiveChat] = useState(null);
+const TopBar=({time})=><div className="absolute top-0 w-full h-8 flex justify-between items-center px-6 text-xs font-semibold z-40 text-white"><span>{time}</span><div className="flex gap-2"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-wifi-high"></i><i className="ph-fill ph-battery-full"></i></div></div>;
 
-            if (activeChat) {
-                const messages = DATA.messages[activeChat] || [];
-                const contact = DATA.contacts.find(c => c.id === activeChat);
-                return (
-                    <div className="h-full flex flex-col bg-[#b2c7d9]">
-                        <div className="bg-[#b2c7d9] p-4 flex items-center border-b border-gray-400">
-                            <button onClick={() => setActiveChat(null)} className="text-black font-bold mr-3">◀</button>
-                            <h2 className="font-bold text-lg text-black">{contact.name}</h2>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-4 flex flex-col hide-scrollbar">
-                            {messages.map((msg, idx) => (
-                                <div key={idx} className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}>
-                                    {msg.sender !== 'me' && <span className="text-xs text-gray-700 mb-1">{contact.name}</span>}
-                                    <div className={msg.sender === 'me' ? 'bubble-right' : 'bubble-left'}>
-                                        {msg.text}
-                                    </div>
-                                    <span className="text-[10px] text-gray-600 mb-3">{msg.time}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                );
-            }
+const Notification=({notif,onClick})=><div onClick={onClick} className="absolute top-10 left-4 right-4 bg-[#1e1e1e]/90 backdrop-blur-md rounded-2xl p-4 flex gap-3 shadow-2xl z-50 fade-in border border-gray-700 cursor-pointer hover:bg-[#2a2a2a] transition-colors"><div className="w-10 h-10 bg-gray-800 rounded-full overflow-hidden flex-shrink-0 border border-gray-600"><img src={notif.avatar||'https://placehold.co/100/333/fff?text=!'} className="w-full h-full object-cover"/></div><div className="flex-1 overflow-hidden flex flex-col justify-center"><h4 className="font-bold text-sm text-gray-100">{notif.title}</h4><p className="text-xs text-gray-400 truncate">{notif.body}</p></div></div>;
 
-            return (
-                <div className="h-full bg-white flex flex-col">
-                    <div className="p-4 bg-white border-b flex items-center">
-                        <button onClick={onBack} className="text-black mr-3">◀</button>
-                        <h2 className="font-bold text-xl text-black">채팅</h2>
-                    </div>
-                    <div className="flex-1 overflow-y-auto hide-scrollbar">
-                        {DATA.contacts.map(contact => (
-                            DATA.messages[contact.id] && (
-                                <div key={contact.id} onClick={() => setActiveChat(contact.id)} className="flex items-center p-3 border-b border-gray-100 active:bg-gray-200 cursor-pointer">
-                                    <div className="w-12 h-12 bg-gray-300 rounded-2xl flex justify-center items-center text-2xl mr-3">{contact.profile}</div>
-                                    <div className="flex-1">
-                                        <h3 className="font-bold text-black">{contact.name}</h3>
-                                        <p className="text-sm text-gray-500 truncate">
-                                            {DATA.messages[contact.id][DATA.messages[contact.id].length - 1].text}
-                                        </p>
-                                    </div>
-                                </div>
-                            )
-                        ))}
-                    </div>
-                </div>
-            );
-        };
+const HomeScreen=({openApp,unreadCounts})=>{
+ const apps=[
+  {id:'messenger',name:'Talk',icon:'ph-chat-circle-text',color:'bg-yellow-400 text-black',badge:unreadCounts.messenger},
+  {id:'photos',name:'사진',icon:'ph-image',color:'bg-white text-blue-500'},
+  {id:'bank',name:'결제/계좌',icon:'ph-wallet',color:'bg-blue-600 text-white'},
+  {id:'notes',name:'메모',icon:'ph-notepad',color:'bg-orange-400 text-white'},
+  {id:'clues',name:'추리(단서)',icon:'ph-magnifying-glass',color:'bg-gray-800 text-white',badge:unreadCounts.clues}
+ ];
+ return <div className="w-full h-full home-bg pt-20 px-6 cursor-default"><div className="grid grid-cols-4 gap-y-6 gap-x-4">{apps.map(app=><div key={app.id} className="flex flex-col items-center gap-2 app-icon cursor-pointer" onClick={()=>openApp(app.id)}><div className={`relative w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-lg ${app.color}`}><i className={`ph-fill ${app.icon}`}></i>{app.badge>0&&<div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black animate-pulse">{app.badge}</div>}</div><span className="text-[10px] font-medium text-gray-200">{app.name}</span></div>)}</div></div>
+};
 
-        const MemoScreen = ({ onBack }) => {
-            const [activeMemo, setActiveMemo] = useState(null);
+const MessengerApp=({closeApp,chats,openChat})=><div className="w-full h-full bg-[#121212] flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-4 px-5 border-b border-gray-800 bg-[#121212]/90 backdrop-blur flex justify-between items-center"><h1 className="text-2xl font-bold text-white">채팅</h1><button onClick={closeApp} className="text-gray-400 hover:text-white"><i className="ph ph-x text-2xl"></i></button></div><div className="flex-1 overflow-y-auto">{Object.keys(chats).map(charId=>{const lastMsg=chats[charId][chats[charId].length-1];return <div key={charId} onClick={()=>openChat(charId)} className="flex items-center gap-4 p-4 border-b border-gray-800/50 hover:bg-gray-800 cursor-pointer transition-colors"><img src={CHARACTERS[charId].avatar} className="w-12 h-12 rounded-2xl object-cover"/><div className="flex-1 overflow-hidden"><div className="flex justify-between items-baseline mb-1"><h3 className="font-semibold text-gray-100">{CHARACTERS[charId].name}</h3><span className="text-xs text-gray-500">{lastMsg.time.split(' ')[0]}</span></div><p className="text-sm text-gray-400 truncate">{lastMsg.text}</p></div></div>})}</div></div>;
 
-            if (activeMemo) {
-                return (
-                    <div className="h-full bg-yellow-50 flex flex-col text-black">
-                        <div className="p-4 border-b flex items-center border-yellow-200">
-                            <button onClick={() => setActiveMemo(null)} className="font-bold mr-3 text-yellow-700">◀</button>
-                            <h2 className="font-bold">{activeMemo.title}</h2>
-                        </div>
-                        <div className="p-5 text-sm leading-relaxed whitespace-pre-wrap">
-                            {activeMemo.content}
-                        </div>
-                    </div>
-                );
-            }
+const ChatRoom=({closeChat,charId,messages,triggerEvent})=>{
+ const char=CHARACTERS[charId],endRef=useRef(null);
+ useEffect(()=>{endRef.current?.scrollIntoView({behavior:'smooth'});triggerEvent('READ_CHAT',{charId});},[messages]);
+ return <div className="w-full h-full bg-[#0a0a0a] flex flex-col slide-in absolute top-0 left-0 z-30"><div className="pt-12 pb-4 px-4 bg-[#1a1a1a] flex items-center gap-3 shadow-md z-10 border-b border-gray-800"><button onClick={closeChat} className="text-gray-400 hover:text-white"><i className="ph ph-caret-left text-2xl"></i></button><img src={char.avatar} className="w-8 h-8 rounded-full"/><h2 className="font-bold text-lg text-white">{char.name}</h2></div><div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 pb-20"><div className="text-center text-xs text-gray-500 my-2">과거의 대화입니다.</div>{messages.map((msg,idx)=><div key={idx} className={`flex max-w-[80%] ${msg.sender==='me'?'self-end flex-row-reverse':'self-start'} gap-2`}><div className="flex flex-col"><div className={`p-3 rounded-2xl text-sm ${msg.sender==='me'?'bg-yellow-500 text-black rounded-tr-sm':'bg-gray-800 text-gray-100 rounded-tl-sm'}`}>{msg.text}</div><span className={`text-[10px] text-gray-500 mt-1 ${msg.sender==='me'?'text-right':'text-left'}`}>{msg.time}</span></div></div>)}<div ref={endRef}/></div></div>
+};
 
-            return (
-                <div className="h-full bg-white flex flex-col text-black">
-                    <div className="p-4 border-b flex items-center">
-                        <button onClick={onBack} className="mr-3">◀</button>
-                        <h2 className="font-bold text-xl">메모장</h2>
-                    </div>
-                    <div className="flex-1 overflow-y-auto hide-scrollbar p-2">
-                        {DATA.memos.map(memo => (
-                            <div key={memo.id} onClick={() => setActiveMemo(memo)} className="bg-yellow-100 p-4 mb-2 rounded-xl active:bg-yellow-200 cursor-pointer">
-                                <h3 className="font-bold mb-1">{memo.title}</h3>
-                                <p className="text-xs text-gray-600 truncate">{memo.content}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            );
-        };
+const PhotosApp=({closeApp,triggerEvent})=>{
+ const [selectedPhoto,setSelectedPhoto]=useState(null);
+ const analyzePhoto=()=>{
+  if(selectedPhoto.isKeyEvidence) triggerEvent('ANALYZE_PHOTO',{photoId:selectedPhoto.id});
+  else{const btn=document.getElementById('analyzeBtn');if(!btn)return;const originalText=btn.innerHTML;btn.innerHTML='특이점 없음';btn.classList.add('text-gray-500');setTimeout(()=>{btn.innerHTML=originalText;btn.classList.remove('text-gray-500')},1500)}
+ };
+ if(selectedPhoto)return <div className="w-full h-full bg-black flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-4 px-4 flex justify-between items-center z-10 bg-gradient-to-b from-black/80 to-transparent"><button onClick={()=>setSelectedPhoto(null)} className="text-white"><i className="ph ph-caret-left text-2xl"></i></button><span className="text-xs text-gray-400">{selectedPhoto.date}</span><button id="analyzeBtn" onClick={analyzePhoto} className="text-yellow-400 font-bold text-sm bg-gray-900 px-4 py-1.5 rounded-full hover:bg-gray-800 transition-colors flex items-center gap-1"><i className="ph ph-scan"></i> 분석</button></div><div className="flex-1 flex items-center justify-center p-4"><img src={selectedPhoto.url} className="w-full rounded-lg object-contain shadow-2xl"/></div><div className="p-6 bg-[#111] border-t border-gray-800"><p className="text-sm text-gray-300">{selectedPhoto.desc}</p></div></div>;
+ return <div className="w-full h-full bg-[#121212] flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-4 px-5 border-b border-gray-800 bg-[#121212]/90 backdrop-blur flex justify-between items-center"><h1 className="text-2xl font-bold text-white">사진</h1><button onClick={closeApp} className="text-gray-400 hover:text-white"><i className="ph ph-x text-2xl"></i></button></div><div className="grid grid-cols-3 gap-1 p-1 overflow-y-auto">{PHOTOS_DATA.map(photo=><div key={photo.id} className="aspect-square bg-gray-800 relative cursor-pointer hover:opacity-80 transition-opacity" onClick={()=>setSelectedPhoto(photo)}><img src={photo.url} className="w-full h-full object-cover"/></div>)}</div></div>
+};
 
-        const PhotosScreen = ({ onBack, isUnlocked, setUnlocked }) => {
-            const [pwdInput, setPwdInput] = useState('');
-            const [showPwdModal, setShowPwdModal] = useState(false);
-            const [alertData, setAlertData] = useState({ isOpen: false, msg: '' });
+const BankApp=({closeApp,triggerEvent})=>{useEffect(()=>{triggerEvent('OPEN_BANK')},[]);return <div className="w-full h-full bg-[#0a1128] flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-6 px-6 bg-blue-600 flex flex-col gap-4 shadow-lg z-10"><div className="flex justify-between items-center text-white"><h1 className="text-xl font-bold">윤호 계좌</h1><button onClick={closeApp} className="hover:text-gray-200"><i className="ph ph-x text-2xl"></i></button></div><div><p className="text-sm text-blue-200 mb-1">잔액</p><h2 className="text-3xl font-bold text-white tracking-tight">13,425,000 원</h2></div></div><div className="flex-1 overflow-y-auto bg-[#121212] px-4 pt-4"><h3 className="text-xs text-gray-500 font-bold mb-4 ml-1">최근 거래 내역</h3>{BANK_HISTORY.map(tx=><div key={tx.id} className="flex justify-between items-center p-4 bg-gray-900/80 rounded-2xl mb-3 border border-gray-800 hover:bg-gray-800 transition-colors"><div className="flex flex-col gap-1"><span className="text-sm font-semibold text-gray-200">{tx.desc}</span><span className="text-[10px] text-gray-500">{tx.date}</span></div><span className={`font-bold ${tx.amount.includes('+')?'text-blue-400':'text-gray-300'}`}>{tx.amount}</span></div>)}</div></div>};
 
-            const handleFolderClick = () => {
-                if (isUnlocked) return;
-                setShowPwdModal(true);
-            };
+const ClueApp=({closeApp,clues})=><div className="w-full h-full bg-[#1a1a1a] flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-4 px-5 border-b border-gray-800 bg-[#1a1a1a]/90 flex justify-between items-center"><h1 className="text-2xl font-bold text-yellow-500">수사 노트</h1><button onClick={closeApp} className="text-gray-400 hover:text-white"><i className="ph ph-x text-2xl"></i></button></div><div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">{clues.length===0?<div className="text-center mt-32 flex flex-col items-center gap-3"><i className="ph ph-magnifying-glass text-4xl text-gray-600"></i><span className="text-gray-500 text-sm">발견된 단서가 없습니다.</span></div>:clues.map((clue,idx)=><div key={idx} className="bg-gray-900 border-l-4 border-yellow-500 p-4 rounded-r-xl shadow-md slide-in"><h3 className="font-bold text-yellow-400 text-sm mb-2">{clue.title}</h3><p className="text-gray-300 text-xs leading-relaxed">{clue.desc}</p></div>)}</div></div>;
 
-            const checkPassword = () => {
-                if (pwdInput === '0710') {
-                    setUnlocked(true);
-                    setShowPwdModal(false);
-                    setAlertData({ isOpen: true, msg: '시크릿 폴더가 해제되었습니다.' });
-                } else {
-                    setAlertData({ isOpen: true, msg: '비밀번호가 틀렸습니다.' });
-                    setPwdInput('');
-                }
-            };
-
-            return (
-                <div className="h-full bg-white flex flex-col text-black relative">
-                    <CustomAlert isOpen={alertData.isOpen} message={alertData.msg} onClose={() => setAlertData({ isOpen: false, msg: '' })} />
-                    
-                    {showPwdModal && (
-                        <div className="absolute inset-0 bg-black bg-opacity-80 flex justify-center items-center z-40">
-                            <div className="bg-white p-5 rounded-xl w-3/4 text-center">
-                                <h3 className="font-bold mb-3">비밀번호 입력</h3>
-                                <input type="password" value={pwdInput} onChange={(e)=>setPwdInput(e.target.value)} maxLength={4} className="border p-2 w-full text-center tracking-[1em] mb-4 bg-gray-100 rounded" placeholder="****" />
-                                <div className="flex space-x-2">
-                                    <button onClick={()=>setShowPwdModal(false)} className="flex-1 bg-gray-300 py-2 rounded font-bold">취소</button>
-                                    <button onClick={checkPassword} className="flex-1 bg-blue-500 text-white py-2 rounded font-bold">확인</button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="p-4 border-b flex items-center">
-                        <button onClick={onBack} className="mr-3">◀</button>
-                        <h2 className="font-bold text-xl">갤러리</h2>
-                    </div>
-                    <div className="flex-1 overflow-y-auto hide-scrollbar p-2 grid grid-cols-2 gap-2 content-start">
-                        {DATA.photos.map(photo => (
-                            <div key={photo.id} onClick={photo.isFolder ? handleFolderClick : undefined} className={`aspect-square rounded-lg flex items-center justify-center p-2 text-center text-xs font-bold text-white shadow-inner ${photo.isFolder ? (isUnlocked ? 'hidden' : 'bg-gray-800') : 'bg-gray-400'}`}>
-                                {photo.src}
-                            </div>
-                        ))}
-                        {isUnlocked && DATA.secretPhotos.map(sPhoto => (
-                            <div key={sPhoto.id} className="aspect-square bg-red-900 rounded-lg flex items-center justify-center p-2 text-center text-xs font-bold text-white border-2 border-red-500">
-                                {sPhoto.src}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            );
-        };
-
-        const DeductionModal = ({ onClose, onSuccess }) => {
-            const [suspect, setSuspect] = useState('');
-            const [location, setLocation] = useState('');
-            const [alertData, setAlertData] = useState({ isOpen: false, msg: '' });
-
-            const handleSubmit = () => {
-                if (suspect.includes('최산') || suspect.includes('산')) {
-                    if (location.includes('가평') || location.includes('별장')) {
-                        onSuccess();
-                        return;
-                    }
-                }
-                setAlertData({ isOpen: true, msg: '추리가 틀렸습니다. 단서를 다시 확인하세요. (범인 이름과 장소 키워드 포함 필요)' });
-            };
-
-            return (
-                <div className="absolute inset-0 bg-black bg-opacity-90 flex flex-col justify-center items-center z-50 p-6">
-                    <CustomAlert isOpen={alertData.isOpen} message={alertData.msg} onClose={() => setAlertData({ isOpen: false, msg: '' })} />
-                    <h2 className="text-red-500 text-2xl font-bold mb-6">최종 추리 보고서</h2>
-                    <p className="text-gray-300 text-sm mb-4 text-center">정윤호는 누구에 의해, 어디로 빼돌려졌습니까?</p>
-                    
-                    <input type="text" placeholder="용의자 이름 (예: 김철수)" value={suspect} onChange={e=>setSuspect(e.target.value)} className="w-full bg-gray-800 text-white border border-gray-600 rounded p-3 mb-4 outline-none focus:border-red-500"/>
-                    <input type="text" placeholder="은신 장소 (예: 제주도 호텔)" value={location} onChange={e=>setLocation(e.target.value)} className="w-full bg-gray-800 text-white border border-gray-600 rounded p-3 mb-6 outline-none focus:border-red-500"/>
-                    
-                    <div className="flex w-full space-x-3">
-                        <button onClick={onClose} className="flex-1 bg-gray-600 text-white py-3 rounded-lg font-bold">수사 보류</button>
-                        <button onClick={handleSubmit} className="flex-1 bg-red-600 text-white py-3 rounded-lg font-bold">결론 제출</button>
-                    </div>
-                </div>
-            );
-        };
-
-        const App = () => {
-            const [currentApp, setCurrentApp] = useState(null);
-            const [isGalleryUnlocked, setIsGalleryUnlocked] = useState(false);
-            const [showDeduction, setShowDeduction] = useState(false);
-            const [isSolved, setIsSolved] = useState(false);
-            const [introAlert, setIntroAlert] = useState(true);
-
-            useEffect(() => {
-                // Prevent scrolling on body
-                document.body.style.overflow = 'hidden';
-            }, []);
-
-            if (isSolved) {
-                return (
-                    <div className="phone-mockup flex flex-col items-center justify-center bg-black text-white p-6 text-center">
-                        <h1 className="text-3xl font-bold text-red-500 mb-4">사건 해결</h1>
-                        <p className="text-sm text-gray-300 leading-relaxed mb-6">
-                            경감님의 추리가 맞았습니다.<br/><br/>
-                            최산은 스폰서 김이사에게 불려갈 위기에 처한 정윤호를 보호한다는 명목 하에, 강제로 가평의 가족 소유 별장으로 납치해 감금했습니다.<br/><br/>
-                            현장에 출동하여 정윤호를 무사히 구출하고 최산을 체포했습니다. 우영과 김이사 역시 별건으로 조사 중입니다.
-                        </p>
-                        <button onClick={() => window.location.reload()} className="bg-white text-black px-6 py-2 rounded-full font-bold">다시 플레이</button>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="phone-mockup bg-cover bg-center" style={{backgroundImage: 'url("https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop")'}}>
-                    <div className="notch"></div>
-                    <TopBar />
-                    
-                    <CustomAlert 
-                        isOpen={introAlert} 
-                        message="[비공개 수사 지령] 인기 아이돌 '정윤호'가 실종되었습니다. 입수한 그의 핸드폰에서 비밀스러운 단서를 찾아 그가 어디로, 누구와 사라졌는지 알아내십시오." 
-                        onClose={() => setIntroAlert(false)} 
-                    />
-
-                    {showDeduction && <DeductionModal onClose={() => setShowDeduction(false)} onSuccess={() => setIsSolved(true)} />}
-
-                    {/* App Render Area */}
-                    <div className="absolute top-[44px] bottom-0 w-full overflow-hidden bg-transparent z-30">
-                        {currentApp === 'talk' && <KTalkScreen onBack={() => setCurrentApp(null)} />}
-                        {currentApp === 'memo' && <MemoScreen onBack={() => setCurrentApp(null)} />}
-                        {currentApp === 'photos' && <PhotosScreen onBack={() => setCurrentApp(null)} isUnlocked={isGalleryUnlocked} setUnlocked={setIsGalleryUnlocked} />}
-                        
-                        {/* Home Screen */}
-                        {!currentApp && (
-                            <div className="h-full p-6 pt-12 flex flex-col">
-                                <div className="grid grid-cols-4 gap-4 mt-10">
-                                    <div onClick={() => setCurrentApp('talk')} className="flex flex-col items-center cursor-pointer transform hover:scale-105 transition">
-                                        <div className="w-14 h-14 bg-yellow-400 app-icon text-black font-black">K</div>
-                                        <span className="text-white text-[10px] mt-1 font-medium shadow-black drop-shadow-md">채팅</span>
-                                    </div>
-                                    <div onClick={() => setCurrentApp('photos')} className="flex flex-col items-center cursor-pointer transform hover:scale-105 transition">
-                                        <div className="w-14 h-14 bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-500 app-icon text-white">❀</div>
-                                        <span className="text-white text-[10px] mt-1 font-medium shadow-black drop-shadow-md">갤러리</span>
-                                    </div>
-                                    <div onClick={() => setCurrentApp('memo')} className="flex flex-col items-center cursor-pointer transform hover:scale-105 transition">
-                                        <div className="w-14 h-14 bg-white app-icon text-yellow-500 text-3xl">📝</div>
-                                        <span className="text-white text-[10px] mt-1 font-medium shadow-black drop-shadow-md">메모장</span>
-                                    </div>
-                                </div>
-
-                                <div className="mt-auto mb-8 w-full flex justify-center">
-                                    <button onClick={() => setShowDeduction(true)} className="bg-red-600/90 text-white font-bold py-3 px-8 rounded-full shadow-lg border-2 border-red-400 animate-pulse">
-                                        🔍 수사 결론 내기
-                                    </button>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            );
-        };
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+const GameCore=()=>{
+ const [currentApp,setCurrentApp]=useState(null),[activeChatId,setActiveChatId]=useState(null),[chats,setChats]=useState(INITIAL_CHATS),[clues,setClues]=useState([]),[notification,setNotification]=useState(null),[gameStage,setGameStage]=useState(0),[unreadCounts,setUnreadCounts]=useState({messenger:0,clues:0});
+ useEffect(()=>{const timer=setTimeout(()=>{const newMsg={sender:'hongjoong',text:'아직 안 자? 26년 9월 28일... 그날 일 말이야. 생각해봤어?',time:'02:17'};setChats(prev=>({...prev,hongjoong:[...prev.hongjoong,newMsg]}));showNotification(CHARACTERS.hongjoong.avatar,CHARACTERS.hongjoong.name,newMsg.text,()=>{setCurrentApp('messenger');setActiveChatId('hongjoong')});setUnreadCounts(prev=>({...prev,messenger:prev.messenger+1}))},2000);return()=>clearTimeout(timer)},[]);
+ const showNotification=(avatar,title,body,action=null)=>{setNotification({avatar,title,body,action});setTimeout(()=>setNotification(null),5000)};
+ const addClue=(id,title,desc)=>{if(clues.find(c=>c.id===id))return;setClues(prev=>[{id,title,desc},...prev]);showNotification('https://placehold.co/100/eab308/000?text=?','새로운 단서 획득',title,()=>setCurrentApp('clues'));setUnreadCounts(prev=>({...prev,clues:prev.clues+1}))};
+ const handleGameEvent=(action,data)=>{
+  if(action==='READ_CHAT'&&data.charId==='hongjoong'&&gameStage===0){setGameStage(1);setUnreadCounts(prev=>({...prev,messenger:0}));setTimeout(()=>showNotification(null,'[시스템 메모]','9월 28일... 사진첩이나 결제 내역을 확인해볼까.'),3000)}
+  if(action==='ANALYZE_PHOTO'&&data.photoId==='p3'&&gameStage>=1){addClue('clue_3rd_person','사진 속 제 3의 인물','9월 28일 23:15, 산이 형과 찍은 VVIP룸 사진 거울에 용 문신을 한 남자가 반사되어 있다. 성화 형님이다.');if(gameStage===1)setGameStage(2)}
+  if(action==='OPEN_BANK'&&gameStage>=2){addClue('clue_money_time','시간의 모순 (결제 기록)','23:15에 VVIP룸에 있었는데, 23:22에 성화 형님에게 1000만원이 입금되었고, 23:45에 민기네 집으로 택시를 탔다.');if(gameStage===2)setGameStage(3)}
+  if(action==='READ_CHAT'&&data.charId==='mingi'&&gameStage>=3){addClue('clue_yunho_lie','윤호의 거짓말','나는 23:24에 민기에게 집에 있다고 거짓말을 했다. 하지만 23:45 결제 내역에는 민기네 집 앞으로 가는 택시를 탔다. 나는 왜 거짓말을 했지?');setGameStage(4);setTimeout(()=>{const newMsg={sender:'seonghwa',text:'그날 택시 탄 거 처리 잘 했어?',time:'02:25'};setChats(prev=>({...prev,seonghwa:[...prev.seonghwa,newMsg]}));showNotification(CHARACTERS.seonghwa.avatar,CHARACTERS.seonghwa.name,newMsg.text,()=>{setCurrentApp('messenger');setActiveChatId('seonghwa')});setUnreadCounts(prev=>({...prev,messenger:prev.messenger+1}))},6000)}
+ };
+ return <div className="phone-container"><div className="notch"></div><TopBar time="02:17"/>{notification&&<Notification notif={notification} onClick={()=>{if(notification.action)notification.action();setNotification(null)}}/>}<HomeScreen openApp={id=>{setCurrentApp(id);if(id==='clues')setUnreadCounts(prev=>({...prev,clues:0}))}} unreadCounts={unreadCounts}/>{currentApp==='messenger'&&!activeChatId&&<MessengerApp closeApp={()=>setCurrentApp(null)} chats={chats} openChat={setActiveChatId}/>} {currentApp==='messenger'&&activeChatId&&<ChatRoom closeChat={()=>setActiveChatId(null)} charId={activeChatId} messages={chats[activeChatId]} triggerEvent={handleGameEvent}/>} {currentApp==='photos'&&<PhotosApp closeApp={()=>setCurrentApp(null)} triggerEvent={handleGameEvent}/>} {currentApp==='bank'&&<BankApp closeApp={()=>setCurrentApp(null)} triggerEvent={handleGameEvent}/>} {currentApp==='clues'&&<ClueApp closeApp={()=>setCurrentApp(null)} clues={clues}/>}<div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/50 rounded-full z-50 pointer-events-none"></div></div>
+};
+ReactDOM.createRoot(document.getElementById('root')).render(<GameCore/>);
+</script>
 </body>
 </html>
