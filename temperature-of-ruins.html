@@ -198,7 +198,22 @@ convenience:'convenience-backroom.jpg',night_street:'seoul-night-street.jpg',rai
 forest:'urban-forest.jpg',camp:'survivor-camp.jpg',shelter:'shelter-interior.jpg',underground:'underground-shelter.jpg',
 factory:'abandoned-factory.jpg',roof_night:'rooftop-night.jpg'
 };
-for(const k in BG_FILES) IMAGE_BG[k]=BG_FILES[k];
+/* 실제 업로드된 배경 이미지: images/temperature-of-ruins/1.png ~ 12.png */
+const NUMBERED_BG_FILES={
+  hall:'1.png',
+  backroom:'2.png',
+  dawn:'3.png',
+  room_night:'4.png',
+  room:'5.png',
+  street:'6.png',
+  building:'7.png',
+  warehouse:'8.png',
+  hospital:'9.png',
+  pharmacy:'10.png',
+  school:'11.png',
+  rooftop:'12.png'
+};
+for(const k in NUMBERED_BG_FILES) IMAGE_BG[k]=NUMBERED_BG_FILES[k];
 
 function svgBg(key,fb){
   if(!fb&&IMAGE_BG[key]) return `<img src="${IMAGE_BASE}${IMAGE_BG[key]}" alt="${key}" style="width:100%;height:100%;display:block;object-fit:cover;object-position:center;" decoding="async" onerror="this.onerror=null;this.parentNode.innerHTML=svgBg('${key}',true)">`;
