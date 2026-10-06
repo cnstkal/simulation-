@@ -3951,19 +3951,16 @@ function seenMax(){return (store.get('seen',{})[S.ch]||0)}
 function markSeen(){const s=store.get('seen',{});if((s[S.ch]||0)<S.pc){s[S.ch]=S.pc;store.set('seen',s)}}
 
 function endingRouteKey(a){
-  const route=(a[0]||'').split('/')[0];
-  const routes={
-    '김홍중 루트':{ch:28,k:'hongjung'},
-    '박성화 루트':{ch:28,k:'seonghwa'},
-    '강여상 루트':{ch:28,k:'yeosang'},
-    '최산 루트':{ch:28,k:'san'},
-    '송민기 루트':{ch:28,k:'mingi'},
-    '정우영 루트':{ch:28,k:'wooyoung'},
-    '최종호 루트':{ch:28,k:'jongho'},
-    '단독 루트':{ch:30,k:'none'},
-    '특수 엔딩':{ch:30,k:'none'}
-  };
-  return routes[route]||null;
+  const target=(a&&a[0])||'';
+  const route=target.split('/')[0];
+  for(const ch of Object.keys(SCRIPTS)){
+    const sc=SCRIPTS[ch];
+    if(!sc.some(e=>e.ending&&e.ending[0]===target))continue;
+    for(const k in (RTT[ch]||{})){
+      if(RTT[ch][k]===route)return {ch:+ch,k};
+    }
+  }
+  return null;
 }
 function endingClone(o){return JSON.parse(JSON.stringify(o||{}))}
 function endingApplyFx(rel,fx){
@@ -4101,9 +4098,22 @@ function advance(){
 }
 function renderCard(c){
   const d=document.createElement('div');d.className='card';
+  d.setAttribute('role','button');d.setAttribute('tabindex','0');
   d.innerHTML=`<div class="k"></div><h2></h2><p></p>`;
   d.children[0].textContent=c[0];d.children[1].textContent=c[1];d.children[2].textContent=c[2]||'';
-  d.addEventListener('click',()=>{if(S.last===S.last&&S.last.card)run()});
+  let advanced=false;
+  const next=ev=>{
+    if(ev){ev.preventDefault();ev.stopPropagation()}
+    if(advanced)return;
+    advanced=true;
+    d.remove();
+    $('game').classList.remove('cardon');
+    $('txt').textContent='';$('nm').hidden=true;$('nx').hidden=true;
+    run();
+  };
+  d.addEventListener('pointerup',next,{passive:false});
+  d.addEventListener('click',next);
+  d.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){next(ev)}});
   $('stage').appendChild(d);
   $('game').classList.add('cardon');
   $('txt').textContent='';$('nm').hidden=true;$('nx').hidden=true;
