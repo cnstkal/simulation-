@@ -54,7 +54,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .name{position:absolute;left:18px;top:-15px;display:flex;align-items:center;gap:8px;background:var(--ink2);border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:.88rem;font-weight:700;letter-spacing:.06em}
 .name i{width:8px;height:8px;border-radius:50%;background:var(--nc,var(--c-etc))}
 .name[hidden]{display:none}
-.txt{font-family:var(--serif);font-size:calc(1.12rem * var(--fs));line-height:1.95;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;min-height:3.9em}
+.txt{font-family:var(--serif);font-size:calc(1.12rem * var(--fs));line-height:1.95;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;min-height:3.9em;max-width:880px}
+.txt.n{line-height:2.02}
+.txt.s{line-height:1.9}
 .txt.n{color:#d8d3c8}
 .txt.i{color:var(--lamp2);font-style:italic}
 .nextmark{position:absolute;right:16px;bottom:10px;width:10px;height:10px;border-right:2px solid var(--lamp);border-bottom:2px solid var(--lamp);transform:rotate(45deg);animation:bob 1.2s infinite}
@@ -376,7 +378,33 @@ N 농담인지 알 수 없는 어조였다. 윤호는 웃으려다 말았다.`]}
 
 const SCRIPTS={},CHTITLE={};
 const pad=n=>String(n).padStart(2,'0');
-for(const n in C){SCRIPTS[n]=[{card:['CHAPTER '+pad(n),C[n][0],'1부 · 붕괴']},...P(C[n][1],'')];SCRIPTS[n].push(C[+n+1]?{nx:+n+1}:{end:1});CHTITLE[n]='CHAPTER '+pad(n)+' — '+C[n][0]}
+
+/* 짧은 문장이 연속으로 끊겨 보이지 않도록 같은 흐름의 지문/대사를 자연스럽게 묶는다.
+   선택지, 장면 전환, 플래그 등 게임 로직은 건드리지 않는다. */
+function smoothLines(list){
+  const out=[];
+  for(const e of list){
+    const canMerge=e && (e.n!==undefined || e.s!==undefined || e.i!==undefined) && !e.L;
+    const prev=out[out.length-1];
+    const prevCanMerge=prev && (prev.n!==undefined || prev.s!==undefined || prev.i!==undefined) && !prev.L;
+    if(canMerge && prevCanMerge){
+      const ek=e.n!==undefined?'n':e.i!==undefined?'i':'s';
+      const pk=prev.n!==undefined?'n':prev.i!==undefined?'i':'s';
+      if(ek===pk && (ek==='n' || ek==='i' || prev.s===e.s)){
+        prev[pk]=String(prev[pk]).trim()+'\\n'+String(e[ek]).trim();
+        continue;
+      }
+    }
+    out.push(e);
+  }
+  return out;
+}
+
+for(const n in C){
+  SCRIPTS[n]=[{card:['CHAPTER '+pad(n),C[n][0],'1부 · 붕괴']},...smoothLines(P(C[n][1],''))];
+  SCRIPTS[n].push(C[+n+1]?{nx:+n+1}:{end:1});
+  CHTITLE[n]='CHAPTER '+pad(n)+' — '+C[n][0]
+}
 const LBL={};for(const k in SCRIPTS){LBL[k]={};SCRIPTS[k].forEach((e,i)=>{if(e.L)LBL[k][e.L]=i})}
 /* ---------- engine ---------- */
 const $=id=>document.getElementById(id);
@@ -444,13 +472,26 @@ function type(el,text,instant){
   const sp=SPD[cfg.speed];
   if(instant||sp===0||skipOn){el.textContent=text;done();return}
   let i=0;el.textContent='';
-  typing=setInterval(()=>{i+=1;el.textContent=text.slice(0,i);if(i>=text.length){clearInterval(typing);typing=null;done()}},sp);
+  typing=setInterval(()=>{
+    /* 한국어는 글자 수가 늘수록 타이핑 속도가 조금씩 빨라져 긴 지문이 지나치게 늘어지지 않게 한다. */
+    i+=1;
+    el.textContent=text.slice(0,i);
+    if(i>=text.length){
+      clearInterval(typing);typing=null;done();
+    }
+  },sp);
   el._full=text;
 }
 function finishTyping(){if(!typing)return;clearInterval(typing);typing=null;const el=$('txt');const e=S.last;el.textContent=e.n||e.i||e.t;done()}
 function done(){
   $('nx').hidden=false;
-  if(autoOn){clearTimeout(autoT);autoT=setTimeout(advance,cfg.auto)}
+  if(autoOn){
+    clearTimeout(autoT);
+    const text=String((S&&S.last&&(S.last.n||S.last.i||S.last.s))||'');
+    /* 짧은 대사는 짧게, 긴 지문은 충분히 읽을 시간을 준다. */
+    const reading=Math.max(1400,Math.min(6200,900+text.replace(/\\s/g,'').length*48));
+    autoT=setTimeout(advance,Math.max(cfg.auto,reading));
+  }
 }
 function overlayOpen(){return !!$('layer').firstChild}
 function advance(){
