@@ -1,0 +1,152 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>폐허의 온도</title><meta name="color-scheme" content="dark">
+<style>
+:root{--bg:#0d0f12;--p:#171a1f;--tx:#e6e2da;--dim:#8a8f98;--ac:#c9a66b;--ln:#2a2f37;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:16px/1.7 system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+#app{height:100%;display:flex;flex-direction:column;max-width:900px;margin:auto}
+#bar{display:flex;flex-wrap:wrap;gap:4px 10px;padding:6px 10px;font-size:12px;color:var(--dim);background:var(--p);border-bottom:1px solid var(--ln)}
+#bar b{color:var(--tx);font-weight:600}
+#mn{display:flex;gap:6px;padding:6px 10px;background:var(--p)}
+button{background:#22262d;color:var(--tx);border:1px solid var(--ln);border-radius:8px;padding:8px 12px;font:inherit;font-size:14px;min-height:40px;cursor:pointer}
+button.on{border-color:var(--ac);color:var(--ac)}button:disabled{opacity:.35}
+#st{flex:1;position:relative;overflow:hidden;transition:background .6s}
+#cs{position:absolute;left:0;right:0;bottom:0;max-height:100%;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:linear-gradient(transparent,#000a 40%)}
+#cs button{text-align:left;min-height:48px;background:#14171cee}
+#tt{position:absolute;top:10px;right:10px;font-size:13px;color:var(--ac);text-align:right;pointer-events:none;white-space:pre-line}
+#bx{background:var(--p);border-top:2px solid var(--ac);padding:12px 14px 16px;min-height:150px}
+#nm{color:var(--ac);font-weight:700;min-height:1.7em}
+#tx{white-space:pre-wrap;font-size:16px}
+#md{position:fixed;inset:0;background:#000d;display:none;align-items:center;justify-content:center;z-index:9;padding:16px}
+.mc{background:var(--p);border:1px solid var(--ln);border-radius:12px;padding:16px;max-width:560px;width:100%;max-height:85%;overflow-y:auto;font-size:14px}
+.mc p{margin:6px 0}.mc .r{border-top:1px solid var(--ln);padding:8px 0;color:var(--dim)}
+.mc .r b{color:var(--tx)}.sl{display:flex;gap:6px;align-items:center;margin:6px 0}.sl span{flex:1;font-size:13px;color:var(--dim)}
+</style></head><body><div id="app">
+<div id="bar"></div>
+<div id="mn"><button onclick="lg()">로그</button><button id="ba" onclick="tg('auto')">자동</button><button id="bs" onclick="tg('skip')">스킵</button><button onclick="rl()">관계</button><button onclick="sm()">저장</button></div>
+<div id="st"><div id="tt"></div><div id="cs"></div></div>
+<div id="bx"><div id="nm"></div><div id="tx"></div></div></div>
+<div id="md"></div>
+
+<!-- ===== DATA: 분리 시 game/characters, game/scenario/chNN.js 로 옮기면 됨 ===== -->
+<script>
+const GAME={id:'apoc1',title:'폐허의 온도'};
+// 공통 캐릭터 원본(게임 때문에 수정 금지)
+const COMMON={yh:{n:'정윤호',b:'1999-03-23',h:186},hj:{n:'김홍중',b:'1998-11-07',h:171},sh:{n:'박성화',b:'1998-04-03',h:178},ys:{n:'강여상',b:'1999-06-15',h:176},sa:{n:'최산',b:'1999-07-10',h:176},mk:{n:'송민기',b:'1999-08-09',h:185},wy:{n:'정우영',b:'1999-11-27',h:173},jh:{n:'최종호',b:'2000-10-12',h:174}};
+// 이 게임 전용 설정
+const GC={yh:{role:'주인공. 평범한 회사원'},hj:{role:'집단의 결정권자'},sh:{role:'응급처치·부상자 관리'},ys:{role:'탐색·관찰'},sa:{role:'선봉·돌파'},mk:{role:'운반·정찰, 갈등 유발'},wy:{role:'타 집단 접촉·정보'},jh:{role:'묵묵한 실행'}};
+const IDS=['hj','sh','ys','sa','mk','wy','jh'];
+const NAMES={'윤호':'yh','홍중':'hj','성화':'sh','여상':'ys','산':'sa','민기':'mk','우영':'wy','종호':'jh'};
+const LB={food:'식량',water:'식수',med:'의약품',tool:'도구',ammo:'탄약',hp:'체력',fat:'피로',safe:'안전도',morale:'사기'};
+const BG={sub:'#1b2230,#0b0d12',tun:'#12151a,#050607',ruin:'#5a2b25,#14100f',home:'#2a2620,#0e0d0b',conv:'#23302c,#0b100f'};
+// 문법: L=[[화자,문장,조건플래그?]], C=[{t,fx,fl,need,r,go}], go='$'면 챕터 종료
+// fx키: 자원명 | 'a:id.l/t/c/d/x'(상대→윤호) | 'y:id.l/t/c/d/x'(윤호→상대) (호감/신뢰/친밀/의존/갈등)
+const CH=[
+{t:'1부 · 붕괴 — 정전',sc:{
+start:{bg:'sub',L:[
+['','밤 아홉 시 사십 분. 열차가 터널 한가운데서 멈췄다. 형광등이 한 번 깜박이더니 전부 꺼졌다.'],
+['윤호','점검이겠죠. 오래 안 걸릴 거예요.'],
+['','옆 사람에게 한 말이었다. 윤호는 눈꼬리를 내려 웃어 보이고 손잡이를 고쳐 잡았다. 휴대폰의 신호 표시는 비어 있었다.']],go:'door'},
+door:{bg:'tun',L:[
+['','한 시간이 지나도 방송은 없었다. 누군가 비상 레버에 손을 올렸다.'],
+['작은 남자','만지지 마세요. 선로에 전기가 살아 있으면 그 사람 혼자 끝나는 게 아니라 이 칸이 같이 곤란해집니다.'],
+['','키가 윤호 가슴께에 겨우 닿았다. 그런데 레버에 손을 얹은 사람이 먼저 손을 뗐다.']],C:[
+{t:'“맞는 말이에요. 일단 앉읍시다.” 주변을 앉힌다.',fx:{morale:5,'a:hj.t':4,'y:hj.t':3},go:'water'},
+{t:'말없이 문틈과 바닥을 살핀다.',fx:{tool:1,'y:hj.x':2},r:[['','문 옆 비상함에 손전등이 있었다. 윤호는 그것을 가방에 넣었다. 아무에게도 말하지 않았다.']],go:'water'},
+{t:'배터리를 아끼며 가만히 기다린다.',fx:{fat:-5},go:'water'}]},
+water:{bg:'tun',L:[
+['','세 시간째. 칸 안에는 숨소리만 남았다. 계단 쪽에서 다친 여자가 부축되어 왔다. 발목이 부어 있었다.'],
+['성화','뼈는 안 나갔어요. 근데 물이 필요합니다. 입술 보이죠.'],
+['','피부가 어둡고 눈매가 가는 남자가 손수건으로 발목을 감았다. 서두르는 기색이 없었다.'],
+['홍중','이 칸에 물 가진 사람, 손.'],
+['','아무도 움직이지 않았다. 윤호의 가방에는 생수가 한 병 남아 있었다. 반쯤.']],C:[
+{t:'혼자 마신다.',fx:{water:-1,hp:5,morale:-5,'a:hj.t':-3},fl:['drank'],r:[['','목 넘기는 소리가 생각보다 컸다. 홍중이 한 번 보고 시선을 돌렸다.'],['홍중','...그렇군요.']],go:'exit'},
+{t:'홍중에게 건넨다.',fx:{water:-1,'a:hj.t':3,'a:hj.l':2,'y:hj.t':3},fl:['gave_hj'],r:[['홍중','저 말고 다친 사람이 먼저죠.'],['','그렇게 말하면서도 병을 받은 손은 놓지 않았다. 입술만 적시고 성화에게 넘겼다.']],go:'exit'},
+{t:'부상자에게 쓰라며 성화에게 준다.',fx:{water:-1,morale:5,'a:sh.t':5,'a:hj.t':2},fl:['gave_inj'],r:[['성화','...받겠습니다. 빚으로 쳐 두죠.']],go:'exit'},
+{t:'모두 한 모금씩 나눠 마시게 한다.',fx:{water:-1,morale:3,fat:5,'a:hj.t':2},fl:['split'],r:[['','뚜껑이 돌 때마다 목이 한 번씩 젖었다. 누구도 충분하지 않았고, 누구도 불평하지 않았다.']],go:'exit'},
+{t:'가방 깊숙이 숨긴다.',fx:{'a:hj.t':-1},fl:['hid'],r:[['','윤호는 지퍼를 끝까지 닫았다. 홍중이 다른 칸으로 걸어갔다. 아무도 묻지 않았다.']],go:'exit'}]},
+exit:{bg:'tun',L:[
+['','새벽 네 시. 일행은 비상 계단을 찾아 선로를 따라 걸었다. 윤호는 맨 뒤였다.'],
+['여상','저 벽 좀 봐요. 물 자국이 허리 높이예요. 이 터널, 한 번 잠겼다 빠진 거 아닌가.'],
+['','눈이 크고 어깨가 넓은 남자가 벽에 손바닥을 대고 있었다. 사람들이 지나치는 곳을 혼자 보고 있었다.'],
+['여상','가방 무거워 보이는데. 안 힘들어요?','hid'],
+['윤호','생각보다 가벼워요.','hid'],
+['','여상은 고개를 갸웃했다. 그뿐이었다.','hid']],go:'up'},
+up:{bg:'ruin',L:[
+['','계단 끝에서 빛이 쏟아졌다. 서울의 불은 꺼져 있었고 하늘만 붉었다.'],
+['','차들이 도로 한가운데 서 있었다. 운전석은 비어 있었다. 멀리서 사이렌 대신 무언가 타는 소리가 났다.'],
+['홍중','다 모여요. 이 근처 지리 아는 사람.'],
+['윤호','저요. 집이 십오 분 거리예요.'],
+['','말해 놓고 윤호는 손바닥이 젖은 걸 알았다. 홍중이 짧게 끄덕였다. 칭찬도 확인도 아닌 끄덕임이었다.']],C:[
+{t:'집에서 물과 식량부터 챙기자고 한다.',fx:{safe:-5,food:1,water:2},fl:['home'],go:'$'},
+{t:'가까운 편의점이 먼저라고 한다.',fx:{'a:hj.t':1},go:'$'}]}}},
+{t:'1부 · 붕괴 — 편의점',sc:{
+start:{bg:'home',L:[
+['','집 문은 잠겨 있었다. 안은 그대로였다. 아침에 쓴 컵이 싱크대에 놓여 있었다.','home'],
+['','수도꼭지는 마른 소리만 냈다. 윤호는 욕조에 남은 물을 생수병에 옮겼다. 이삼 리터였다. 냉장고 속 우유는 이미 시큼했다.','home'],
+['','일행은 편의점 앞에서 멈췄다. 반쯤 내려온 셔터 안에서 손전등 불빛이 흔들렸다.']],go:'conv'},
+conv:{bg:'conv',L:[
+['','셔터 밑으로 들어서자 냉장고 앞에 남자가 서 있었다. 단단한 어깨, 평범한 얼굴. 손에는 야구방망이.'],
+['종호','재고 없어요.'],
+['홍중','선반에 있는데요.'],
+['종호','제 가게 아니고, 제 근무시간이라서요. 사장 연락 올 때까지 지킵니다.'],
+['','목소리는 낮고 평평했다. 방망이를 쥔 손가락 마디만 하얬다.']],C:[
+{t:'가진 현금을 내고 값을 치르겠다고 한다.',fx:{'a:jh.t':2,food:2,'a:hj.x':1},r:[['종호','현금은 의미 없을 겁니다. ...그래도 받아 두죠. 기록은 남겨야 하니까.'],['','영수증을 끊는 손이 느렸다.']],go:'mk'},
+{t:'손전등을 건네고 물과 식량을 달라고 한다.',need:'tool',fx:{tool:-1,food:3,water:2,'a:jh.t':4,'y:jh.t':3},fl:['trade'],r:[['종호','손전등은 쓸 만하네요. 한 박스만 가져가요.']],go:'mk'},
+{t:'홍중이 협상하도록 한 발 물러선다.',fx:{'a:hj.t':3,'y:jh.x':2,food:2},r:[['홍중','우리 중에 다친 사람 있습니다. 정리는 저희가 합니다.'],['','종호가 홍중을 오래 봤다. 먼저 시선을 내린 쪽은 종호였다.']],go:'mk'},
+{t:'“그냥 나가죠.” 빈손으로 돌아선다.',fx:{morale:-8,'a:jh.t':3,'a:hj.t':-2},fl:['left'],go:'mk'}]},
+mk:{bg:'conv',L:[
+['','그때 뒷문이 쾅 열렸다. 박스를 어깨에 멘 남자가 들어왔다. 윤호보다도 컸다.'],
+['민기','비켜요. 길 막고 서 있지 말고.'],
+['종호','계산하고 가져가세요.'],
+['민기','계산할 사람이 없는데 뭘 계산해.'],
+['','민기는 종호를 지나쳐 라면 박스 두 개를 집었다. 방망이가 올라가는 소리가 났다.']],C:[
+{t:'둘 사이에 선다. “여기서 다치면 약도 없어요.”',fx:{'a:mk.t':-2,'a:jh.t':2,'y:mk.x':3,morale:3,'a:hj.t':2},fl:['stopped_mk'],r:[['민기','...비키라고 안 했습니까.'],['','윤호는 대답하지 않았다. 팔을 든 채로 시간이 지나갔다. 민기가 박스를 내려놓았다.']],go:'fin'},
+{t:'민기에게 반을 나누자고 제안한다.',fx:{food:2,'a:mk.t':2,'a:jh.t':-1,'a:hj.x':2},r:[['민기','...반.'],['윤호','반이면 같이 들어 줄 사람이 둘 늘어요.']],go:'fin'},
+{t:'가만히 둔다. 다칠 사람은 내가 아니다.',fx:{'a:hj.t':-3,'y:hj.x':3},fl:['watched'],r:[['','방망이가 라면 박스를 쳤다. 면 부서지는 소리가 났다. 홍중이 윤호를 돌아봤다. 윤호는 그 시선을 받았다.']],go:'fin'}]},
+fin:{bg:'conv',L:[
+['','결국 박스 세 개가 문 앞에 쌓였다. 윤호까지 여섯이 됐다.'],
+['홍중','오늘 밤은 여기서 잡습니다. 교대로 서요. 윤호 씨가 첫 번째.'],
+['윤호','제가요?'],
+['홍중','제일 오래 깨어 있을 얼굴이라서요.'],
+['','농담인지 알 수 없는 어조였다. 윤호는 웃으려다 말았다.']],go:'$'}}}
+];
+</script>
+
+<!-- ===== ENGINE ===== -->
+<script>
+const $=s=>document.querySelector(s),K='pa_'+GAME.id+'_';
+const db={g:k=>{try{return JSON.parse(localStorage.getItem(K+k))}catch(e){return null}},s:(k,v)=>{try{localStorage.setItem(K+k,JSON.stringify(v))}catch(e){}}};
+const E=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const R0=()=>({l:0,t:0,c:0,d:0,x:0});
+const init=()=>({ch:0,sc:'start',res:{food:2,water:1,med:1,tool:0,ammo:0,hp:100,fat:20,safe:30,morale:50},rel:Object.fromEntries(IDS.map(i=>[i,{a:R0(),y:R0()}])),fl:{},met:{},log:[]});
+let S,cur,wait=true,auto=0,skip=0,T,tt;
+function bar(){const r=S.res;$('#bar').innerHTML=Object.keys(LB).map(k=>`${LB[k]} <b>${r[k]}</b>`).join(' · ')}
+function fxa(f){const o=[];for(const k in f){const v=f[k];if(k in S.res){S.res[k]=Math.max(0,Math.min(k in{food:1,water:1,med:1,tool:1,ammo:1}?99:100,S.res[k]+v));o.push(LB[k]+(v>0?' +':' ')+v)}else{const m=k.match(/^([ay]):(\w+)\.(\w)$/);if(m)S.rel[m[2]][m[1]][m[3]]+=v}}
+ if(Object.keys(f).some(k=>k.includes(':')))o.push('관계가 달라졌다');toast(o.join('  '))}
+function toast(t){$('#tt').textContent=t;clearTimeout(tt);tt=setTimeout(()=>$('#tt').textContent='',2600)}
+function load(id){S.sc=id;const c=CH[S.ch],sc=c.sc[id];S.log=S.log.slice(-200);const{snap,...o}=S;S.snap=JSON.stringify(o);db.s('auto',S.snap);
+ let L=(sc.L||[]).filter(l=>!l[2]||(l[2][0]=='!'?!S.fl[l[2].slice(1)]:S.fl[l[2]]));if(id=='start')L=[['','— '+c.t+' —'],...L];
+ cur={L,C:sc.C,go:sc.go,i:0};$('#st').style.background=`linear-gradient(${BG[sc.bg||'ruin']})`;bar();wait=false;next()}
+function next(){if(wait)return;if(cur.i<cur.L.length)return say(cur.L[cur.i++]);if(cur.C)return ch();cur.go&&cur.go!='$'?load(cur.go):end()}
+function say(l){$('#nm').textContent=l[0];$('#tx').textContent=l[1];S.log.push(l);const i=NAMES[l[0]];if(i&&i!='yh')S.met[i]=1;sched()}
+function sched(){clearTimeout(T);if(wait)return;if(skip)T=setTimeout(next,45);else if(auto)T=setTimeout(next,1600+$('#tx').textContent.length*45)}
+function ch(){wait=true;const d=$('#cs');d.innerHTML='';cur.C.forEach(c=>{const b=document.createElement('button');b.textContent=c.t;if(c.need&&!S.res[c.need]){b.disabled=1;b.textContent+=' (필요: '+LB[c.need]+')'}b.onclick=e=>{e.stopPropagation();pick(c)};d.appendChild(b)})}
+function pick(c){$('#cs').innerHTML='';c.fx&&fxa(c.fx);(c.fl||[]).forEach(f=>S.fl[f]=1);bar();skip=0;$('#bs').className='';cur={L:c.r||[],go:c.go,i:0};wait=false;next()}
+function end(){if(CH[S.ch+1]){S.ch++;return load('start')}wait=true;clearTimeout(T);
+ const r=S.res;db.s('rec',{...(db.g('rec')||{}),trial:1});
+ $('#nm').textContent='';$('#tx').textContent=`— 체험판은 여기까지입니다 —\n\n현재 일행: 윤호 외 5명\n식량 ${r.food} · 식수 ${r.water} · 사기 ${r.morale}\n\n(1부 3장부터는 CH 배열에 같은 형식으로 추가)`;
+ $('#cs').innerHTML='<button onclick="title()">처음으로</button>'}
+function tg(k){if(k=='auto'){auto=!auto;$('#ba').className=auto?'on':''}else{skip=!skip;$('#bs').className=skip?'on':''}sched()}
+function md(h){$('#md').innerHTML='<div class=mc>'+h+'<p><button onclick="cm()">닫기</button></p></div>';$('#md').style.display='flex'}
+function cm(){$('#md').style.display='none'}
+function lg(){md(S.log.map(l=>`<p><b>${E(l[0])}</b> ${E(l[1])}</p>`).join('')||'<p>기록 없음</p>');$('.mc').scrollTop=1e5}
+const T5=['호감','신뢰','친밀','의존','갈등'];
+function rl(){const m=IDS.filter(i=>S.met[i]);md(m.length?m.map(i=>{const r=S.rel[i],f=o=>'lt c d x'.split(' ').length&&['l','t','c','d','x'].map((k,j)=>T5[j]+' '+o[k]).join(' ');return`<div class=r><b>${COMMON[i].n}</b> · ${GC[i].role}<br>${COMMON[i].n.slice(1)}→윤호: ${f(r.a)}<br>윤호→${COMMON[i].n.slice(1)}: ${f(r.y)}</div>`}).join(''):'<p>아직 만난 사람이 없다.</p>')}
+function sm(){let h='<p><b>저장 / 불러오기</b></p>';for(let i=1;i<=3;i++){const d=db.g('s'+i);h+=`<div class=sl><span>슬롯${i}: ${d?E(d.t):'비어 있음'}</span><button onclick="sv(${i})">저장</button><button onclick="ld('s${i}')" ${d?'':'disabled'}>불러오기</button></div>`}
+ const a=db.g('auto');h+=`<div class=sl><span>자동저장</span><button onclick="ld('auto')" ${a?'':'disabled'}>불러오기</button></div>`;h+='<p><b>엔딩 기록</b> '+(Object.keys(db.g('rec')||{}).join(', ')||'없음')+'</p>';md(h)}
+function sv(i){db.s('s'+i,{t:CH[S.ch].t+' · '+new Date().toLocaleString('ko'),snap:S.snap});sm()}
+function ld(k){const d=db.g(k),s=k=='auto'?d:d&&d.snap;if(!s)return;S=JSON.parse(s);cm();load(S.sc)}
+function title(){wait=true;clearTimeout(T);$('#nm').textContent='';$('#tx').textContent=GAME.title+'\n\n세상이 끝난 뒤에도 사람은 사람을 필요로 한다.';$('#st').style.background='linear-gradient(#1b2230,#0b0d12)';
+ $('#cs').innerHTML='<button onclick="S=init();load(\'start\')">새로 시작</button><button onclick="ld(\'auto\')" '+(db.g('auto')?'':'disabled')+'>이어하기</button>'}
+$('#st').onclick=$('#bx').onclick=()=>next();
+S=init();bar();title();
+</script></body></html>
