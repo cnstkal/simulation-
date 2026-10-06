@@ -1,0 +1,1 @@
+export default {id:'ace-night',title:'정윤호의 밤',subtitle:'어느 밤의 에이스에 대한 이야기',description:'현대 성인 로맨스 · 30챕터 확장판',chapterCount:30,characterIds:['yunho','hongjoong','seonghwa','yeosang','san','mingi','wooyoung','jongho']};
