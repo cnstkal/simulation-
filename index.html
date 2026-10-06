@@ -1,129 +1,787 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>밤의 이면 : Smartphone Detective</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-        body{font-family:'Inter','Noto Sans KR',sans-serif;background:#0a0a0a;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;overflow:hidden}
-        .phone-container{width:375px;height:812px;background:#000;border-radius:40px;border:8px solid #2a2a2a;box-shadow:0 0 50px rgba(0,0,0,.8),inset 0 0 20px rgba(255,255,255,.05);position:relative;overflow:hidden;display:flex;flex-direction:column}
-        .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:30px;background:#2a2a2a;border-bottom-left-radius:20px;border-bottom-right-radius:20px;z-index:50}
-        ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
-        .app-icon{filter:drop-shadow(0 4px 6px rgba(0,0,0,.5));transition:transform .1s}.app-icon:active{transform:scale(.9)}
-        .slide-in{animation:slideIn .3s cubic-bezier(.16,1,.3,1) forwards}.fade-in{animation:fadeIn .3s ease-out forwards}
-        @keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-        .home-bg{background:linear-gradient(to bottom,rgba(15,23,42,.8),rgba(0,0,0,.9)),url('https://placehold.co/375x812/1a1a2e/ffffff?text=Night+City') center/cover}
-    </style>
-</head>
-<body>
-<div id="root"></div>
-<script type="text/babel">
-const {useState,useEffect,useRef}=React;
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>정윤호의 밤</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout concept: full-bleed night-city backdrops, a low translucent text bar, menu anchored bottom-left like a film title card.
+   Single committed look: Seoul after midnight, sodium-lamp amber on blue-black. */
+:root{
+  --ink:#0d101b; --ink2:#151a2b; --ink3:#1f2640;
+  --paper:#ece7dd; --mute:#98a0b9; --lamp:#e9a65c; --lamp2:#f6c98b;
+  --line:rgba(236,231,221,.16); --veil:rgba(9,11,20,.82);
+  --c-yunho:#f3d6a8; --c-jongho:#7fc6b4; --c-seonghwa:#d9726e; --c-etc:#b7bddb;
+  --serif:'Gowun Batang','Noto Serif KR',serif; --sans:'Noto Sans KR',system-ui,sans-serif;
+  --fs:1;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--ink);color:var(--paper);font-family:var(--sans);overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+#app{position:relative;height:100%;width:100%;overflow:hidden;background:var(--ink)}
+.bg{position:absolute;inset:0;transition:opacity .9s ease}
+.bg svg{width:100%;height:100%;display:block}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 40%,transparent 40%,rgba(5,6,12,.55) 100%),linear-gradient(to top,rgba(6,8,16,.78),transparent 42%)}
 
-const CHARACTERS={
- hongjoong:{id:'hongjoong',name:'김홍중',avatar:'https://placehold.co/100/3b82f6/fff?text=HJ',desc:'과거를 아는 프로듀서 형'},
- seonghwa:{id:'seonghwa',name:'박성화 형님',avatar:'https://placehold.co/100/ef4444/fff?text=SH',desc:'가게 관리자 (조직)'},
- mingi:{id:'mingi',name:'송민기',avatar:'https://placehold.co/100/eab308/fff?text=MG',desc:'오랜 친구'},
- san:{id:'san',name:'최산',avatar:'https://placehold.co/100/22c55e/fff?text=S',desc:'전직 가드, 평범한 회사원'},
- wooyoung:{id:'wooyoung',name:'정우영',avatar:'https://placehold.co/100/a855f7/fff?text=WY',desc:'경쟁자 에이스'},
- yeosang:{id:'yeosang',name:'강여상',avatar:'https://placehold.co/100/ec4899/fff?text=YS',desc:'전 룸메이트'}
-};
+/* menu */
+#menu{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 20px 32px}
+#menu .menuwrap{position:relative;max-width:520px;display:flex;flex-direction:column;gap:28px}
+.kicker{font-size:.78rem;letter-spacing:.28em;color:var(--lamp);text-transform:uppercase}
+.title{font-family:var(--serif);font-weight:700;font-size:clamp(3rem,13vw,6.2rem);line-height:1.02;letter-spacing:.04em;text-wrap:balance}
+.title small{display:block;font-size:clamp(1rem,3.6vw,1.35rem);font-weight:400;letter-spacing:.12em;color:var(--lamp2);margin-top:14px}
+.menulist{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;max-width:420px;border-top:1px solid var(--line)}
+.menulist button{text-align:left;padding:13px 2px;border-bottom:1px solid var(--line);font-size:1rem;letter-spacing:.06em;transition:color .2s,padding-left .2s}
+.menulist button:hover:not(:disabled){color:var(--lamp);padding-left:8px}
+.menulist button:disabled{color:var(--mute);opacity:.5;cursor:default}
+.fine{font-size:.75rem;color:var(--mute);line-height:1.7;max-width:420px}
 
-const INITIAL_CHATS={
- hongjoong:[
-  {sender:'me',text:'형 잘 지내요?',time:'2026.09.15 14:20'},
-  {sender:'hongjoong',text:'어 뭐, 늘 똑같지. 곡 작업하고.',time:'2026.09.15 14:30'},
-  {sender:'hongjoong',text:'너는? 아직도 밤에 일해?',time:'2026.09.15 14:31'}
- ],
- seonghwa:[
-  {sender:'seonghwa',text:'오늘 손님 없으면 나랑 술이나 한잔할래?',time:'어제 22:10'},
-  {sender:'me',text:'형이 사주는 거면 생각해볼게요.',time:'어제 22:15'},
-  {sender:'seonghwa',text:'생각만 하지 말고 와.',time:'어제 22:16'}
- ],
- mingi:[
-  {sender:'mingi',text:'야 정윤호 얼굴 까먹겠다',time:'2026.09.28 21:00'},
-  {sender:'me',text:'나 오늘 집이야. 피곤해서 잔다.',time:'2026.09.28 23:24'},
-  {sender:'mingi',text:'어휴 ㅉㅉ 푹 쉬어라',time:'2026.09.28 23:30'}
- ],
- san:[
-  {sender:'san',text:'너 웃는 거 보니까 아직도 손님들한테 잘하긴 하나 보다.',time:'오늘 01:10'},
-  {sender:'me',text:'질투해요?',time:'오늘 01:12'},
-  {sender:'san',text:'......미쳤냐?',time:'오늘 01:13'},
-  {sender:'san',text:'돈 때문에 목숨 걸 필요는 없잖아. 언제까지 할 건데.',time:'오늘 01:15'}
- ]
-};
+/* game */
+#game{position:absolute;inset:0}
+.tools{position:absolute;top:0;left:0;right:0;display:flex;flex-wrap:wrap;gap:2px 4px;justify-content:flex-end;padding:10px 12px;z-index:5}
+.tools button{padding:7px 10px;font-size:.8rem;color:var(--paper);background:rgba(9,11,20,.5);border:1px solid var(--line);border-radius:6px;backdrop-filter:blur(4px)}
+.tools button.on{background:var(--lamp);color:#1a1208;border-color:var(--lamp)}
+.tools button:hover{border-color:var(--lamp)}
+.stage{position:absolute;inset:0;z-index:2}
+.tbwrap{position:absolute;left:0;right:0;bottom:0;padding:0 16px 18px;display:flex;justify-content:center;z-index:3;pointer-events:none}
+.tb{position:relative;flex:1;min-width:0;max-width:940px;min-height:calc(7.2em * var(--fs));background:var(--veil);border:1px solid var(--line);border-radius:10px;padding:26px 22px 24px;backdrop-filter:blur(6px);pointer-events:auto;cursor:pointer}
+.name{position:absolute;left:18px;top:-15px;display:flex;align-items:center;gap:8px;background:var(--ink2);border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:.88rem;font-weight:700;letter-spacing:.06em}
+.name i{width:8px;height:8px;border-radius:50%;background:var(--nc,var(--c-etc))}
+.name[hidden]{display:none}
+.txt{font-family:var(--serif);font-size:calc(1.12rem * var(--fs));line-height:1.95;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;min-height:3.9em}
+.txt.n{color:#d8d3c8}
+.txt.i{color:var(--lamp2);font-style:italic}
+.nextmark{position:absolute;right:16px;bottom:10px;width:10px;height:10px;border-right:2px solid var(--lamp);border-bottom:2px solid var(--lamp);transform:rotate(45deg);animation:bob 1.2s infinite}
+@keyframes bob{50%{transform:rotate(45deg) translate(3px,3px)}}
+.choices{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:64px 16px 150px;background:linear-gradient(to top,rgba(5,6,12,.78),rgba(5,6,12,.45));align-items:center;overflow:auto}
+.choices .q{font-size:.8rem;letter-spacing:.2em;color:var(--lamp);margin-bottom:4px;max-width:760px;width:100%}
+.choice{width:100%;max-width:760px;text-align:left;padding:16px 20px;font-family:var(--serif);font-size:calc(1.05rem * var(--fs));line-height:1.6;background:rgba(15,19,36,.92);border:1px solid rgba(233,166,92,.5);border-radius:8px;transition:background .18s,border-color .18s,transform .18s}
+.choice:hover{background:rgba(233,166,92,.16);border-color:var(--lamp);transform:translateX(6px)}
+.card{position:absolute;inset:0;z-index:6;background:var(--ink);display:flex;flex-direction:column;justify-content:center;gap:16px;padding:24px 28px;cursor:pointer;animation:fade .8s ease}
+.card .k{font-size:.8rem;letter-spacing:.34em;color:var(--lamp)}
+.card h2{font-family:var(--serif);font-size:clamp(2.2rem,8vw,4rem);margin:0;font-weight:700;letter-spacing:.04em}
+.card p{margin:0;color:var(--mute);font-size:.95rem}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.endcard{position:absolute;inset:0;z-index:6;background:var(--ink);overflow:auto;padding:36px 20px;display:flex;justify-content:center;animation:fade .8s ease}
+.endcard .in{max-width:640px;width:100%;display:flex;flex-direction:column;gap:20px}
+.endcard h2{font-family:var(--serif);font-size:clamp(1.8rem,6vw,2.6rem);margin:0}
+.memo{font-family:var(--serif);line-height:1.85;color:#d8d3c8;border-left:2px solid var(--lamp);padding-left:16px;display:flex;flex-direction:column;gap:10px}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px}
+.btn{padding:11px 20px;border:1px solid var(--lamp);border-radius:6px;font-size:.92rem;letter-spacing:.04em}
+.btn:hover{background:var(--lamp);color:#1a1208}
 
-const PHOTOS_DATA=[
- {id:'p1',url:'https://placehold.co/400x600/222/aaa?text=Selfie\nToday',date:'오늘 01:05',desc:'출근 전 거울 샷'},
- {id:'p2',url:'https://placehold.co/400x600/1a1a1a/eab308?text=Drink\nWith+Mingi',date:'2026.10.01',desc:'민기랑 술집에서'},
- {id:'p3',url:'https://placehold.co/400x600/331a1a/ef4444?text=VVIP+Room\nSan+%26+...',date:'2026.09.28 23:15',desc:'산이 형이랑 브이아이피 룸에서. 뒤 거울에 용 문신이 비친다.',isKeyEvidence:true},
- {id:'p4',url:'https://placehold.co/400x600/112233/3b82f6?text=Practice+Room\n2018',date:'2018.05.12',desc:'연습생 시절 홍중이 형이랑'}
+/* modal */
+.modal{position:absolute;inset:0;z-index:20;background:rgba(5,6,12,.8);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.panel{width:100%;max-width:720px;max-height:100%;display:flex;flex-direction:column;background:var(--ink2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.panel header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.panel header h3{margin:0;font-family:var(--serif);font-size:1.2rem}
+.panel .x{padding:4px 10px;color:var(--mute);font-size:1.3rem}
+.panel .body{padding:16px 18px 20px;overflow:auto;min-height:0}
+.logline{padding:8px 0;border-bottom:1px solid var(--line);font-family:var(--serif);line-height:1.7;font-size:.98rem}
+.logline b{display:block;font-family:var(--sans);font-size:.75rem;letter-spacing:.08em;color:var(--lamp);margin-bottom:2px}
+.slot{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 14px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px;text-align:left}
+.slot:hover{border-color:var(--lamp)}
+.slot small{display:block;color:var(--mute);margin-top:3px;font-size:.78rem;overflow-wrap:anywhere}
+.slot span{min-width:0}
+.set{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.set label{font-size:.85rem;color:var(--mute)}
+.set select,.set input[type=range]{width:100%;accent-color:var(--lamp)}
+.set select{background:var(--ink3);color:var(--paper);border:1px solid var(--line);padding:9px;border-radius:6px}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.gal figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.gal .th{aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--ink);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--mute);max-width:100%}
+.gal .th svg{width:100%;height:100%;display:block}
+.gal figcaption{font-size:.8rem;color:var(--mute)}
+.route{margin-bottom:16px}
+.route h4{margin:0 0 6px;font-family:var(--serif);font-size:1.02rem}
+.route ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.route li{padding:5px 11px;border:1px dashed var(--line);border-radius:5px;font-size:.82rem;color:var(--mute)}
+.route li.got{border-style:solid;border-color:var(--lamp);color:var(--lamp2)}
+.note{font-size:.82rem;color:var(--mute);line-height:1.7;margin-bottom:14px}
+@media (max-width:520px){.choices{padding-bottom:170px}.tb{padding:24px 16px 22px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app">
+  <div class="bg" id="bgA"></div><div class="bg" id="bgB" style="opacity:0"></div>
+  <div class="vig"></div>
+
+  <section id="menu">
+    <div class="menuwrap">
+      <div>
+        <div class="kicker">Adult Romance Visual Novel</div>
+        <h1 class="title" style="margin:10px 0 0">정윤호<small>어느 밤의 에이스에 대한 이야기</small></h1>
+      </div>
+      <nav class="menulist" aria-label="메인 메뉴">
+        <button id="mStart">게임 시작</button>
+        <button id="mCont">이어하기</button>
+        <button id="mLoad">불러오기</button>
+        <button id="mSet">설정</button>
+        <button id="mGal">갤러리</button>
+        <button id="mEnd">엔딩 리스트</button>
+      </nav>
+      <p class="fine">19세 이상 · 현대 성인 로맨스 · 전체 30챕터 중 CHAPTER 01 수록<br>인물 일러스트는 사용하지 않고, 대사와 글, 배경으로만 이야기합니다.</p>
+    </div>
+  </section>
+
+  <section id="game" hidden>
+    <div class="tools" id="tools">
+      <button id="tLog">로그</button><button id="tAuto">자동</button><button id="tSkip">스킵</button>
+      <button id="tSave">저장</button><button id="tLoad">불러오기</button><button id="tSet">설정</button><button id="tMenu">메뉴</button>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div class="tbwrap"><div class="tb" id="tb">
+      <div class="name" id="nm" hidden><i></i><span id="nmt"></span></div>
+      <div class="txt" id="txt"></div>
+      <div class="nextmark" id="nx" hidden></div>
+    </div></div>
+  </section>
+  <div id="layer"></div>
+</div>
+
+<script>
+/* ---------- storage ---------- */
+const store={mem:{},
+  get(k,d){try{const v=localStorage.getItem('yh_'+k);if(v!==null)return JSON.parse(v)}catch(e){}return k in this.mem?this.mem[k]:d},
+  set(k,v){this.mem[k]=v;try{localStorage.setItem('yh_'+k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- backgrounds (generated, no people) ---------- */
+let uid=0;
+function mul(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hs(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function LG(id,stops){return `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${stops.map((c,i)=>`<stop offset="${(i/(stops.length-1)).toFixed(2)}" stop-color="${c}"/>`).join('')}</linearGradient>`}
+function RG(id,c,o=1){return `<radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`}
+function skyline(r,y,minH,maxH,fill,lit,litC,st){let x=-20,o='';while(x<1620){const w=60+r()*110,h=minH+r()*(maxH-minH);o+=`<rect x="${x.toFixed(0)}" y="${(y-h).toFixed(0)}" width="${w.toFixed(0)}" height="${(h+900-y).toFixed(0)}" fill="${fill}"/>`;
+  if(lit>0){for(let wy=y-h+14;wy<y-10;wy+=st){for(let wx=x+8;wx<x+w-14;wx+=st){if(r()<lit)o+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${(st*.45).toFixed(0)}" height="${(st*.55).toFixed(0)}" fill="${litC}" opacity="${(.45+r()*.55).toFixed(2)}"/>`}}}
+  x+=w+r()*8}return o}
+function svgBg(key){
+  const r=mul(hs(key)),p='g'+(uid++),W=1600,H=900;let d='',b='';
+  const blur=`<filter id="${p}b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>`;
+  if(key==='street'){
+    d=LG(p+'s',['#080a18','#171b3a','#34274a'])+blur;
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}s)"/>`+skyline(r,640,120,330,'#0e1128',.09,'#f2c27a',30)+skyline(r,780,80,280,'#090b17',.17,'#ffd9a0',34);
+    const nc=['#e8517a','#5ec8e8','#e9a65c','#b07ae8'];
+    for(let i=0;i<7;i++){const x=80+r()*1400,y=380+r()*300,c=nc[i%4];b+=`<rect x="${x}" y="${y}" width="${30+r()*60}" height="${12+r()*16}" fill="${c}" filter="url(#${p}b)" opacity=".8"/><rect x="${x+4}" y="${y+4}" width="${22+r()*40}" height="5" fill="${c}"/>`}
+    b+=`<rect y="790" width="${W}" height="110" fill="#07080f"/><rect x="0" y="790" width="${W}" height="3" fill="#e9a65c" opacity=".35"/>`;
+    for(let i=0;i<6;i++){b+=`<rect x="${r()*1500}" y="800" width="${40+r()*90}" height="${90}" fill="${nc[i%4]}" opacity=".07"/>`}
+    b+=`<rect x="1090" y="620" width="260" height="170" fill="#05060c"/><rect x="1110" y="640" width="220" height="12" fill="#c9ccd8" opacity=".75"/><text x="1220" y="650" font-size="11" fill="#05060c" text-anchor="middle" font-family="sans-serif" font-weight="700">ENCORE</text>`;
+  }else if(key==='dawn'){
+    d=LG(p+'s',['#252c4a','#6d7396','#e4a888'])+RG(p+'g','#ffd2a0',.9)+RG(p+'l','#ffd38a',.8);
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}s)"/><circle cx="520" cy="640" r="420" fill="url(#${p}g)"/>`+skyline(r,700,100,300,'#1b1e36',.04,'#ffd9a0',32)+skyline(r,760,60,200,'#12142a',.05,'#ffd9a0',34);
+    b+=`<polygon points="0,740 1600,740 1600,900 0,900" fill="#171926"/><polygon points="700,740 900,740 1400,900 200,900" fill="#1d2030"/>`;
+    for(let i=0;i<5;i++){const y=760+i*i*6+i*14;b+=`<rect x="${790-i*5}" y="${y}" width="${20+i*10}" height="${6+i*2}" fill="#d8cdb8" opacity=".5"/>`}
+    b+=`<rect x="1240" y="380" width="10" height="360" fill="#0d0e18"/><rect x="1180" y="376" width="76" height="8" fill="#0d0e18"/><circle cx="1184" cy="392" r="120" fill="url(#${p}l)"/><circle cx="1184" cy="388" r="8" fill="#ffe3a8"/>`;
+  }else if(key==='building'){
+    d=LG(p+'s',['#8fa8c4','#dcd4c3'])+LG(p+'f',['#c2b7a3','#a89c88']);
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}s)"/>`+skyline(r,700,120,320,'#a9b2bd',0,'',30);
+    b+=`<rect x="420" y="130" width="760" height="720" fill="url(#${p}f)"/><rect x="420" y="130" width="760" height="22" fill="#8d8272"/>`;
+    for(let row=0;row<3;row++)for(let c=0;c<4;c++){b+=`<rect x="${470+c*172}" y="${190+row*148}" width="108" height="100" fill="#5f7387"/><rect x="${470+c*172}" y="${190+row*148}" width="108" height="30" fill="#8fa5ba" opacity=".5"/>`}
+    b+=`<rect x="720" y="590" width="160" height="260" fill="#3b4650"/><rect x="732" y="602" width="136" height="248" fill="#6b8296" opacity=".55"/><rect x="798" y="602" width="4" height="248" fill="#3b4650"/>`;
+    b+=`<rect x="690" y="548" width="220" height="34" fill="#7d725f"/><text x="800" y="573" font-size="22" fill="#e6dcc6" text-anchor="middle" font-family="sans-serif" font-weight="700" letter-spacing="4">삼호빌딩</text>`;
+    b+=`<rect y="840" width="${W}" height="60" fill="#6c6a68"/><rect y="840" width="${W}" height="4" fill="#85827d"/><polygon points="0,0 700,0 300,900 0,900" fill="#fff3d8" opacity=".07"/>`;
+  }else if(key==='hall'){
+    d=RG(p+'g','#ffcf8a',.55)+blur;
+    b=`<rect width="${W}" height="${H}" fill="#2a2623"/><rect y="520" width="${W}" height="380" fill="#3a322d"/><rect y="516" width="${W}" height="6" fill="#4d433b"/>`;
+    for(let i=0;i<9;i++){const x=500+i*110,y=180+i*60;b+=`<polygon points="${x},${y+160} ${x+110},${y+100} ${x+110},${y+130} ${x},${y+190}" fill="#463c35"/><polygon points="${x},${y+160} ${x+110},${y+100} ${x+110},${y+108} ${x},${y+168}" fill="#6a5c50"/>`}
+    b+=`<polygon points="440,900 1600,330 1600,900" fill="#241f1c" opacity=".7"/><rect x="120" y="260" width="240" height="520" fill="#4a3c32"/><rect x="140" y="280" width="200" height="480" fill="#554437"/><circle cx="318" cy="540" r="9" fill="#c9a96a"/><rect x="200" y="310" width="80" height="34" fill="#c9bfa8"/><text x="240" y="335" font-size="22" fill="#2a2623" text-anchor="middle" font-family="sans-serif" font-weight="700">301</text>`;
+    b+=`<circle cx="800" cy="120" r="260" fill="url(#${p}g)"/><rect x="700" y="62" width="200" height="26" rx="13" fill="#ffe9bd"/>`;
+  }else if(key==='room'||key==='room_night'){
+    const n=key==='room_night';
+    d=LG(p+'w',n?['#171b2e','#1d2138']:['#d6c8ae','#c3b399'])+LG(p+'g',n?['#0b0f22','#2b2a52']:['#f6d095','#e9955b'])+RG(p+'l','#ffcf8a',n?.6:.25)+LG(p+'m',n?['#3a3548','#2a2535']:['#f1ede4','#cfc8bb']);
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}w)"/><rect y="650" width="${W}" height="250" fill="${n?'#241d2c':'#8f7557'}"/><rect y="640" width="${W}" height="14" fill="${n?'#2f2638':'#e0d4be'}"/>`;
+    b+=`<rect x="980" y="110" width="400" height="420" fill="${n?'#2c3050':'#efe6d4'}"/><rect x="996" y="126" width="368" height="388" fill="url(#${p}g)"/>`;
+    if(n){for(let i=0;i<60;i++)b+=`<rect x="${1000+r()*350}" y="${300+r()*200}" width="6" height="8" fill="#f2c27a" opacity="${.3+r()*.6}"/>`}
+    b+=`<rect x="1178" y="126" width="8" height="388" fill="${n?'#2c3050':'#efe6d4'}"/><rect x="996" y="312" width="368" height="8" fill="${n?'#2c3050':'#efe6d4'}"/>`;
+    if(!n)b+=`<polygon points="990,640 1380,640 1500,900 700,900" fill="#ffd9a0" opacity=".22"/>`;
+    b+=`<g transform="rotate(3 470 420)"><rect x="370" y="130" width="190" height="540" rx="4" fill="${n?'#2b2536':'#a58a62'}"/><rect x="380" y="140" width="170" height="520" fill="url(#${p}m)"/></g>`;
+    b+=`<rect x="90" y="470" width="190" height="180" fill="#a98b63"/><rect x="110" y="380" width="170" height="90" fill="#b79a70"/><rect x="90" y="556" width="190" height="8" fill="#d8c8a2"/>`;
+    b+=`<circle cx="1210" cy="560" r="300" fill="url(#${p}l)"/>`;
+    if(n)b+=`<circle cx="740" cy="560" r="220" fill="url(#${p}l)"/><rect x="722" y="540" width="36" height="110" fill="#1a1522"/>`;
+  }else if(key==='backroom'){
+    d=RG(p+'g','#ffd9a0',.75)+blur;
+    b=`<rect width="${W}" height="${H}" fill="#171018"/><rect y="700" width="${W}" height="200" fill="#0e0a10"/><rect x="180" y="150" width="1100" height="430" fill="#2a2430"/><rect x="200" y="170" width="1060" height="390" fill="#3b3442"/>`;
+    for(let i=0;i<=13;i++){const x=200+i*81.5;for(const y of [150,560])b+=`<circle cx="${x}" cy="${y}" r="26" fill="url(#${p}g)"/><circle cx="${x}" cy="${y}" r="9" fill="#ffe7b8"/>`}
+    for(let i=0;i<4;i++)b+=`<rect x="${1330+i*64}" y="210" width="56" height="470" fill="#2a2430" stroke="#171018" stroke-width="3"/>`;
+    b+=`<rect x="220" y="620" width="880" height="26" fill="#241b27"/><rect x="220" y="690" width="880" height="12" fill="#141017" opacity=".8"/>`;
+  }else{ /* bar */
+    d=LG(p+'s',['#0b0a14','#1b1226'])+blur;
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}s)"/>`;
+    for(let i=0;i<3;i++)b+=`<rect x="140" y="${200+i*120}" width="1320" height="6" fill="#4a3a2a"/>`;
+    const bc=['#2d5a4e','#6a3d2a','#8a6a2a','#2a3f6a','#5a2a3a'];
+    for(let s=0;s<3;s++)for(let i=0;i<26;i++){const x=160+i*50+r()*10,h=60+r()*40;b+=`<rect x="${x}" y="${200+s*120-h}" width="${18+r()*10}" height="${h}" rx="4" fill="${bc[(i+s)%5]}" opacity=".85"/>`}
+    const col=['#e9a65c','#c85b7a','#6aa7d8'];
+    for(let i=0;i<14;i++)b+=`<circle cx="${r()*W}" cy="${380+r()*380}" r="${22+r()*50}" fill="${col[i%3]}" opacity="${.12+r()*.14}" filter="url(#${p}b)"/>`;
+    b+=`<rect y="720" width="${W}" height="180" fill="#120c14"/><rect y="716" width="${W}" height="6" fill="#e9a65c" opacity=".55"/>`;
+    b+=`<rect x="1100" y="520" width="420" height="170" rx="18" fill="#1d1224"/><rect x="60" y="540" width="360" height="150" rx="18" fill="#1d1224"/><rect x="560" y="640" width="200" height="14" fill="#2a1d30"/>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><defs>${d}</defs>${b}</svg>`;
+}
+const BGN={building:'삼호빌딩 앞',hall:'계단과 복도',room:'301호, 낮',room_night:'301호, 밤',street:'앙코르 골목',backroom:'대기실',bar:'홀',dawn:'새벽 거리'};
+let bgFlip=false;
+function setBg(k,instant){
+  if(S)S.bg=k;
+  const a=document.getElementById('bgA'),b=document.getElementById('bgB'),cur=bgFlip?b:a,nxt=bgFlip?a:b;
+  nxt.innerHTML=svgBg(k);nxt.style.opacity=1;cur.style.opacity=0;bgFlip=!bgFlip;
+  const u=store.get('bgs',[]);if(!u.includes(k)){u.push(k);store.set('bgs',u)}
+}
+
+/* ---------- script helpers ---------- */
+const N=t=>({n:t}),I=t=>({i:t}),SP=(s,t)=>({s,t});
+const Y=t=>SP('윤호',t),J=t=>SP('종호',t),SH=t=>SP('성화',t),IM=t=>SP('임 대표',t),HS=t=>SP('한 실장',t),DH=t=>SP('동혁',t),P1=t=>SP('선수',t);
+const L=n=>({L:n}),GO=n=>({go:n}),BG=k=>({bg:k}),FX=o=>({fx:o}),FL=f=>({flag:f}),IF=(f,go)=>({if:f,go}),CH=(q,c)=>({q,c});
+
+/* ---------- CHAPTER 01 ---------- */
+const CH1=[
+{card:['CHAPTER 01','새로운 방','1부 · 새로운 일상']},
+BG('building'),
+N(`이삿짐 트럭이 골목을 빠져나간 건 오후 세 시를 조금 넘긴 때였다.`),
+N(`정윤호가 가진 짐은 생각보다 적었다. 박스 아홉 개, 캐리어 하나, 접이식 건조대. 투룸 빌라에서 나올 때도 딱 이만큼이었다. 누군가와 같이 쓰던 공간을 나오고 나면, '내 것'이 이렇게 적다는 걸 알게 된다.`),
+N(`사 층짜리 낡은 건물이었다. 삼호빌딩. 간판은 색이 바랬는데, 현관 유리문에는 누가 매일 닦는 것처럼 손자국 하나 없었다.`),
+I(`엘리베이터는 없네. 삼 층이라고 했으니까, 아홉 번만 오르내리면 되겠다.`),
+N(`첫 번째 박스를 안아 드는데, 현관 옆 벽에 기대 서 있던 사람이 몸을 일으켰다.`),
+J(`정윤호 씨, 맞죠? 삼백일호.`),
+N(`키는 윤호의 어깨쯤이었다. 동그란 얼굴에 볕에 그을린 피부, 티셔츠 아래로 단단하게 자리 잡은 어깨. 얼굴만 보면 순한데, 눈은 그렇지 않았다. 사람을 위에서 아래까지 재는 눈이었다.`),
+Y(`네, 맞아요. 아, 집주인분이세요? 계약은 부동산에서 대신 해주셨어서, 이렇게 직접 뵙는 건 처음이네요.`),
+J(`최종호예요. 이 건물 관리합니다. 먼저 말씀드릴게요. 계단에 짐 두시면 안 돼요. 층계참에 잠깐 내려놓는 것도요. 소방 점검 나오면 과태료는 제가 내거든요.`),
+N(`윤호는 박스를 든 채 웃어 보였다. 웃는 건 생각보다 먼저 나오는 일이었다.`),
+CH('종호의 첫인사에 어떻게 답할까',[
+ {t:`"걱정 마세요. 한 개도 안 내려놓을 테니까요."`,go:'c1a',fx:{mask:1}},
+ {t:`"그럼 집주인이시니까, 하나만 같이 들어주실래요?"`,go:'c1b'},
+ {t:`"알겠습니다. 바로 올릴게요."`,go:'c1c',fx:{jongho:1}}]),
+L('c1a'),
+J(`웃으면서 장담하는 사람 말은 반만 듣는 편이에요.`),
+Y(`반이면 후한 거네요. 보통은 아예 안 들으시던데.`),
+J(`…그건 인정할게요.`),
+GO('c1e'),
+L('c1b'),
+J(`제가요?`),
+Y(`아니면 말고요. 물어본 것뿐이에요.`),
+J(`도와드릴 의무는 없어요. 계단 닦는 건 제 일이라, 흙 묻히면 직접 닦으세요.`),
+GO('c1e'),
+L('c1c'),
+N(`종호가 눈을 한 번 깜빡였다. 반박을 준비해 둔 사람이 허공에 대고 주먹을 쥔 것 같은 표정이었다.`),
+J(`…네. 그럼 됐고요.`),
+L('c1e'),
+J(`그리고 월세는 매달 이십오일이에요. 하루라도 늦으면 문자 가요. 두 번 늦으면 전화 가고요.`),
+Y(`세 번째는요?`),
+J(`세 번째는 없게 해주세요, 형.`),
+N(`윤호의 손이 박스 모서리에서 멈췄다.`),
+Y(`형?`),
+J(`계약서에 생년 있잖아요. 구칠년생이시던데. 저는 구팔이에요.`),
+N(`스물일곱. 윤호보다 한 살 아래. 건물 하나를 쥐고 서 있는 사람으로 보기엔 어렸고, 그 눈빛으로 보기엔 너무 정확했다.`),
+Y(`그럼 말은 어떻게 할까. 편하게 해도 돼?`),
+J(`집주인한테요?`),
+CH('말투를 정한다',[
+ {t:`"종호야, 한 살 차이에 갑을 따지면 피곤해."`,go:'c2a'},
+ {t:`"형이라고 부르는 사람한테 존댓말 쓰긴 좀 그래서. 종호야, 라고 불러도 될까?"`,go:'c2b',fx:{jongho:1}},
+ {t:`"…알겠습니다, 최종호 씨."`,go:'c2c',flag:'formal'}]),
+L('c2a'),
+J(`갑을로 따지면 제가 갑인 게 맞는데요.`),
+Y(`그렇지. 그래서 이렇게 눈치 보면서 말하잖아, 종호야.`),
+J(`눈치 보는 것처럼은 안 보이는데요.`),
+GO('c2e'),
+L('c2b'),
+J(`…그걸 왜 저한테 물어봐요. 형 마음대로 하세요.`),
+Y(`마음대로 하면 그냥 부를 건데.`),
+J(`그럼 묻지 말고 그냥 부르면 되잖아요.`),
+Y(`그럼 그렇게 할게. 종호야.`),
+N(`종호는 대꾸하지 않았다. 귀 끝만 조금 붉어져 있었다.`),
+GO('c2e'),
+L('c2c'),
+J(`…그렇게까지 거리 두실 건 아니고요.`),
+Y(`아, 편한 쪽이 낫구나.`),
+J(`그냥 형 마음대로 하세요. 저는 어차피 존댓말 쓸 거예요.`),
+L('c2e'),
+J(`직장은 어디 다니세요? 계약서에 직장 칸이 비어 있던데.`),
+Y(`서비스업이에요. 시간이 좀 불규칙한 쪽이라서.`),
+J(`밤에 많이 들어오시겠네요.`),
+N(`질문이 아니라 확인이었다.`),
+Y(`…그런 편이에요.`),
+J(`열두 시 넘으면 계단 조심해 주세요. 이층에 어르신 사세요. 새벽에 샤워 물소리도 벽 타고 올라가고요.`),
+N(`직업은 한 번도 묻지 않았다. 묻지 않고도 이미 정리를 끝낸 얼굴이었다. 윤호가 사람의 얼굴에다 하는 일을, 이 사람은 지금 윤호의 얼굴에다 하고 있었다.`),
+CH('밤에 일한다는 사실에 대해',[
+ {t:`"소리 안 나게 다닐게요. 고양이처럼."`,go:'c3a',fx:{mask:1}},
+ {t:`"밤에 일해요. 뭘 하는지는 안 물어봐 주면 고맙겠고."`,go:'c3b',fx:{jongho:1}},
+ {t:`"제가 뭐 하는 사람으로 보여요?"`,go:'c3c'}]),
+L('c3a'),
+J(`고양이는 계단에서 쿵쿵거리진 않죠.`),
+J(`그 말, 기억해 둘게요.`),
+GO('c3e'),
+L('c3b'),
+J(`물어볼 생각 없었어요.`),
+Y(`그렇게 보였어. 그래서 말한 거고.`),
+J(`…그럼 저도 한 가지만요. 말 안 하는 건 괜찮은데, 거짓말은 하지 마세요. 그건 싫어요.`),
+N(`짧은 말이었는데 이상하게 오래 남았다. 윤호에게 거짓말은 직업이 아니라 습관에 가까웠다.`),
+GO('c3e'),
+L('c3c'),
+J(`맞히면 월세 깎아주실 거예요?`),
+Y(`그건 안 되지.`),
+J(`그럼 안 맞힐래요.`),
+N(`입꼬리가 아주 조금 올라갔다 내려갔다. 웃은 건지 비웃은 건지 알 수 없었다.`),
+L('c3e'),
+J(`이 건물에 십 년 넘게 있었어요. 아침에 돌아오는 사람이랑 밤에 나가는 사람은 걸음이 달라요. 대충은 알아요. 대충요.`),
+J(`이따 저녁에 계량기 확인하러 올라올게요. 입주 기준값 적어둬야 나중에 안 싸우거든요.`),
+Y(`이사 온 당일에요?`),
+J(`당일이니까요.`),
+N(`종호는 클립보드를 옆구리에 끼고 돌아섰다. 계단 쪽으로 사라지기 전에 어깨 너머로 한마디를 덧붙였다.`),
+J(`박스는 층계참에 내려놓지 마시고요, 형.`),
+Y(`알았다니까.`),
+N(`혼자 남은 현관에서 윤호는 작게 중얼거렸다.`),
+I(`까다롭네.`),
+I(`…그래도 눈은 좋다.`),
+
+BG('hall'),
+N(`박스 아홉 개를 올리는 데 사십 분이 걸렸다. 층계참에는 한 개도 내려놓지 않았다. 이 층을 지날 때는 문틈으로 텔레비전 소리가 새어 나왔고, 윤호는 저도 모르게 발소리를 죽였다.`),
+BG('room'),
+N(`삼백일호는 다섯 평 남짓이었다. 서쪽으로 난 창, 낡았지만 깨끗한 싱크대, 오래 손을 탄 장판. 창으로 들어온 오후 빛이 바닥에 비스듬히 누워 있었다.`),
+N(`윤호는 짐을 풀기 전에 전신거울부터 꺼냈다. 호스트에게 거울은 가구가 아니라 장비다. 현관 옆 벽에 세워 놓고, 옷걸이용 못을 벽에 하나 박았다. 그리고 거울 앞에 섰다.`),
+N(`숨을 한 번 들이마시고, 내쉬었다.`),
+N(`거울 속 얼굴이 바뀌었다. 눈꼬리가 내려가고, 입꼬리가 올라가고, 어깨에서 힘이 빠졌다. 누구라도 먼저 말을 걸고 싶어지는 얼굴. 스위치처럼 켤 수 있게 된 지 오래된 얼굴이었다.`),
+N(`그리고 스위치를 내렸다. 꺼질 때는 늘 조금 늦게 꺼진다. 웃음이 사라진 뒤에도 입가에 흔적이 남아 있는 얼굴이 거울에 서 있었다.`),
+I(`이게 진짜 얼굴인가 싶을 때가 있다. 켜진 쪽인지, 꺼진 쪽인지.`),
+N(`마지막 박스를 열었을 때, 맨 아래에서 낡은 운동화 한 켤레가 나왔다. 앞코가 닳고 밑창이 얇아진 연습용 신발이었다.`),
+N(`윤호는 그것을 한참 내려다보다가, 도로 박스 맨 밑에 넣고 뚜껑을 닫았다.`),
+I(`버려야지 하면서, 이사 때마다 들고 다닌 지 칠 년째다.`),
+N(`노크 소리가 났다.`),
+J(`계량기 확인이요.`),
+N(`종호는 현관 옆 계량기를 손전등으로 비추다가 문득 고개를 들었다. 시선이 거울에 가 닿았다.`),
+J(`거울 크네요. 벽에 못 박지 마세요. 후크는 접착식만 돼요.`),
+N(`윤호는 대답 대신 벽을 한 번 쳐다봤다. 종호의 시선도 따라갔다. 옷걸이용 못이 거기 박혀 있었다.`),
+CH('못 이야기에 대해',[
+ {t:`"…이미 하나 박았어요. 죄송합니다."`,go:'d1a',fx:{jongho:1}},
+ {t:`"저게 못이에요? 원래 있던 건데."`,go:'d1b',fx:{jongho:-1,mask:1}}]),
+L('d1a'),
+J(`하나요. 그냥 말씀하시지. 나갈 때 구멍 메우는 비용은 보증금에서 뺄 거예요.`),
+Y(`솔직하게 말했는데 벌금이네.`),
+J(`솔직한 건 알겠어요. 그래도 벌금은 벌금이고요.`),
+GO('d1e'),
+L('d1b'),
+J(`원래 있던 거면 여기 먼지는 왜 새거예요?`),
+N(`종호가 손가락 끝을 들어 보였다. 하얀 석고 가루가 묻어 있었다.`),
+Y(`……`),
+J(`작은 거짓말이 제일 눈에 띄어요, 형.`),
+L('d1e'),
+J(`기준값은 적었어요. 그럼 쉬세요.`),
+N(`문을 닫기 전에 종호는 거울을 한 번 더 봤다.`),
+J(`좋은 거울이네요. 그 정도 거울은 아무 직업이나 안 사요.`),
+N(`문이 닫혔다. 윤호는 거울 속의 자기 얼굴과 눈이 마주쳤다.`),
+I(`아무 직업이나 안 산다. …정말 대충은 아는 사람이네.`),
+
+BG('room_night'),
+N(`여섯 시 사십 분. 창밖이 주황색에서 남색으로 넘어가는 시간이었다.`),
+N(`샤워를 하고, 셔츠를 입고, 슬랙스와 재킷. 오른쪽 손목에 시계, 목덜미에 향수 한 번. 마지막으로 머리를 손으로 한 번 헝클였다가 정리한다. 너무 완벽하면 사람들은 거리를 둔다.`),
+N(`거울 앞에서 스위치를 올렸다. 이번에는 꺼내 쓰기 위한 것이었다.`),
+N(`현관을 나서자 계단참이 조용했다. 윤호는 발뒤꿈치부터 내려놓으며 내려갔다.`),
+
+BG('street'),
+N(`번화가 한복판은 아니었다. 그 바깥, 간판들이 한 겹 덜 번쩍이는 골목. 지하로 내려가는 계단 끝에 검은 문이 있고, 문 옆에 은색 글씨로 작게 적혀 있었다.`),
+N(`클럽 앙코르. 남성 전용, 예약제.`),
+DH(`형, 오셨어요! 오늘 예약판 보셨죠?`),
+Y(`아직. 몇 개야?`),
+DH(`열한 개요.`),
+Y(`열한 개면 평소 정도지.`),
+DH(`형한테 평소가 다른 형들한테는 신기록이에요.`),
+BG('backroom'),
+N(`대기실은 영업 전 특유의 소란으로 가득했다. 거울 앞에서 넥타이를 고쳐 매는 선수들, 얼음을 씹는 소리, 누군가의 향수와 헤어스프레이 냄새가 뒤섞인 공기.`),
+P1(`윤호 형 왔다. 형, 오늘 임 대표님 오시는 날이죠?`),
+Y(`아마도. 예약이 아홉 시 반이라던데.`),
+P1(`그 대표님은 형 아니면 안 앉잖아요.`),
+HS(`정윤호. 예약판.`),
+N(`한 실장이 화이트보드를 손가락으로 두드렸다. 윤호의 이름 옆에는 11이라는 숫자가 있었다. 다른 이름들 옆 숫자는 전부 한 자리였다.`),
+HS(`그리고 이번 주에 신입이 하나 들어왔어. 아직 홀엔 안 서고 교육 중인데, 이름 들어봤어?`),
+Y(`아뇨.`),
+HS(`곧 보게 될 거야. 입이 좀 험한 친구라 한 번은 부딪힐 거다. 미리 말해둔다.`),
+Y(`저랑요? 왜요?`),
+HS(`이 바닥에서 네 위로 올라가고 싶은 놈은, 일단 널 보게 돼 있어.`),
+N(`윤호는 어깨를 으쓱했다. 이런 소리를 들을 때 어떤 표정을 지어야 하는지는 이미 알고 있었다. 아무 일도 아닌 것처럼. 하지만 마음 한구석이 아주 조금 팽팽해진 것도 사실이었다.`),
+
+BG('bar'),
+N(`아홉 시. 홀의 조명이 한 단계 낮아졌다.`),
+N(`윤호는 홀에 서자마자 달라졌다. 걸음이 느려지고, 목소리가 반 톤 내려가고, 눈은 방 안의 테이블을 한 번에 훑었다. 누가 웃고 있고, 누가 웃는 척하고 있고, 누가 오늘 누군가에게 기대고 싶은지.`),
+N(`첫 번째 테이블은 생일 파티였다. 삼십 대 초반 남자 넷, 이미 한 병을 비운 상태. 윤호는 앉자마자 잔을 들었다.`),
+Y(`오늘 주인공이 누구세요? 저한테 말도 안 하고 한 살 드시면 안 되죠.`),
+N(`웃음이 터졌다. 사 분 뒤, 테이블의 분위기는 윤호의 손안에 있었다.`),
+N(`두 번째 테이블은 반대였다. 혼자 온 손님이 말없이 얼음만 돌리고 있었다. 윤호는 잔을 권하지 않았다. 옆에 앉아서, 그냥 옆에 있었다. 이십 분 뒤, 그 손님이 먼저 입을 열었다.`),
+N(`두 사람이 같은 사람에게 접대받았다는 걸 알아볼 사람은 없었다. 윤호는 테이블마다 다른 사람이었고, 그게 이 가게에서 그가 가진 가장 큰 재능이었다.`),
+N(`아홉 시 반, 임 대표가 들어왔다. 마흔하나. 회사를 세 개째 굴리는 사람. 보통은 들어서자마자 웃으며 농담부터 던지는데, 오늘은 달랐다.`),
+N(`넥타이를 느슨하게 푼 채 소파에 앉더니, 잔 대신 손바닥으로 얼굴을 한 번 문질렀다.`),
+IM(`윤호야, 오늘은 좀 조용히 마시자.`),
+Y(`네. 대표님 오시는 날엔 제가 늘 조용히 마시는데요.`),
+IM(`거짓말.`),
+Y(`아, 들켰네.`),
+N(`평소라면 웃었을 사람이 웃지 않았다.`),
+CH('임 대표 옆에서',[
+ {t:`가볍게 분위기를 띄워 본다. "대표님, 오늘 표정이 이 집 얼음보다 차가운데요?"`,go:'e1a',fx:{mask:1}},
+ {t:`아무 말 하지 않고 잔을 채운 뒤, 옆에서 기다린다.`,go:'e1b'},
+ {t:`"지난번에 말씀하신 따님 발표회는 어떻게 됐어요?"`,go:'e1c'}]),
+L('e1a'),
+IM(`하하… 너는 진짜.`),
+N(`웃음은 나왔는데 눈은 웃지 않았다. 윤호는 거기서 멈췄다. 한 번 더 밀면 오늘 밤이 망가진다.`),
+Y(`아니다. 죄송해요. 오늘은 다르시네요, 대표님.`),
+IM(`…다르지.`),
+GO('e1e'),
+L('e1b'),
+N(`윤호는 말을 아꼈다. 얼음 부딪히는 소리가 이 분쯤 이어졌다.`),
+IM(`야, 사람 불편하게 만들 줄도 아네.`),
+Y(`불편하세요?`),
+IM(`아니. 이상하게 안 불편해.`),
+GO('e1e'),
+L('e1c'),
+N(`임 대표의 손이 멈췄다.`),
+IM(`…기억하고 있었냐.`),
+Y(`중요한 날이라고 하셨잖아요. 연습하다가 울었다는 얘기도 하셨고.`),
+IM(`오늘이었어, 그게. 근데 나는 회의 때문에 못 갔다.`),
+N(`여기서부터는 윤호가 말할 차례가 아니었다.`),
+L('e1e'),
+N(`한 시간 뒤, 임 대표는 많은 이야기를 했다. 윤호가 한 일은 질문 두 개와 끄덕임 몇 번이 전부였다.`),
+IM(`야, 너 진짜 사람 마음을 읽는다.`),
+Y(`대표님이 잘 보여주신 거예요.`),
+IM(`아니야. 나는 안 보여주고 싶었는데, 네 앞에서는 다 보이네.`),
+N(`칭찬이었다. 윤호는 웃으며 받았다.`),
+I(`읽는 건 쉬운데.`),
+I(`읽히는 건, 아직도 영 어렵다.`),
+N(`머릿속 한쪽에서 아까 현관에서 만난 둥근 얼굴이 잠깐 지나갔다. 윤호는 잔을 들어 그 생각을 지웠다.`),
+
+N(`새벽 네 시, 마지막 손님이 나가고 홀의 조명이 전부 켜졌다. 의자를 정리하던 윤호의 등 뒤에서 구둣발 소리가 멈췄다.`),
+SH(`정윤호.`),
+Y(`아, 형. 오셨어요?`),
+N(`박성화. 셔츠 맨 위 단추를 채우지 않은 사람. 깃 사이로 짙은 용 비늘의 끝자락이 보였다. 까무잡잡한 얼굴에 눈이 가늘고 길어서, 웃지 않아도 어딘가를 겨누고 있는 인상이었다.`),
+SH(`오늘 임 대표 테이블. 네가 받았지.`),
+Y(`네.`),
+SH(`계산, 다른 날의 두 배더라.`),
+Y(`대표님이 오늘 기분이 좀 그러셔서요.`),
+SH(`기분 좋은 날에도 그만큼은 안 쓰고 가던데.`),
+N(`질문인지 칭찬인지 알 수 없는 말투였다. 이 사람은 늘 그랬다.`),
+SH(`이번 주 매출도 네가 1등이다.`),
+CH('성화의 말에',[
+ {t:`"형이 일을 잘 주신 덕이죠."`,go:'f1a',fx:{mask:1}},
+ {t:`"오늘은 좀 피곤하네요. 칭찬은 내일 다시 해주세요."`,go:'f1b',fx:{seonghwa:1}},
+ {t:`"형, 밥은요? 저번에도 안 드셨잖아요."`,go:'f1c',fx:{seonghwa:1}}]),
+L('f1a'),
+SH(`입에 침이나 바르고 말해라.`),
+N(`말은 그렇게 했어도, 성화의 시선이 아주 잠깐 풀렸다.`),
+GO('f1e'),
+L('f1b'),
+SH(`피곤하면 자. 그걸 왜 나한테 말해.`),
+Y(`형이 물어보셔서요.`),
+SH(`…내가?`),
+N(`성화는 말없이 시선을 돌렸다. 대답하기 곤란한 질문을 받은 사람처럼.`),
+GO('f1e'),
+L('f1c'),
+SH(`네가 내 밥을 왜 챙겨.`),
+Y(`형은 제 밥 챙겨주시잖아요. 지난주에 국밥.`),
+SH(`그건 네 얼굴이 허옇길래.`),
+N(`변명이라고 하기엔 너무 구체적이었다.`),
+L('f1e'),
+SH(`집은 옮겼다며.`),
+Y(`네, 어제요.`),
+SH(`어디.`),
+Y(`삼호빌딩이라고, 골목 안쪽에 있는 데요.`),
+SH(`…가게에서 먼 데를 잡았네.`),
+Y(`월세가 맞아서요.`),
+SH(`주소는 한 실장한테도 말해둬라.`),
+Y(`알겠어요.`),
+N(`한 문장이었다. 그 말은 보호이기도 했고 감시이기도 했다. 이 가게에서 그 둘은 늘 같은 말투로 온다는 걸 윤호는 알고 있었다.`),
+SH(`신입 얘기는 들었냐.`),
+Y(`한 실장님이 말씀하셨어요. 입이 험하다고.`),
+SH(`말만 험하면 다행이고.`),
+N(`성화는 더 설명하지 않고 가게 안쪽으로 걸어갔다.`),
+
+BG('dawn'),
+N(`택시에서 내린 건 다섯 시 오십 분이었다.`),
+N(`서울의 새벽은 밤과 아침 사이에서 길을 잃은 색이다. 가로등은 아직 켜져 있는데 하늘은 이미 회색으로 번지고 있었다.`),
+N(`몸이 무거웠다. 술은 거의 마시지 않았지만, 사람을 마시고 오면 이상하게 속이 피곤했다. 삼호빌딩 현관 앞에 한 사람이 서 있었다.`),
+J(`형.`),
+Y(`…너, 지금 여섯 시야.`),
+J(`저는 이 시간에 일어나요.`),
+N(`종호의 손에는 노란 비닐봉투가 들려 있었다. 윤호가 어제 현관 옆에 내놓은 이삿짐 포장재였다.`),
+J(`이거 형 거죠. 종이랑 비닐 섞여 있어요. 종이는 종이, 비닐은 비닐, 테이프는 떼서 따로. 수거는 오늘 오전 일곱 시고요.`),
+Y(`지금 여섯 시인데…`),
+J(`그래서 지금 말씀드리는 거예요.`),
+N(`해가 뜨는 시간에, 한 사람은 일어나고 한 사람은 눕는다. 두 사람은 그 경계선 위에 마주 서 있었다.`),
+CH('새벽의 분리수거',[
+ {t:`"미안. 내가 지금 바로 정리할게."`,go:'g1a',fx:{jongho:1}},
+ {t:`"이거 안 하면 안 돼? 나 정말 자야 하거든."`,go:'g1b',flag:'bicker'},
+ {t:`"그럼 네가 해줘. 월세 올려도 되니까."`,go:'g1c',flag:'bicker'}]),
+L('g1a'),
+J(`…네.`),
+N(`종호는 봉투를 건네려다 말고, 잠깐 윤호의 얼굴을 봤다.`),
+J(`그럼 같이 해요. 어차피 제가 일곱 시 전에 끝내야 하니까.`),
+Y(`같이?`),
+J(`형이 뭘 잘 모르는 것 같아서요.`),
+GO('g1e'),
+L('g1b'),
+J(`안 돼요.`),
+Y(`한 번만. 오늘만.`),
+J(`그 말 하는 사람들 매번 있어요. 그래서 한 번도 안 봐줬고요.`),
+Y(`지금 너, 지는 거 싫어하는 얼굴이다.`),
+J(`지는 거 싫어해요.`),
+N(`정색하는 목소리가 너무 진지해서 윤호는 하마터면 웃을 뻔했다.`),
+Y(`알았어. 한다, 해.`),
+GO('g1e'),
+L('g1c'),
+J(`제가요?`),
+Y(`집주인이 건물을 깨끗하게 쓰고 싶은 거잖아.`),
+J(`…형.`),
+Y(`응?`),
+J(`저 지는 거 싫어해요.`),
+Y(`알아. 이미 그 얼굴이야.`),
+J(`그럼 알아서 하세요. 대신 한 번에 제대로요.`),
+L('g1e'),
+N(`윤호는 현관 옆 구석에 쪼그려 앉아 박스에서 테이프를 떼어내기 시작했다. 종호는 팔짱을 끼고 지켜보다가, 몇 초 뒤 장갑 한 켤레를 던졌다.`),
+J(`맨손으로 하면 손 베여요.`),
+N(`정확하고 무뚝뚝한 친절이었다.`),
+IF('formal','gf'),
+Y(`종호야, 비닐은 이쪽이지?`),
+J(`네, 그쪽이요.`),
+GO('g2'),
+L('gf'),
+Y(`종호 씨, 이건… 아니, 그냥 종호야. 이건 어느 쪽이야?`),
+N(`종호의 손이 멈췄다.`),
+J(`방금 뭐라고 했어요.`),
+Y(`종호야.`),
+J(`…네. 그쪽이요.`),
+N(`대답이 짧았다. 하지만 아까보다 덜 날카로웠다.`),
+L('g2'),
+N(`테이프를 다 떼고 나서야, 일곱 시 이십 분 전쯤 종호가 불쑥 말했다.`),
+J(`형.`),
+Y(`응.`),
+J(`얼굴이 많이 안 좋아 보여요.`),
+N(`윤호는 고개를 들었다.`),
+Y(`걱정해 주는 거야?`),
+J(`아니요.`),
+J(`월세 밀릴까 봐서요.`),
+N(`그렇게 말하고 종호는 시선을 돌렸다. 윤호는 그 대답이 진짜인지 아닌지 가려낼 수 없었다. 가려내는 건 윤호의 일인데도.`),
+I(`읽히는 건 어렵다. 읽는 쪽이 이쪽인지 저쪽인지는, 더 어렵고.`),
+BG('room'),
+N(`봉투를 내려놓고 올라온 삼백일호. 창밖은 이미 환했다. 커튼 틈으로 들어온 빛이 거울에 부딪혀 바닥에 길게 떨어졌다.`),
+N(`윤호는 신발을 벗고, 재킷을 의자에 걸고, 거울 앞에서 스위치를 내렸다.`),
+N(`이번에는 웃음이 사라지는 데 시간이 더 오래 걸렸다.`),
+{end:1}
 ];
+const SCRIPTS={1:CH1};
+const CHTITLE={1:'CHAPTER 01 — 새로운 방'};
+const LBL={};for(const k in SCRIPTS){LBL[k]={};SCRIPTS[k].forEach((e,i)=>{if(e.L)LBL[k][e.L]=i})}
 
-const BANK_HISTORY=[
- {id:1,date:'2026.10.05 23:50',amount:'+ 3,500,000',desc:'입금 (가게 정산)'},
- {id:2,date:'2026.10.05 20:10',amount:'- 15,000',desc:'스타벅스'},
- {id:3,date:'2026.09.28 23:45',amount:'- 28,000',desc:'카카오T 택시 (도착: 송민기 자취방 앞)'},
- {id:4,date:'2026.09.28 23:22',amount:'+ 10,000,000',desc:'입금 (박성화)'}
-];
+/* ---------- engine ---------- */
+const $=id=>document.getElementById(id);
+const NC={'윤호':'var(--c-yunho)','종호':'var(--c-jongho)','성화':'var(--c-seonghwa)'};
+let S=null,typing=null,autoT=null,autoOn=false,skipOn=false,skipT=null,lineCount=0;
+const cfg=Object.assign({speed:1,auto:2200,size:100},store.get('cfg',{}));
+function applyCfg(){document.documentElement.style.setProperty('--fs',cfg.size/100);store.set('cfg',cfg)}
+applyCfg();
+const SPD=[60,30,14,0];
 
-const TopBar=({time})=><div className="absolute top-0 w-full h-8 flex justify-between items-center px-6 text-xs font-semibold z-40 text-white"><span>{time}</span><div className="flex gap-2"><i className="ph-fill ph-cell-signal-full"></i><i className="ph-fill ph-wifi-high"></i><i className="ph-fill ph-battery-full"></i></div></div>;
+function freshState(){return {ch:1,pc:0,bg:null,rel:{jongho:0,seonghwa:0,mask:0},flags:{},last:null,log:[]}}
+function snap(){const c=JSON.parse(JSON.stringify(S));c.log=c.log.slice(-60);return c}
+function seenMax(){return (store.get('seen',{})[S.ch]||0)}
+function markSeen(){const s=store.get('seen',{});if((s[S.ch]||0)<S.pc){s[S.ch]=S.pc;store.set('seen',s)}}
 
-const Notification=({notif,onClick})=><div onClick={onClick} className="absolute top-10 left-4 right-4 bg-[#1e1e1e]/90 backdrop-blur-md rounded-2xl p-4 flex gap-3 shadow-2xl z-50 fade-in border border-gray-700 cursor-pointer hover:bg-[#2a2a2a] transition-colors"><div className="w-10 h-10 bg-gray-800 rounded-full overflow-hidden flex-shrink-0 border border-gray-600"><img src={notif.avatar||'https://placehold.co/100/333/fff?text=!'} className="w-full h-full object-cover"/></div><div className="flex-1 overflow-hidden flex flex-col justify-center"><h4 className="font-bold text-sm text-gray-100">{notif.title}</h4><p className="text-xs text-gray-400 truncate">{notif.body}</p></div></div>;
+function run(){
+  const sc=SCRIPTS[S.ch];
+  while(S.pc<sc.length){
+    const e=sc[S.pc++];
+    if(e.L)continue;
+    if(e.if!==undefined){if(S.flags[e.if])S.pc=LBL[S.ch][e.go];continue}
+    if(e.go){S.pc=LBL[S.ch][e.go];continue}
+    if(e.bg){setBg(e.bg);continue}
+    if(e.fx){applyFx(e.fx);continue}
+    if(e.flag){S.flags[e.flag]=1;continue}
+    show(e);return;
+  }
+}
+function applyFx(o){for(const k in o)S.rel[k]=(S.rel[k]||0)+o[k]}
+function clearStage(){$('stage').innerHTML=''}
+function show(e,instant){
+  S.last=e;
+  const fresh=!instant;
+  if(fresh){markSeen();lineCount++}
+  clearTimeout(autoT);
+  if(e.card){clearStage();renderCard(e.card);if(fresh)store.set('auto',snap());return}
+  if(e.end){clearStage();renderEnd();store.set('auto',snap());return}
+  if(e.c){clearStage();renderChoices(e);if(fresh)store.set('auto',snap());return}
+  clearStage();
+  const kind=e.n?'n':e.i?'i':'s';
+  const text=e.n||e.i||e.t;
+  const who=e.n?null:(e.i?'윤호':e.s);
+  const nm=$('nm');
+  if(who){nm.hidden=false;$('nmt').textContent=who;nm.style.setProperty('--nc',NC[who]||'var(--c-etc)')}else nm.hidden=true;
+  const t=$('txt');t.className='txt '+kind;
+  if(fresh)S.log.push({s:who||'',t:text});
+  if(S.log.length>300)S.log.shift();
+  $('nx').hidden=true;
+  type(t,text,instant);
+  if(fresh&&lineCount%14===0)store.set('auto',snap());
+}
+function type(el,text,instant){
+  clearInterval(typing);typing=null;
+  const sp=SPD[cfg.speed];
+  if(instant||sp===0||skipOn){el.textContent=text;done();return}
+  let i=0;el.textContent='';
+  typing=setInterval(()=>{i+=1;el.textContent=text.slice(0,i);if(i>=text.length){clearInterval(typing);typing=null;done()}},sp);
+  el._full=text;
+}
+function finishTyping(){if(!typing)return;clearInterval(typing);typing=null;const el=$('txt');const e=S.last;el.textContent=e.n||e.i||e.t;done()}
+function done(){
+  $('nx').hidden=false;
+  if(autoOn){clearTimeout(autoT);autoT=setTimeout(advance,cfg.auto)}
+}
+function overlayOpen(){return !!$('layer').firstChild}
+function advance(){
+  if(!S||overlayOpen())return;
+  if(typing){finishTyping();return}
+  const l=S.last;if(!l||l.c||l.end)return;
+  run();
+}
+function renderCard(c){
+  const d=document.createElement('div');d.className='card';
+  d.innerHTML=`<div class="k"></div><h2></h2><p></p>`;
+  d.children[0].textContent=c[0];d.children[1].textContent=c[1];d.children[2].textContent=c[2]||'';
+  d.addEventListener('click',()=>{if(S.last===S.last&&S.last.card)run()});
+  $('stage').appendChild(d);
+  $('txt').textContent='';$('nm').hidden=true;$('nx').hidden=true;
+  stopAutoSkip(true);
+}
+function renderChoices(e){
+  $('txt').textContent='';$('nm').hidden=true;$('nx').hidden=true;
+  stopAutoSkip(true);
+  const w=document.createElement('div');w.className='choices';
+  if(e.q){const q=document.createElement('div');q.className='q';q.textContent=e.q;w.appendChild(q)}
+  e.c.forEach((o,i)=>{const b=document.createElement('button');b.className='choice';b.textContent=o.t;b.addEventListener('click',ev=>{ev.stopPropagation();pick(o)});w.appendChild(b)});
+  $('stage').appendChild(w);
+  w.querySelector('.choice').focus({preventScroll:true});
+}
+function pick(o){
+  S.log.push({s:'선택',t:o.t});
+  if(o.fx)applyFx(o.fx);
+  if(o.flag)S.flags[o.flag]=1;
+  clearStage();
+  S.pc=LBL[S.ch][o.go];
+  run();
+}
+function memo(){
+  const r=S.rel,L=[];
+  L.push(r.jongho>=2?`종호는 윤호를 '신경 쓰이는 세입자'쯤으로 다시 적어 두었다. 아직 이름 붙일 만한 사이는 아니다.`:r.jongho>=1?`종호는 윤호에 대한 평가를 보류했다. 물어보지 않는 대신, 계속 보고 있다.`:`종호의 눈은 여전히 날카롭다. 윤호는 아직 '대충은 아는 사람'에게 읽히고 있다.`);
+  L.push(r.seonghwa>=1?`성화는 윤호의 새 주소를 기억했다. 그것이 걱정인지 관리인지는 아직 윤호도 모른다.`:`성화는 윤호의 새 주소를 알게 됐다. 이유는 묻지 않았다.`);
+  L.push(r.mask>=3?`오늘 윤호의 스위치는 자주 켜졌다. 꺼진 얼굴을 본 사람은 아직 없다.`:`윤호는 오늘 몇 번, 켜지 않은 얼굴로 말했다.`);
+  return L;
+}
+function renderEnd(){
+  stopAutoSkip(true);
+  const d=document.createElement('div');d.className='endcard';
+  const ms=memo().map(t=>`<p style="margin:0"></p>`).join('');
+  d.innerHTML=`<div class="in"><div class="kicker" style="font-size:.78rem;letter-spacing:.28em;color:var(--lamp)">CHAPTER 01 COMPLETE</div><h2>새로운 방</h2><div class="memo">${ms}</div><p class="note">다음 이야기, CHAPTER 02 — 에이스는 준비 중입니다. 지금의 선택과 관계는 저장 데이터에 그대로 이어집니다.</p><div class="btnrow"><button class="btn" id="eSave">저장하기</button><button class="btn" id="eMenu">메뉴로</button></div></div>`;
+  d.querySelectorAll('.memo p').forEach((p,i)=>p.textContent=memo()[i]);
+  $('stage').appendChild(d);
+  $('eSave').onclick=()=>openSlots('save');$('eMenu').onclick=toMenu;
+  const c=store.get('cleared',[]);if(!c.includes(S.ch)){c.push(S.ch);store.set('cleared',c)}
+}
 
-const HomeScreen=({openApp,unreadCounts})=>{
- const apps=[
-  {id:'messenger',name:'Talk',icon:'ph-chat-circle-text',color:'bg-yellow-400 text-black',badge:unreadCounts.messenger},
-  {id:'photos',name:'사진',icon:'ph-image',color:'bg-white text-blue-500'},
-  {id:'bank',name:'결제/계좌',icon:'ph-wallet',color:'bg-blue-600 text-white'},
-  {id:'notes',name:'메모',icon:'ph-notepad',color:'bg-orange-400 text-white'},
-  {id:'clues',name:'추리(단서)',icon:'ph-magnifying-glass',color:'bg-gray-800 text-white',badge:unreadCounts.clues}
- ];
- return <div className="w-full h-full home-bg pt-20 px-6 cursor-default"><div className="grid grid-cols-4 gap-y-6 gap-x-4">{apps.map(app=><div key={app.id} className="flex flex-col items-center gap-2 app-icon cursor-pointer" onClick={()=>openApp(app.id)}><div className={`relative w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-lg ${app.color}`}><i className={`ph-fill ${app.icon}`}></i>{app.badge>0&&<div className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-black animate-pulse">{app.badge}</div>}</div><span className="text-[10px] font-medium text-gray-200">{app.name}</span></div>)}</div></div>
-};
+/* ---------- auto / skip ---------- */
+function stopAutoSkip(quiet){autoOn=false;skipOn=false;clearTimeout(autoT);clearInterval(skipT);$('tAuto').classList.remove('on');$('tSkip').classList.remove('on')}
+$('tAuto').onclick=()=>{if(!S)return;const on=!autoOn;stopAutoSkip();autoOn=on;$('tAuto').classList.toggle('on',on);if(on&&!typing)done()};
+$('tSkip').onclick=()=>{if(!S)return;const on=!skipOn;stopAutoSkip();skipOn=on;$('tSkip').classList.toggle('on',on);
+  if(on)skipT=setInterval(()=>{if(overlayOpen())return;if(typing)finishTyping();const l=S.last;if(!l||l.c||l.end||l.card){stopAutoSkip();return}if(S.pc<seenMax())run();else stopAutoSkip()},70)};
 
-const MessengerApp=({closeApp,chats,openChat})=><div className="w-full h-full bg-[#121212] flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-4 px-5 border-b border-gray-800 bg-[#121212]/90 backdrop-blur flex justify-between items-center"><h1 className="text-2xl font-bold text-white">채팅</h1><button onClick={closeApp} className="text-gray-400 hover:text-white"><i className="ph ph-x text-2xl"></i></button></div><div className="flex-1 overflow-y-auto">{Object.keys(chats).map(charId=>{const lastMsg=chats[charId][chats[charId].length-1];return <div key={charId} onClick={()=>openChat(charId)} className="flex items-center gap-4 p-4 border-b border-gray-800/50 hover:bg-gray-800 cursor-pointer transition-colors"><img src={CHARACTERS[charId].avatar} className="w-12 h-12 rounded-2xl object-cover"/><div className="flex-1 overflow-hidden"><div className="flex justify-between items-baseline mb-1"><h3 className="font-semibold text-gray-100">{CHARACTERS[charId].name}</h3><span className="text-xs text-gray-500">{lastMsg.time.split(' ')[0]}</span></div><p className="text-sm text-gray-400 truncate">{lastMsg.text}</p></div></div>})}</div></div>;
+/* ---------- screens ---------- */
+function toGame(){$('menu').hidden=true;$('game').hidden=false}
+function toMenu(){closeLayer();stopAutoSkip();clearInterval(typing);typing=null;$('game').hidden=true;$('menu').hidden=false;S=S;setMenuBg();refreshMenu()}
+function setMenuBg(){const s=S;S=null;setBg('street');S=s}
+function refreshMenu(){$('mCont').disabled=!store.get('auto',null)}
+function startNew(){S=freshState();lineCount=0;toGame();clearStage();run()}
+function loadState(st){S=JSON.parse(JSON.stringify(st));lineCount=0;closeLayer();toGame();stopAutoSkip();clearStage();setBg(S.bg||'street');const l=S.last;if(l)show(l,true);else run()}
 
-const ChatRoom=({closeChat,charId,messages,triggerEvent})=>{
- const char=CHARACTERS[charId],endRef=useRef(null);
- useEffect(()=>{endRef.current?.scrollIntoView({behavior:'smooth'});triggerEvent('READ_CHAT',{charId});},[messages]);
- return <div className="w-full h-full bg-[#0a0a0a] flex flex-col slide-in absolute top-0 left-0 z-30"><div className="pt-12 pb-4 px-4 bg-[#1a1a1a] flex items-center gap-3 shadow-md z-10 border-b border-gray-800"><button onClick={closeChat} className="text-gray-400 hover:text-white"><i className="ph ph-caret-left text-2xl"></i></button><img src={char.avatar} className="w-8 h-8 rounded-full"/><h2 className="font-bold text-lg text-white">{char.name}</h2></div><div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 pb-20"><div className="text-center text-xs text-gray-500 my-2">과거의 대화입니다.</div>{messages.map((msg,idx)=><div key={idx} className={`flex max-w-[80%] ${msg.sender==='me'?'self-end flex-row-reverse':'self-start'} gap-2`}><div className="flex flex-col"><div className={`p-3 rounded-2xl text-sm ${msg.sender==='me'?'bg-yellow-500 text-black rounded-tr-sm':'bg-gray-800 text-gray-100 rounded-tl-sm'}`}>{msg.text}</div><span className={`text-[10px] text-gray-500 mt-1 ${msg.sender==='me'?'text-right':'text-left'}`}>{msg.time}</span></div></div>)}<div ref={endRef}/></div></div>
-};
+/* ---------- layer (modals) ---------- */
+function closeLayer(){$('layer').innerHTML=''}
+function modal(title,build){
+  closeLayer();
+  const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div class="panel" role="dialog" aria-modal="true"><header><h3></h3><button class="x" aria-label="닫기">×</button></header><div class="body"></div></div>`;
+  m.querySelector('h3').textContent=title;
+  m.querySelector('.x').onclick=closeLayer;
+  m.addEventListener('click',e=>{if(e.target===m)closeLayer()});
+  build(m.querySelector('.body'));
+  $('layer').appendChild(m);
+  m.querySelector('.x').focus();
+}
+function openLog(){modal('로그',b=>{const lg=S?S.log:[];if(!lg.length){b.textContent='아직 기록이 없습니다.';return}lg.forEach(x=>{const d=document.createElement('div');d.className='logline';if(x.s){const n=document.createElement('b');n.textContent=x.s;d.appendChild(n)}d.appendChild(document.createTextNode(x.t));b.appendChild(d)});setTimeout(()=>b.scrollTop=b.scrollHeight,0)})}
+function openSlots(mode){
+  if(mode==='save'&&!S)return;
+  modal(mode==='save'?'저장':'불러오기',b=>{
+    const slots=store.get('slots',{});
+    const mk=(id,label)=>{
+      const v=slots[id];const bt=document.createElement('button');bt.className='slot';
+      const info=v?`${CHTITLE[v.st.ch]||''} · ${v.when}`:'비어 있음';
+      bt.innerHTML=`<span><strong></strong><small></small></span><span style="color:var(--lamp);font-size:.85rem"></span>`;
+      bt.querySelector('strong').textContent=label;bt.querySelector('small').textContent=info+(v&&v.snip?` · ${v.snip}`:'');
+      bt.lastChild.textContent=mode==='save'?'저장':(v?'불러오기':'');
+      bt.onclick=()=>{
+        if(mode==='save'){const l=S.log[S.log.length-1];slots[id]={st:snap(),when:new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}),snip:l?l.t.slice(0,26):''};store.set('slots',slots);openSlots('save')}
+        else if(v)loadState(v.st);
+      };
+      b.appendChild(bt);
+    };
+    for(let i=1;i<=8;i++)mk('s'+i,'슬롯 '+i);
+    if(mode==='load'){const a=store.get('auto',null);if(a){const bt=document.createElement('button');bt.className='slot';bt.innerHTML=`<span><strong>자동 저장</strong><small></small></span><span style="color:var(--lamp);font-size:.85rem">불러오기</span>`;bt.querySelector('small').textContent=CHTITLE[a.ch]||'';bt.onclick=()=>loadState(a);b.insertBefore(bt,b.firstChild)}}
+  });
+}
+function openSettings(){
+  modal('설정',b=>{
+    b.innerHTML=`<div class="set"><label for="sSpeed">텍스트 속도</label><select id="sSpeed"><option value="0">느리게</option><option value="1">보통</option><option value="2">빠르게</option><option value="3">즉시</option></select></div>
+    <div class="set"><label for="sAuto">자동 진행 대기 시간 <span id="vAuto"></span></label><input type="range" id="sAuto" min="800" max="5000" step="200"></div>
+    <div class="set"><label for="sSize">글자 크기 <span id="vSize"></span></label><input type="range" id="sSize" min="85" max="140" step="5"></div>`;
+    const sp=b.querySelector('#sSpeed'),au=b.querySelector('#sAuto'),sz=b.querySelector('#sSize');
+    sp.value=cfg.speed;au.value=cfg.auto;sz.value=cfg.size;
+    const lab=()=>{b.querySelector('#vAuto').textContent=(au.value/1000).toFixed(1)+'초';b.querySelector('#vSize').textContent=sz.value+'%'};lab();
+    sp.onchange=()=>{cfg.speed=+sp.value;applyCfg()};au.oninput=()=>{cfg.auto=+au.value;lab();applyCfg()};sz.oninput=()=>{cfg.size=+sz.value;lab();applyCfg()};
+  });
+}
+function openGallery(){
+  modal('갤러리',b=>{
+    const u=store.get('bgs',[]);
+    const p=document.createElement('p');p.className='note';p.textContent=`배경 ${u.filter(k=>BGN[k]).length} / ${Object.keys(BGN).length} 수집. 장면에서 한 번 이상 본 배경이 열립니다.`;b.appendChild(p);
+    const g=document.createElement('div');g.className='gal';
+    Object.keys(BGN).forEach(k=>{const f=document.createElement('figure');const t=document.createElement('div');t.className='th';
+      if(u.includes(k))t.innerHTML=svgBg(k);else t.textContent='?';
+      const c=document.createElement('figcaption');c.textContent=u.includes(k)?BGN[k]:'미공개';f.appendChild(t);f.appendChild(c);g.appendChild(f)});
+    b.appendChild(g);
+  });
+}
+const ENDS=[
+ ['김홍중 루트',['다시 시작','지금의 우리','그때처럼']],
+ ['박성화 루트',['너만은','밤이 끝나면','선을 넘지 못해서','같은 밤']],
+ ['강여상 루트',['돌아갈 곳','우리답게','너무 늦게','룸메이트']],
+ ['최산 루트',['네가 선택한 삶','천천히','그만해']],
+ ['송민기 루트',['오래된 사람','여전히 우리','친구로','모르는 사람']],
+ ['정우영 루트',['1위','라이벌','패배']],
+ ['최종호 루트',['같은 집','옆집 사람','계약 종료']],
+ ['단독 루트',['정윤호','새로운 시작','오늘도 밤은 온다']],
+ ['특수 엔딩',['ALL RELATIONSHIP','LONELY BAD','DREAM','NIGHT']]];
+function openEndings(){
+  modal('엔딩 리스트',b=>{
+    const got=store.get('ends',[]);const tot=ENDS.reduce((a,x)=>a+x[1].length,0);
+    const p=document.createElement('p');p.className='note';p.textContent=`엔딩 ${got.length} / ${tot}. 개인 루트는 CHAPTER 27 이후 열립니다. 제목은 도달하면 공개됩니다.`;b.appendChild(p);
+    ENDS.forEach(([r,es])=>{const d=document.createElement('div');d.className='route';const h=document.createElement('h4');h.textContent=r;const ul=document.createElement('ul');
+      es.forEach(e=>{const li=document.createElement('li');const k=r+'/'+e;if(got.includes(k)){li.className='got';li.textContent=e}else li.textContent='???';ul.appendChild(li)});
+      d.appendChild(h);d.appendChild(ul);b.appendChild(d)});
+  });
+}
 
-const PhotosApp=({closeApp,triggerEvent})=>{
- const [selectedPhoto,setSelectedPhoto]=useState(null);
- const analyzePhoto=()=>{
-  if(selectedPhoto.isKeyEvidence) triggerEvent('ANALYZE_PHOTO',{photoId:selectedPhoto.id});
-  else{const btn=document.getElementById('analyzeBtn');if(!btn)return;const originalText=btn.innerHTML;btn.innerHTML='특이점 없음';btn.classList.add('text-gray-500');setTimeout(()=>{btn.innerHTML=originalText;btn.classList.remove('text-gray-500')},1500)}
- };
- if(selectedPhoto)return <div className="w-full h-full bg-black flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-4 px-4 flex justify-between items-center z-10 bg-gradient-to-b from-black/80 to-transparent"><button onClick={()=>setSelectedPhoto(null)} className="text-white"><i className="ph ph-caret-left text-2xl"></i></button><span className="text-xs text-gray-400">{selectedPhoto.date}</span><button id="analyzeBtn" onClick={analyzePhoto} className="text-yellow-400 font-bold text-sm bg-gray-900 px-4 py-1.5 rounded-full hover:bg-gray-800 transition-colors flex items-center gap-1"><i className="ph ph-scan"></i> 분석</button></div><div className="flex-1 flex items-center justify-center p-4"><img src={selectedPhoto.url} className="w-full rounded-lg object-contain shadow-2xl"/></div><div className="p-6 bg-[#111] border-t border-gray-800"><p className="text-sm text-gray-300">{selectedPhoto.desc}</p></div></div>;
- return <div className="w-full h-full bg-[#121212] flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-4 px-5 border-b border-gray-800 bg-[#121212]/90 backdrop-blur flex justify-between items-center"><h1 className="text-2xl font-bold text-white">사진</h1><button onClick={closeApp} className="text-gray-400 hover:text-white"><i className="ph ph-x text-2xl"></i></button></div><div className="grid grid-cols-3 gap-1 p-1 overflow-y-auto">{PHOTOS_DATA.map(photo=><div key={photo.id} className="aspect-square bg-gray-800 relative cursor-pointer hover:opacity-80 transition-opacity" onClick={()=>setSelectedPhoto(photo)}><img src={photo.url} className="w-full h-full object-cover"/></div>)}</div></div>
-};
-
-const BankApp=({closeApp,triggerEvent})=>{useEffect(()=>{triggerEvent('OPEN_BANK')},[]);return <div className="w-full h-full bg-[#0a1128] flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-6 px-6 bg-blue-600 flex flex-col gap-4 shadow-lg z-10"><div className="flex justify-between items-center text-white"><h1 className="text-xl font-bold">윤호 계좌</h1><button onClick={closeApp} className="hover:text-gray-200"><i className="ph ph-x text-2xl"></i></button></div><div><p className="text-sm text-blue-200 mb-1">잔액</p><h2 className="text-3xl font-bold text-white tracking-tight">13,425,000 원</h2></div></div><div className="flex-1 overflow-y-auto bg-[#121212] px-4 pt-4"><h3 className="text-xs text-gray-500 font-bold mb-4 ml-1">최근 거래 내역</h3>{BANK_HISTORY.map(tx=><div key={tx.id} className="flex justify-between items-center p-4 bg-gray-900/80 rounded-2xl mb-3 border border-gray-800 hover:bg-gray-800 transition-colors"><div className="flex flex-col gap-1"><span className="text-sm font-semibold text-gray-200">{tx.desc}</span><span className="text-[10px] text-gray-500">{tx.date}</span></div><span className={`font-bold ${tx.amount.includes('+')?'text-blue-400':'text-gray-300'}`}>{tx.amount}</span></div>)}</div></div>};
-
-const ClueApp=({closeApp,clues})=><div className="w-full h-full bg-[#1a1a1a] flex flex-col slide-in absolute top-0 left-0 z-20"><div className="pt-12 pb-4 px-5 border-b border-gray-800 bg-[#1a1a1a]/90 flex justify-between items-center"><h1 className="text-2xl font-bold text-yellow-500">수사 노트</h1><button onClick={closeApp} className="text-gray-400 hover:text-white"><i className="ph ph-x text-2xl"></i></button></div><div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">{clues.length===0?<div className="text-center mt-32 flex flex-col items-center gap-3"><i className="ph ph-magnifying-glass text-4xl text-gray-600"></i><span className="text-gray-500 text-sm">발견된 단서가 없습니다.</span></div>:clues.map((clue,idx)=><div key={idx} className="bg-gray-900 border-l-4 border-yellow-500 p-4 rounded-r-xl shadow-md slide-in"><h3 className="font-bold text-yellow-400 text-sm mb-2">{clue.title}</h3><p className="text-gray-300 text-xs leading-relaxed">{clue.desc}</p></div>)}</div></div>;
-
-const GameCore=()=>{
- const [currentApp,setCurrentApp]=useState(null),[activeChatId,setActiveChatId]=useState(null),[chats,setChats]=useState(INITIAL_CHATS),[clues,setClues]=useState([]),[notification,setNotification]=useState(null),[gameStage,setGameStage]=useState(0),[unreadCounts,setUnreadCounts]=useState({messenger:0,clues:0});
- useEffect(()=>{const timer=setTimeout(()=>{const newMsg={sender:'hongjoong',text:'아직 안 자? 26년 9월 28일... 그날 일 말이야. 생각해봤어?',time:'02:17'};setChats(prev=>({...prev,hongjoong:[...prev.hongjoong,newMsg]}));showNotification(CHARACTERS.hongjoong.avatar,CHARACTERS.hongjoong.name,newMsg.text,()=>{setCurrentApp('messenger');setActiveChatId('hongjoong')});setUnreadCounts(prev=>({...prev,messenger:prev.messenger+1}))},2000);return()=>clearTimeout(timer)},[]);
- const showNotification=(avatar,title,body,action=null)=>{setNotification({avatar,title,body,action});setTimeout(()=>setNotification(null),5000)};
- const addClue=(id,title,desc)=>{if(clues.find(c=>c.id===id))return;setClues(prev=>[{id,title,desc},...prev]);showNotification('https://placehold.co/100/eab308/000?text=?','새로운 단서 획득',title,()=>setCurrentApp('clues'));setUnreadCounts(prev=>({...prev,clues:prev.clues+1}))};
- const handleGameEvent=(action,data)=>{
-  if(action==='READ_CHAT'&&data.charId==='hongjoong'&&gameStage===0){setGameStage(1);setUnreadCounts(prev=>({...prev,messenger:0}));setTimeout(()=>showNotification(null,'[시스템 메모]','9월 28일... 사진첩이나 결제 내역을 확인해볼까.'),3000)}
-  if(action==='ANALYZE_PHOTO'&&data.photoId==='p3'&&gameStage>=1){addClue('clue_3rd_person','사진 속 제 3의 인물','9월 28일 23:15, 산이 형과 찍은 VVIP룸 사진 거울에 용 문신을 한 남자가 반사되어 있다. 성화 형님이다.');if(gameStage===1)setGameStage(2)}
-  if(action==='OPEN_BANK'&&gameStage>=2){addClue('clue_money_time','시간의 모순 (결제 기록)','23:15에 VVIP룸에 있었는데, 23:22에 성화 형님에게 1000만원이 입금되었고, 23:45에 민기네 집으로 택시를 탔다.');if(gameStage===2)setGameStage(3)}
-  if(action==='READ_CHAT'&&data.charId==='mingi'&&gameStage>=3){addClue('clue_yunho_lie','윤호의 거짓말','나는 23:24에 민기에게 집에 있다고 거짓말을 했다. 하지만 23:45 결제 내역에는 민기네 집 앞으로 가는 택시를 탔다. 나는 왜 거짓말을 했지?');setGameStage(4);setTimeout(()=>{const newMsg={sender:'seonghwa',text:'그날 택시 탄 거 처리 잘 했어?',time:'02:25'};setChats(prev=>({...prev,seonghwa:[...prev.seonghwa,newMsg]}));showNotification(CHARACTERS.seonghwa.avatar,CHARACTERS.seonghwa.name,newMsg.text,()=>{setCurrentApp('messenger');setActiveChatId('seonghwa')});setUnreadCounts(prev=>({...prev,messenger:prev.messenger+1}))},6000)}
- };
- return <div className="phone-container"><div className="notch"></div><TopBar time="02:17"/>{notification&&<Notification notif={notification} onClick={()=>{if(notification.action)notification.action();setNotification(null)}}/>}<HomeScreen openApp={id=>{setCurrentApp(id);if(id==='clues')setUnreadCounts(prev=>({...prev,clues:0}))}} unreadCounts={unreadCounts}/>{currentApp==='messenger'&&!activeChatId&&<MessengerApp closeApp={()=>setCurrentApp(null)} chats={chats} openChat={setActiveChatId}/>} {currentApp==='messenger'&&activeChatId&&<ChatRoom closeChat={()=>setActiveChatId(null)} charId={activeChatId} messages={chats[activeChatId]} triggerEvent={handleGameEvent}/>} {currentApp==='photos'&&<PhotosApp closeApp={()=>setCurrentApp(null)} triggerEvent={handleGameEvent}/>} {currentApp==='bank'&&<BankApp closeApp={()=>setCurrentApp(null)} triggerEvent={handleGameEvent}/>} {currentApp==='clues'&&<ClueApp closeApp={()=>setCurrentApp(null)} clues={clues}/>}<div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-white/50 rounded-full z-50 pointer-events-none"></div></div>
-};
-ReactDOM.createRoot(document.getElementById('root')).render(<GameCore/>);
+/* ---------- wiring ---------- */
+$('mStart').onclick=startNew;
+$('mCont').onclick=()=>{const a=store.get('auto',null);if(a)loadState(a)};
+$('mLoad').onclick=()=>openSlots('load');
+$('mSet').onclick=openSettings;$('mGal').onclick=openGallery;$('mEnd').onclick=openEndings;
+$('tLog').onclick=openLog;$('tSave').onclick=()=>openSlots('save');$('tLoad').onclick=()=>openSlots('load');$('tSet').onclick=openSettings;$('tMenu').onclick=toMenu;
+$('tb').addEventListener('click',advance);
+$('stage').addEventListener('click',e=>{if(e.target.id==='stage')advance()});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(overlayOpen())closeLayer();return}
+  if(!S||$('game').hidden||overlayOpen())return;
+  if(e.key===' '||e.key==='Enter'){if(document.activeElement&&document.activeElement.tagName==='BUTTON')return;e.preventDefault();advance()}
+  if(S.last&&S.last.c&&/^[1-4]$/.test(e.key)){const o=S.last.c[+e.key-1];if(o)pick(o)}
+});
+setBg('street');refreshMenu();
 </script>
-</body>
-</html>
+
+</body></html>
