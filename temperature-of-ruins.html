@@ -48,7 +48,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .tools button.on{background:var(--lamp);color:#1a1208;border-color:var(--lamp)}
 .tools button:hover{border-color:var(--lamp)}
 .stage{position:absolute;inset:0;z-index:2}
-#game.cardon .tbwrap{display:none}
+#game.cardon .tbwrap{transition:opacity .12s ease,transform .12s ease;}
+.tbwrap.choice-open{opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px)}
+.tbwrap{display:none}
 .tbwrap{position:absolute;left:0;right:0;bottom:0;padding:0 16px 18px;display:flex;justify-content:center;z-index:3;pointer-events:none}
 .tb{position:relative;flex:1;min-width:0;max-width:940px;min-height:calc(7.2em * var(--fs));background:var(--veil);border:1px solid var(--line);border-radius:10px;padding:26px 22px 24px;backdrop-filter:blur(6px);pointer-events:auto;cursor:pointer}
 .name{position:absolute;left:18px;top:-15px;display:flex;align-items:center;gap:8px;background:var(--ink2);border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:.88rem;font-weight:700;letter-spacing:.06em}
@@ -162,7 +164,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <button id="tSet">설정</button>
     </div>
     <div class="stage" id="stage"></div>
-    <div class="tbwrap"><div class="tb" id="tb">
+    <div class="tbwrap" id="tbwrap"><div class="tb" id="tb">
       <div class="name" id="nm" hidden><i></i><span id="nmt"></span></div>
       <div class="txt" id="txt"></div>
       <div class="nextmark" id="nx" hidden></div>
@@ -250,7 +252,7 @@ function svgBg(key,fb){
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><defs>${d}</defs>${b}</svg>`;
 }
 /* 사진이 들어있는 폴더/주소. 폰에서 쓰려면 호스팅한 주소로 바꾸세요. 예: 'https://res.cloudinary.com/계정/image/upload/' */
-const IMAGE_BASE='./images/',IMAGE_BG={};
+const IMAGE_BASE='./images/temperature-of-ruins/',IMAGE_BG={};
 const BGN={hall:'지하철 객차',backroom:'터널',dawn:'붉은 새벽의 서울',room_night:'윤호의 집',room:'편의점',street:'서울 거리'};
 let bgFlip=false;
 function setBg(k,instant){
@@ -479,6 +481,7 @@ const KEYS=['hj','sh','ys','sa','mk','wy','jh'];
 function applyFx(o){for(const k in o)S.rel[k]=(S.rel[k]||0)+o[k]}
 function clearStage(){$('stage').innerHTML=''}
 function show(e,instant){
+  $('tbwrap').classList.remove('choice-open');
   S.last=e;
   $('game').classList.remove('cardon');
   const fresh=!instant;
@@ -487,7 +490,7 @@ function show(e,instant){
   if(e.card){clearStage();renderCard(e.card);if(fresh)store.set('auto',snap());return}
   if(e.ending){clearStage();renderEnding(e.ending);store.set('auto',snap());return}
   if(e.end){clearStage();renderEnd();store.set('auto',snap());return}
-  if(e.c){clearStage();renderChoices(e);if(fresh)store.set('auto',snap());return}
+  if(e.c){clearStage();$('tbwrap').classList.add('choice-open');renderChoices(e);if(fresh)store.set('auto',snap());return}
   clearStage();
   const kind=e.n?'n':e.i?'i':'s';
   const text=e.n||e.i||e.t;
@@ -554,6 +557,7 @@ function renderChoices(e){
   w.querySelector('.choice').focus({preventScroll:true});
 }
 function pick(o){
+  $('tbwrap').classList.remove('choice-open');
   S.log.push({s:'선택',t:o.t});
   if(o.fx)applyFx(o.fx);
   if(o.flag)S.flags[o.flag]=1;
