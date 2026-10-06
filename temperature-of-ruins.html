@@ -188,6 +188,7 @@ function RG(id,c,o=1){return `<radialGradient id="${id}"><stop offset="0" stop-c
 function skyline(r,y,minH,maxH,fill,lit,litC,st){let x=-20,o='';while(x<1620){const w=60+r()*110,h=minH+r()*(maxH-minH);o+=`<rect x="${x.toFixed(0)}" y="${(y-h).toFixed(0)}" width="${w.toFixed(0)}" height="${(h+900-y).toFixed(0)}" fill="${fill}"/>`;
   if(lit>0){for(let wy=y-h+14;wy<y-10;wy+=st){for(let wx=x+8;wx<x+w-14;wx+=st){if(r()<lit)o+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${(st*.45).toFixed(0)}" height="${(st*.55).toFixed(0)}" fill="${litC}" opacity="${(.45+r()*.55).toFixed(2)}"/>`}}}
   x+=w+r()*8}return o}
+const IMAGE_BASE='./images/temperature-of-ruins/',IMAGE_BG={};
 const BG_FILES={
 hall:'subway-car.jpg',backroom:'subway-tunnel.jpg',dawn:'seoul-dawn.jpg',room_night:'yoonho-home.jpg',
 room:'convenience-store.jpg',street:'seoul-ruins-street.jpg',building:'ruined-building.jpg',warehouse:'abandoned-warehouse.jpg',
@@ -279,7 +280,6 @@ function svgBg(key,fb){
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><defs>${d}</defs>${b}</svg>`;
 }
 /* 사진이 들어있는 폴더/주소. 폰에서 쓰려면 호스팅한 주소로 바꾸세요. 예: 'https://res.cloudinary.com/계정/image/upload/' */
-const IMAGE_BASE='./images/temperature-of-ruins/',IMAGE_BG={};
 const BGN={
 hall:'지하철 객차',backroom:'지하철 터널',dawn:'붉은 새벽의 서울',room_night:'윤호의 집 거실',
 room:'편의점 내부',street:'폐허가 된 서울 거리',building:'폐건물 외관',warehouse:'폐창고',
