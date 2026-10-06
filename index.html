@@ -98,7 +98,34 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .route li{padding:5px 11px;border:1px dashed var(--line);border-radius:5px;font-size:.82rem;color:var(--mute)}
 .route li.got{border-style:solid;border-color:var(--lamp);color:var(--lamp2)}
 .note{font-size:.82rem;color:var(--mute);line-height:1.7;margin-bottom:14px}
-@media (max-width:520px){.choices{padding-bottom:230px}.tb{padding:24px 16px 22px}}
+@media (max-width:520px){
+  #menu{padding:20px 18px calc(22px + env(safe-area-inset-bottom,0px)) 22px;overflow:auto}
+  #menu .menuwrap{max-width:none;width:100%;gap:20px}
+  .kicker{font-size:.64rem;letter-spacing:.16em;line-height:1.5}
+  .title{font-size:clamp(2.7rem,15vw,4.2rem);letter-spacing:.02em}
+  .title small{font-size:.9rem;letter-spacing:.08em;margin-top:10px}
+  .menulist{grid-template-columns:1fr;gap:0;max-width:none;width:100%}
+  .menulist button{padding:14px 4px;font-size:.95rem;min-height:48px}
+  .fine{font-size:.7rem;line-height:1.65;max-width:none}
+  .tools{padding:calc(8px + env(safe-area-inset-top,0px)) 8px 8px;gap:4px;justify-content:flex-start}
+  .tools button{padding:8px 9px;font-size:.72rem;min-height:38px}
+  .tbwrap{padding:0 10px calc(10px + env(safe-area-inset-bottom,0px))}
+  .tb{max-height:48vh;min-height:0;padding:22px 15px 17px;border-radius:9px}
+  .name{left:12px;top:-13px;padding:3px 9px;font-size:.78rem}
+  .txt{font-size:calc(.98rem * var(--fs));line-height:1.75;min-height:0}
+  .choices{padding:60px 10px calc(150px + env(safe-area-inset-bottom,0px));justify-content:flex-end;overflow-y:auto}
+  .choices .q{font-size:.68rem;letter-spacing:.14em}
+  .choice{max-width:none;padding:13px 14px;font-size:calc(.94rem * var(--fs));line-height:1.5;border-radius:8px;min-height:48px}
+  .gal{grid-template-columns:1fr 1fr;gap:8px}
+  .gal figcaption{font-size:.7rem}
+}
+@media (max-width:360px){
+  .title{font-size:2.45rem}
+  .tb{max-height:52vh}
+  .txt{font-size:calc(.92rem * var(--fs))}
+  .choice{font-size:calc(.88rem * var(--fs));padding:12px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
