@@ -4036,7 +4036,7 @@ function show(e,instant){
     if(S.replay){
       const idx=S.replayChoices[S.ch+':'+(S.pc-1)],o=e.c[idx==null?0:idx];
       if(o.fx)applyFx(o.fx);if(o.flag)S.flags[o.flag]=1;
-      S.pc=LBL[S.ch][o.go];continue;
+      S.pc=LBL[S.ch][o.go];run();return;
     }
     clearStage();$('tbwrap').classList.add('choice-open');renderChoices(e);if(fresh)store.set('auto',snap());return;
   }
