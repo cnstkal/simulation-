@@ -1,0 +1,2975 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>정윤호의 밤</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout concept: full-bleed night-city backdrops, a low translucent text bar, menu anchored bottom-left like a film title card.
+   Single committed look: Seoul after midnight, sodium-lamp amber on blue-black. */
+:root{
+  --ink:#0d101b; --ink2:#151a2b; --ink3:#1f2640;
+  --paper:#ece7dd; --mute:#98a0b9; --lamp:#e9a65c; --lamp2:#f6c98b;
+  --line:rgba(236,231,221,.16); --veil:rgba(9,11,20,.82);
+  --c-yunho:#f3d6a8; --c-jongho:#7fc6b4; --c-seonghwa:#d9726e; --c-etc:#b7bddb;
+  --serif:'Gowun Batang','Noto Serif KR',serif; --sans:'Noto Sans KR',system-ui,sans-serif;
+  --fs:1;
+  color-scheme:dark;
+}
+*,*::before,*::after{letter-spacing:-.02em!important}
+[hidden],#menu[hidden],#game[hidden],#layer[hidden]{display:none!important}
+button{touch-action:manipulation;-webkit-appearance:none;appearance:none}
+html,body{height:100%}
+@supports(height:100dvh){html,body,#app{height:100dvh}}
+body{background:var(--ink);color:var(--paper);font-family:var(--sans);overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+#app{position:relative;height:100%;width:100%;overflow:hidden;background:var(--ink)}
+.bg{position:absolute;inset:0;transition:opacity .45s ease;pointer-events:none}
+.bg svg{width:100%;height:100%;display:block}
+.vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 40%,transparent 40%,rgba(5,6,12,.55) 100%),linear-gradient(to top,rgba(6,8,16,.78),transparent 42%)}
+
+/* menu */
+#menu{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 20px 32px 48px;pointer-events:auto}
+#menu button{position:relative;z-index:11;pointer-events:auto;touch-action:manipulation}
+#menu .menuwrap{position:relative;flex:none;max-width:520px;display:flex;flex-direction:column;gap:28px}
+.kicker{font-size:.78rem;letter-spacing:.28em;color:var(--lamp);text-transform:uppercase}
+.title{font-family:var(--serif);font-weight:700;font-size:clamp(3rem,13vw,6.2rem);line-height:1.02;letter-spacing:.04em;text-wrap:balance}
+.title small{display:block;font-size:clamp(1rem,3.6vw,1.35rem);font-weight:400;letter-spacing:.12em;color:var(--lamp2);margin-top:14px}
+.menulist{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;max-width:420px;border-top:1px solid var(--line)}
+.menulist button{text-align:left;padding:13px 2px;border-bottom:1px solid var(--line);font-size:1rem;letter-spacing:.06em;transition:color .2s,padding-left .2s}
+@media (hover:hover){.menulist button:hover:not(:disabled){color:var(--lamp);padding-left:8px}}
+.menulist button:disabled{color:var(--mute);opacity:.5;cursor:default}
+.fine{font-size:.75rem;color:var(--mute);line-height:1.7;max-width:420px}
+
+/* game */
+#game{position:absolute;inset:0}
+.tools{position:absolute;top:0;left:0;right:0;display:flex;flex-wrap:wrap;gap:2px 4px;justify-content:flex-end;padding:10px 12px;z-index:5}
+.tools button{padding:7px 10px;font-size:.8rem;color:var(--paper);background:rgba(9,11,20,.5);border:1px solid var(--line);border-radius:6px;backdrop-filter:blur(4px)}
+.tools button.on{background:var(--lamp);color:#1a1208;border-color:var(--lamp)}
+.tools button:hover{border-color:var(--lamp)}
+.stage{position:absolute;inset:0;z-index:2}
+#game.cardon .tbwrap{display:none}
+.tbwrap{position:absolute;left:0;right:0;bottom:0;padding:0 16px 18px;display:flex;justify-content:center;z-index:3;pointer-events:none}
+.tb{position:relative;flex:1;min-width:0;max-width:940px;min-height:calc(7.2em * var(--fs));background:var(--veil);border:1px solid var(--line);border-radius:10px;padding:26px 22px 24px;backdrop-filter:blur(6px);pointer-events:auto;cursor:pointer}
+.name{position:absolute;left:18px;top:-15px;display:flex;align-items:center;gap:8px;background:var(--ink2);border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:.88rem;font-weight:700;letter-spacing:.06em}
+.name i{width:8px;height:8px;border-radius:50%;background:var(--nc,var(--c-etc))}
+.name[hidden]{display:none}
+.txt{font-family:var(--serif);font-size:calc(1.12rem * var(--fs));line-height:1.95;white-space:pre-wrap;word-break:keep-all;overflow-wrap:anywhere;min-height:3.9em}
+.txt.n{color:#d8d3c8}
+.txt.i{color:var(--lamp2);font-style:italic}
+.nextmark{position:absolute;right:16px;bottom:10px;width:10px;height:10px;border-right:2px solid var(--lamp);border-bottom:2px solid var(--lamp);transform:rotate(45deg);animation:bob 1.2s infinite}
+@keyframes bob{50%{transform:rotate(45deg) translate(3px,3px)}}
+.choices{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:64px 16px;background:linear-gradient(to top,rgba(5,6,12,.78),rgba(5,6,12,.45));align-items:center;overflow:auto}
+.choices .q{font-size:.8rem;letter-spacing:.2em;color:var(--lamp);margin-bottom:4px;max-width:760px;width:100%}
+.choice{width:100%;max-width:760px;text-align:left;padding:16px 20px;font-family:var(--serif);font-size:calc(1.05rem * var(--fs));line-height:1.6;background:rgba(15,19,36,.92);border:1px solid rgba(233,166,92,.5);border-radius:8px;transition:background .18s,border-color .18s,transform .18s}
+.choice:hover{background:rgba(233,166,92,.16);border-color:var(--lamp);transform:translateX(6px)}
+.card{position:absolute;inset:0;z-index:6;background:var(--ink);display:flex;flex-direction:column;justify-content:center;gap:16px;padding:24px 28px;cursor:pointer;animation:fade .8s ease}
+.card .k{font-size:.8rem;letter-spacing:.34em;color:var(--lamp)}
+.card h2{font-family:var(--serif);font-size:clamp(2.2rem,8vw,4rem);margin:0;font-weight:700;letter-spacing:.04em}
+.card p{margin:0;color:var(--mute);font-size:.95rem}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.endcard{position:absolute;inset:0;z-index:6;background:var(--ink);overflow:auto;padding:36px 20px;display:flex;justify-content:center;animation:fade .8s ease}
+.endcard .in{max-width:640px;width:100%;display:flex;flex-direction:column;gap:20px}
+.endcard h2{font-family:var(--serif);font-size:clamp(1.8rem,6vw,2.6rem);margin:0}
+.memo{font-family:var(--serif);line-height:1.85;color:#d8d3c8;border-left:2px solid var(--lamp);padding-left:16px;display:flex;flex-direction:column;gap:10px}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px}
+.btn{padding:11px 20px;border:1px solid var(--lamp);border-radius:6px;font-size:.92rem;letter-spacing:.04em}
+.btn:hover{background:var(--lamp);color:#1a1208}
+
+/* modal */
+.modal{position:absolute;inset:0;z-index:20;background:rgba(5,6,12,.8);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.panel{width:100%;max-width:720px;max-height:100%;display:flex;flex-direction:column;background:var(--ink2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.panel header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+.panel header h3{margin:0;font-family:var(--serif);font-size:1.2rem}
+.panel .x{padding:4px 10px;color:var(--mute);font-size:1.3rem}
+.panel .body{padding:16px 18px 20px;overflow:auto;min-height:0}
+.logline{padding:8px 0;border-bottom:1px solid var(--line);font-family:var(--serif);line-height:1.7;font-size:.98rem}
+.logline b{display:block;font-family:var(--sans);font-size:.75rem;letter-spacing:.08em;color:var(--lamp);margin-bottom:2px}
+.slot{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:12px 14px;margin-bottom:8px;border:1px solid var(--line);border-radius:8px;text-align:left}
+.slot:hover{border-color:var(--lamp)}
+.slot small{display:block;color:var(--mute);margin-top:3px;font-size:.78rem;overflow-wrap:anywhere}
+.slot span{min-width:0}
+.set{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.set label{font-size:.85rem;color:var(--mute)}
+.set select,.set input[type=range]{width:100%;accent-color:var(--lamp)}
+.set select{background:var(--ink3);color:var(--paper);border:1px solid var(--line);padding:9px;border-radius:6px}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.gal figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.gal .th{aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--ink);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--mute);max-width:100%}
+.gal .th svg{width:100%;height:100%;display:block}
+.gal figcaption{font-size:.8rem;color:var(--mute)}
+.route{margin-bottom:16px}
+.route h4{margin:0 0 6px;font-family:var(--serif);font-size:1.02rem}
+.route ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.route li{padding:5px 11px;border:1px dashed var(--line);border-radius:5px;font-size:.82rem;color:var(--mute)}
+.route li.got{border-style:solid;border-color:var(--lamp);color:var(--lamp2)}
+.note{font-size:.82rem;color:var(--mute);line-height:1.7;margin-bottom:14px}
+@media (max-width:520px){
+  #menu{padding:20px 18px calc(22px + env(safe-area-inset-bottom,0px)) 22px;overflow:auto}
+  #menu .menuwrap{max-width:none;width:100%;gap:20px}
+  .kicker{font-size:.64rem;letter-spacing:.16em;line-height:1.5}
+  .title{font-size:clamp(2.7rem,15vw,4.2rem);letter-spacing:.02em}
+  .title small{font-size:.9rem;letter-spacing:.08em;margin-top:10px}
+  .menulist{grid-template-columns:1fr;gap:0;max-width:none;width:100%;flex:none;align-content:start;grid-auto-rows:min-content}
+  .menulist button{padding:14px 4px;font-size:.95rem;min-height:48px;height:auto;align-self:start}
+  .fine{font-size:.7rem;line-height:1.65;max-width:none}
+  .tools{padding:calc(8px + env(safe-area-inset-top,0px)) 8px 8px;gap:4px;justify-content:flex-start}
+  .tools button{padding:8px 9px;font-size:.72rem;min-height:38px}
+  .tbwrap{padding:0 10px calc(130px + env(safe-area-inset-bottom,0px))}
+  .tb{max-height:48vh;min-height:112px;padding:22px 15px 17px;border-radius:9px}
+  .name{left:12px;top:-13px;padding:3px 9px;font-size:.78rem}
+  .txt{font-size:calc(.98rem * var(--fs));line-height:1.75;min-height:0}
+  .choices{padding:160px 12px calc(335px + env(safe-area-inset-bottom,0px));justify-content:center;overflow-y:auto}
+  .choices .q{font-size:.68rem;letter-spacing:.14em}
+  .choice{max-width:none;padding:13px 14px;font-size:calc(.94rem * var(--fs));line-height:1.5;border-radius:8px;min-height:48px}
+  .gal{grid-template-columns:1fr 1fr;gap:8px}
+  .gal figcaption{font-size:.7rem}
+}
+@media (max-width:360px){
+  .title{font-size:2.45rem}
+  .tb{max-height:52vh}
+  .txt{font-size:calc(.92rem * var(--fs))}
+  .choice{font-size:calc(.88rem * var(--fs));padding:12px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div id="app">
+  <div class="bg" id="bgA"></div><div class="bg" id="bgB" style="opacity:0"></div>
+  <div class="vig"></div>
+
+  <section id="menu">
+    <div class="menuwrap">
+      <div>
+        <div class="kicker">Adult Romance Visual Novel · EXTENDED EDITION</div>
+        <h1 class="title" style="margin:10px 0 0">정윤호<small>어느 밤의 에이스에 대한 이야기</small></h1>
+      </div>
+      <nav class="menulist" aria-label="메인 메뉴">
+        <button id="mStart">게임 시작</button>
+        <button id="mCont">이어하기</button>
+        <button id="mSet">설정</button>
+        <button id="mGal">갤러리</button>
+        <button id="mEnd">엔딩 리스트</button>
+      </nav>
+      <p class="fine">19세 이상 · 현대 성인 로맨스 · 확장판 · 전체 30챕터<br>대사와 글, 배경으로만 이야기하며 관계와 감정의 디테일을 더했습니다.</p>
+    </div>
+  </section>
+
+  <section id="game" hidden>
+    <div class="tools" id="tools">
+      <button id="tAuto">자동</button><button id="tSkip">스킵</button>
+      <button id="tSet">설정</button>
+    </div>
+    <div class="stage" id="stage"></div>
+    <div class="tbwrap"><div class="tb" id="tb">
+      <div class="name" id="nm" hidden><i></i><span id="nmt"></span></div>
+      <div class="txt" id="txt"></div>
+      <div class="nextmark" id="nx" hidden></div>
+    </div></div>
+  </section>
+  <div id="layer"></div>
+</div>
+
+<script>
+/* ---------- storage ---------- */
+const store={mem:{},
+  get(k,d){try{const v=localStorage.getItem('yh_'+k);if(v!==null)return JSON.parse(v)}catch(e){}return k in this.mem?this.mem[k]:d},
+  set(k,v){this.mem[k]=v;try{localStorage.setItem('yh_'+k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- backgrounds (generated, no people) ---------- */
+let uid=0;
+function mul(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hs(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function LG(id,stops){return `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">${stops.map((c,i)=>`<stop offset="${(i/(stops.length-1)).toFixed(2)}" stop-color="${c}"/>`).join('')}</linearGradient>`}
+function RG(id,c,o=1){return `<radialGradient id="${id}"><stop offset="0" stop-color="${c}" stop-opacity="${o}"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient>`}
+function skyline(r,y,minH,maxH,fill,lit,litC,st){let x=-20,o='';while(x<1620){const w=60+r()*110,h=minH+r()*(maxH-minH);o+=`<rect x="${x.toFixed(0)}" y="${(y-h).toFixed(0)}" width="${w.toFixed(0)}" height="${(h+900-y).toFixed(0)}" fill="${fill}"/>`;
+  if(lit>0){for(let wy=y-h+14;wy<y-10;wy+=st){for(let wx=x+8;wx<x+w-14;wx+=st){if(r()<lit)o+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${(st*.45).toFixed(0)}" height="${(st*.55).toFixed(0)}" fill="${litC}" opacity="${(.45+r()*.55).toFixed(2)}"/>`}}}
+  x+=w+r()*8}return o}
+function svgBg(key,fb){
+  if(!fb&&IMAGE_BG[key]) return `<img src="${IMAGE_BASE}${IMAGE_BG[key]}" alt="${key}" style="width:100%;height:100%;display:block;object-fit:cover;object-position:center;" decoding="async" onerror="this.onerror=null;this.parentNode.innerHTML=svgBg('${key}',true)">`;
+  const r=mul(hs(key)),p='g'+(uid++),W=1600,H=900;let d='',b='';
+  const blur=`<filter id="${p}b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>`;
+  if(key==='street'){
+    d=LG(p+'s',['#080a18','#171b3a','#34274a'])+blur;
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}s)"/>`+skyline(r,640,120,330,'#0e1128',.09,'#f2c27a',30)+skyline(r,780,80,280,'#090b17',.17,'#ffd9a0',34);
+    const nc=['#e8517a','#5ec8e8','#e9a65c','#b07ae8'];
+    for(let i=0;i<7;i++){const x=80+r()*1400,y=380+r()*300,c=nc[i%4];b+=`<rect x="${x}" y="${y}" width="${30+r()*60}" height="${12+r()*16}" fill="${c}" filter="url(#${p}b)" opacity=".8"/><rect x="${x+4}" y="${y+4}" width="${22+r()*40}" height="5" fill="${c}"/>`}
+    b+=`<rect y="790" width="${W}" height="110" fill="#07080f"/><rect x="0" y="790" width="${W}" height="3" fill="#e9a65c" opacity=".35"/>`;
+    for(let i=0;i<6;i++){b+=`<rect x="${r()*1500}" y="800" width="${40+r()*90}" height="${90}" fill="${nc[i%4]}" opacity=".07"/>`}
+    b+=`<rect x="1090" y="620" width="260" height="170" fill="#05060c"/><rect x="1110" y="640" width="220" height="12" fill="#c9ccd8" opacity=".75"/><text x="1220" y="650" font-size="11" fill="#05060c" text-anchor="middle" font-family="sans-serif" font-weight="700">ENCORE</text>`;
+  }else if(key==='dawn'){
+    d=LG(p+'s',['#252c4a','#6d7396','#e4a888'])+RG(p+'g','#ffd2a0',.9)+RG(p+'l','#ffd38a',.8);
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}s)"/><circle cx="520" cy="640" r="420" fill="url(#${p}g)"/>`+skyline(r,700,100,300,'#1b1e36',.04,'#ffd9a0',32)+skyline(r,760,60,200,'#12142a',.05,'#ffd9a0',34);
+    b+=`<polygon points="0,740 1600,740 1600,900 0,900" fill="#171926"/><polygon points="700,740 900,740 1400,900 200,900" fill="#1d2030"/>`;
+    for(let i=0;i<5;i++){const y=760+i*i*6+i*14;b+=`<rect x="${790-i*5}" y="${y}" width="${20+i*10}" height="${6+i*2}" fill="#d8cdb8" opacity=".5"/>`}
+    b+=`<rect x="1240" y="380" width="10" height="360" fill="#0d0e18"/><rect x="1180" y="376" width="76" height="8" fill="#0d0e18"/><circle cx="1184" cy="392" r="120" fill="url(#${p}l)"/><circle cx="1184" cy="388" r="8" fill="#ffe3a8"/>`;
+  }else if(key==='building'){
+    d=LG(p+'s',['#8fa8c4','#dcd4c3'])+LG(p+'f',['#c2b7a3','#a89c88']);
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}s)"/>`+skyline(r,700,120,320,'#a9b2bd',0,'',30);
+    b+=`<rect x="420" y="130" width="760" height="720" fill="url(#${p}f)"/><rect x="420" y="130" width="760" height="22" fill="#8d8272"/>`;
+    for(let row=0;row<3;row++)for(let c=0;c<4;c++){b+=`<rect x="${470+c*172}" y="${190+row*148}" width="108" height="100" fill="#5f7387"/><rect x="${470+c*172}" y="${190+row*148}" width="108" height="30" fill="#8fa5ba" opacity=".5"/>`}
+    b+=`<rect x="720" y="590" width="160" height="260" fill="#3b4650"/><rect x="732" y="602" width="136" height="248" fill="#6b8296" opacity=".55"/><rect x="798" y="602" width="4" height="248" fill="#3b4650"/>`;
+    b+=`<rect x="690" y="548" width="220" height="34" fill="#7d725f"/><text x="800" y="573" font-size="22" fill="#e6dcc6" text-anchor="middle" font-family="sans-serif" font-weight="700" letter-spacing="4">3호 빌딩</text>`;
+    b+=`<rect y="840" width="${W}" height="60" fill="#6c6a68"/><rect y="840" width="${W}" height="4" fill="#85827d"/><polygon points="0,0 700,0 300,900 0,900" fill="#fff3d8" opacity=".07"/>`;
+  }else if(key==='hall'){
+    d=RG(p+'g','#ffcf8a',.55)+blur;
+    b=`<rect width="${W}" height="${H}" fill="#2a2623"/><rect y="520" width="${W}" height="380" fill="#3a322d"/><rect y="516" width="${W}" height="6" fill="#4d433b"/>`;
+    for(let i=0;i<9;i++){const x=500+i*110,y=180+i*60;b+=`<polygon points="${x},${y+160} ${x+110},${y+100} ${x+110},${y+130} ${x},${y+190}" fill="#463c35"/><polygon points="${x},${y+160} ${x+110},${y+100} ${x+110},${y+108} ${x},${y+168}" fill="#6a5c50"/>`}
+    b+=`<polygon points="440,900 1600,330 1600,900" fill="#241f1c" opacity=".7"/><rect x="120" y="260" width="240" height="520" fill="#4a3c32"/><rect x="140" y="280" width="200" height="480" fill="#554437"/><circle cx="318" cy="540" r="9" fill="#c9a96a"/><rect x="200" y="310" width="80" height="34" fill="#c9bfa8"/><text x="240" y="335" font-size="22" fill="#2a2623" text-anchor="middle" font-family="sans-serif" font-weight="700">301</text>`;
+    b+=`<circle cx="800" cy="120" r="260" fill="url(#${p}g)"/><rect x="700" y="62" width="200" height="26" rx="13" fill="#ffe9bd"/>`;
+  }else if(key==='room'||key==='room_night'){
+    const n=key==='room_night';
+    d=LG(p+'w',n?['#171b2e','#1d2138']:['#d6c8ae','#c3b399'])+LG(p+'g',n?['#0b0f22','#2b2a52']:['#f6d095','#e9955b'])+RG(p+'l','#ffcf8a',n?.6:.25)+LG(p+'m',n?['#3a3548','#2a2535']:['#f1ede4','#cfc8bb']);
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}w)"/><rect y="650" width="${W}" height="250" fill="${n?'#241d2c':'#8f7557'}"/><rect y="640" width="${W}" height="14" fill="${n?'#2f2638':'#e0d4be'}"/>`;
+    b+=`<rect x="980" y="110" width="400" height="420" fill="${n?'#2c3050':'#efe6d4'}"/><rect x="996" y="126" width="368" height="388" fill="url(#${p}g)"/>`;
+    if(n){for(let i=0;i<60;i++)b+=`<rect x="${1000+r()*350}" y="${300+r()*200}" width="6" height="8" fill="#f2c27a" opacity="${.3+r()*.6}"/>`}
+    b+=`<rect x="1178" y="126" width="8" height="388" fill="${n?'#2c3050':'#efe6d4'}"/><rect x="996" y="312" width="368" height="8" fill="${n?'#2c3050':'#efe6d4'}"/>`;
+    if(!n)b+=`<polygon points="990,640 1380,640 1500,900 700,900" fill="#ffd9a0" opacity=".22"/>`;
+    b+=`<g transform="rotate(3 470 420)"><rect x="370" y="130" width="190" height="540" rx="4" fill="${n?'#2b2536':'#a58a62'}"/><rect x="380" y="140" width="170" height="520" fill="url(#${p}m)"/></g>`;
+    b+=`<rect x="90" y="470" width="190" height="180" fill="#a98b63"/><rect x="110" y="380" width="170" height="90" fill="#b79a70"/><rect x="90" y="556" width="190" height="8" fill="#d8c8a2"/>`;
+    b+=`<circle cx="1210" cy="560" r="300" fill="url(#${p}l)"/>`;
+    if(n)b+=`<circle cx="740" cy="560" r="220" fill="url(#${p}l)"/><rect x="722" y="540" width="36" height="110" fill="#1a1522"/>`;
+  }else if(key==='backroom'){
+    d=RG(p+'g','#ffd9a0',.75)+blur;
+    b=`<rect width="${W}" height="${H}" fill="#171018"/><rect y="700" width="${W}" height="200" fill="#0e0a10"/><rect x="180" y="150" width="1100" height="430" fill="#2a2430"/><rect x="200" y="170" width="1060" height="390" fill="#3b3442"/>`;
+    for(let i=0;i<=13;i++){const x=200+i*81.5;for(const y of [150,560])b+=`<circle cx="${x}" cy="${y}" r="26" fill="url(#${p}g)"/><circle cx="${x}" cy="${y}" r="9" fill="#ffe7b8"/>`}
+    for(let i=0;i<4;i++)b+=`<rect x="${1330+i*64}" y="210" width="56" height="470" fill="#2a2430" stroke="#171018" stroke-width="3"/>`;
+    b+=`<rect x="220" y="620" width="880" height="26" fill="#241b27"/><rect x="220" y="690" width="880" height="12" fill="#141017" opacity=".8"/>`;
+  }else{ /* bar */
+    d=LG(p+'s',['#0b0a14','#1b1226'])+blur;
+    b=`<rect width="${W}" height="${H}" fill="url(#${p}s)"/>`;
+    for(let i=0;i<3;i++)b+=`<rect x="140" y="${200+i*120}" width="1320" height="6" fill="#4a3a2a"/>`;
+    const bc=['#2d5a4e','#6a3d2a','#8a6a2a','#2a3f6a','#5a2a3a'];
+    for(let s=0;s<3;s++)for(let i=0;i<26;i++){const x=160+i*50+r()*10,h=60+r()*40;b+=`<rect x="${x}" y="${200+s*120-h}" width="${18+r()*10}" height="${h}" rx="4" fill="${bc[(i+s)%5]}" opacity=".85"/>`}
+    const col=['#e9a65c','#c85b7a','#6aa7d8'];
+    for(let i=0;i<14;i++)b+=`<circle cx="${r()*W}" cy="${380+r()*380}" r="${22+r()*50}" fill="${col[i%3]}" opacity="${.12+r()*.14}" filter="url(#${p}b)"/>`;
+    b+=`<rect y="720" width="${W}" height="180" fill="#120c14"/><rect y="716" width="${W}" height="6" fill="#e9a65c" opacity=".55"/>`;
+    b+=`<rect x="1100" y="520" width="420" height="170" rx="18" fill="#1d1224"/><rect x="60" y="540" width="360" height="150" rx="18" fill="#1d1224"/><rect x="560" y="640" width="200" height="14" fill="#2a1d30"/>`;
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><defs>${d}</defs>${b}</svg>`;
+}
+/* 사진이 들어있는 폴더/주소. 폰에서 쓰려면 호스팅한 주소로 바꾸세요. 예: 'https://res.cloudinary.com/계정/image/upload/' */
+const IMAGE_BASE='./images/';
+const IMAGE_BG={building:'3.png',hall:'4.png',room:'6.png',room_night:'7.png',street:'16.png',host_exterior:'17.png',host_entry:'18.png',bar:'19.png',bar_table:'20.png',bar_counter:'21.png',host_corridor:'22.png',backroom:'23.png',back_exit:'24.png',dawn:'25.png',cut37:'37.png',cut38:'38.png',cut39:'39.png',cut40:'40.png',cut41:'41.png',cut42:'42.png',cut43:'43.png',cut44:'44.png',cut45:'45.png',cut46:'46.png',cut47:'47.png',cut48:'48.png'};
+const BGN={building:'3호 빌딩 앞',hall:'계단과 복도',room:'301호, 낮',room_night:'301호, 밤',street:'서울 도심 번화가',host_exterior:'앙코르 외관',host_entry:'앙코르 입구',bar:'앙코르 메인 홀',bar_table:'앙코르 테이블',bar_counter:'앙코르 바 카운터',host_corridor:'앙코르 안쪽 복도',backroom:'직원용 백룸',back_exit:'앙코르 뒷골목',dawn:'새벽 거리'};
+let bgFlip=false;
+function setBg(k,instant){
+  if(S)S.bg=k;
+  const a=document.getElementById('bgA'),b=document.getElementById('bgB'),cur=bgFlip?b:a,nxt=bgFlip?a:b;
+  nxt.innerHTML=svgBg(k);nxt.style.opacity=1;cur.style.opacity=0;bgFlip=!bgFlip;
+  const u=store.get('bgs',[]);if(BGN[k]&&!u.includes(k)){u.push(k);store.set('bgs',u)}
+}
+
+/* ---------- script helpers ---------- */
+const N=t=>({n:t}),I=t=>({i:t}),SP=(s,t)=>({s,t});
+const Y=t=>SP('윤호',t),J=t=>SP('종호',t),SH=t=>SP('성화',t),IM=t=>SP('임 대표',t),HS=t=>SP('한 실장',t),DH=t=>SP('동혁',t),P1=t=>SP('선수',t);
+const L=n=>({L:n}),GO=n=>({go:n}),BG=k=>({bg:k}),CUT=k=>({cut:k}),FX=o=>({fx:o}),FL=f=>({flag:f}),IF=(f,go)=>({if:f,go}),CH=(q,c)=>({q,c});
+
+/* ---------- CHAPTER 01 ---------- */
+const CH1=[
+{card:['CHAPTER 01','새로운 방','1부 · 새로운 일상']},
+BG('building'),
+N(`이삿짐 트럭이 골목을 빠져나간 건 오후 3시를 조금 넘긴 때였다.`),
+N(`정윤호가 가진 짐은 생각보다 적었다. 박스 아홉 개, 캐리어 하나, 접이식 건조대. 투룸 빌라에서 나올 때도 딱 이만큼이었다. 누군가와 같이 쓰던 공간을 나오고 나면, '내 것'이 이렇게 적다는 걸 알게 된다.`),
+N(`4층짜리 낡은 건물이었다. 삼호 빌딩. 간판은 색이 바랬는데, 현관 유리문에는 누가 매일 닦는 것처럼 손자국 하나 없었다.`),
+I(`엘리베이터는 없네. 3층이라고 했으니까, 아홉 번만 오르내리면 되겠다.`),
+N(`첫 번째 박스를 안아 드는데, 현관 옆 벽에 기대 서 있던 사람이 몸을 일으켰다.`),
+J(`정윤호 씨, 맞죠? 301호.`),
+N(`동그란 얼굴에 볕에 그을린 피부, 티셔츠 아래로 단단하게 자리 잡은 어깨. 얼굴만 보면 순한데, 눈은 그렇지 않았다. 사람을 위에서 아래까지 재는 눈이었다.`),
+Y(`네, 맞아요. 아, 집주인분이세요? 계약은 부동산에서 대신 해주셨어서, 이렇게 직접 뵙는 건 처음이네요.`),
+J(`최종호예요. 이 건물 관리합니다. 먼저 말씀드릴게요. 계단에 짐 두시면 안 돼요. 층계참에 잠깐 내려놓는 것도요. 소방 점검 나오면 과태료는 제가 내거든요.`),
+N(`윤호는 박스를 든 채 웃어 보였다. 웃는 건 생각보다 먼저 나오는 일이었다.`),
+CH('종호의 첫인사에 어떻게 답할까',[
+ {t:`"걱정 마세요. 한 개도 안 내려놓을 테니까요."`,go:'c1a',fx:{mask:1}},
+ {t:`"그럼 집주인이시니까, 하나만 같이 들어주실래요?"`,go:'c1b'},
+ {t:`"알겠습니다. 바로 올릴게요."`,go:'c1c',fx:{jongho:1}}]),
+L('c1a'),
+J(`웃으면서 장담하는 사람 말은 반만 듣는 편이에요.`),
+Y(`반이면 후한 거네요. 보통은 아예 안 들으시던데.`),
+J(`…그건 인정할게요.`),
+GO('c1e'),
+L('c1b'),
+J(`제가요?`),
+Y(`아니면 말고요. 물어본 것뿐이에요.`),
+J(`도와드릴 의무는 없어요. 계단 닦는 건 제 일이라, 흙 묻히면 직접 닦으세요.`),
+GO('c1e'),
+L('c1c'),
+N(`종호가 눈을 한 번 깜빡였다. 반박을 준비해 둔 사람이 허공에 대고 주먹을 쥔 것 같은 표정이었다.`),
+J(`…네. 그럼 됐고요.`),
+L('c1e'),
+J(`그리고 월세는 매달 25일이에요. 하루라도 늦으면 문자 가요. 두 번 늦으면 전화 가고요.`),
+Y(`세 번째는요?`),
+J(`세 번째는 없게 해주세요, 형.`),
+N(`윤호의 손이 박스 모서리에서 멈췄다.`),
+Y(`형?`),
+J(`계약서에 생년 있잖아요. 99년생이시던데요. 저는 00년생이에요.`),
+N(`스물일곱. 윤호보다 한 살 아래. 건물 하나를 쥐고 서 있는 사람으로 보기엔 어렸고, 그 눈빛으로 보기엔 너무 정확했다.`),
+Y(`그럼 말은 어떻게 할까. 편하게 해도 돼?`),
+J(`집주인한테요?`),
+CH('말투를 정한다',[
+ {t:`"종호야, 한 살 차이에 갑을 따지면 피곤해."`,go:'c2a'},
+ {t:`"형이라고 부르는 사람한테 존댓말 쓰긴 좀 그래서. 종호야, 라고 불러도 될까?"`,go:'c2b',fx:{jongho:1}},
+ {t:`"…알겠습니다, 최종호 씨."`,go:'c2c',flag:'formal'}]),
+L('c2a'),
+J(`갑을로 따지면 제가 갑인 게 맞는데요.`),
+Y(`그렇지. 그래서 이렇게 눈치 보면서 말하잖아, 종호야.`),
+J(`눈치 보는 것처럼은 안 보이는데요.`),
+GO('c2e'),
+L('c2b'),
+J(`…그걸 왜 저한테 물어봐요. 형 마음대로 하세요.`),
+Y(`마음대로 하면 그냥 부를 건데.`),
+J(`그럼 묻지 말고 그냥 부르면 되잖아요.`),
+Y(`그럼 그렇게 할게. 종호야.`),
+N(`종호는 대꾸하지 않았다. 귀 끝만 조금 붉어져 있었다.`),
+GO('c2e'),
+L('c2c'),
+J(`…그렇게까지 거리 두실 건 아니고요.`),
+Y(`아, 편한 쪽이 낫구나.`),
+J(`그냥 형 마음대로 하세요. 저는 어차피 존댓말 쓸 거예요.`),
+L('c2e'),
+J(`직장은 어디 다니세요? 계약서에 직장 칸이 비어 있던데.`),
+Y(`서비스업이에요. 시간이 좀 불규칙한 쪽이라서.`),
+J(`밤에 많이 들어오시겠네요.`),
+N(`질문이 아니라 확인이었다.`),
+Y(`…그런 편이에요.`),
+J(`12시 넘으면 계단 조심해 주세요. 2층에 어르신 사세요. 새벽에 샤워 물소리도 벽 타고 올라가고요.`),
+N(`직업은 한 번도 묻지 않았다. 묻지 않고도 이미 정리를 끝낸 얼굴이었다. 윤호가 사람의 얼굴에다 하는 일을, 이 사람은 지금 윤호의 얼굴에다 하고 있었다.`),
+CH('밤에 일한다는 사실에 대해',[
+ {t:`"소리 안 나게 다닐게요. 고양이처럼."`,go:'c3a',fx:{mask:1}},
+ {t:`"밤에 일해요. 뭘 하는지는 안 물어봐 주면 고맙겠고."`,go:'c3b',fx:{jongho:1}},
+ {t:`"제가 뭐 하는 사람으로 보여요?"`,go:'c3c'}]),
+L('c3a'),
+J(`고양이는 계단에서 쿵쿵거리진 않죠.`),
+J(`그 말, 기억해 둘게요.`),
+GO('c3e'),
+L('c3b'),
+J(`물어볼 생각 없었어요.`),
+Y(`그렇게 보였어. 그래서 말한 거고.`),
+J(`…그럼 저도 한 가지만요. 말 안 하는 건 괜찮은데, 거짓말은 하지 마세요. 그건 싫어요.`),
+N(`짧은 말이었는데 이상하게 오래 남았다. 윤호에게 거짓말은 직업이 아니라 습관에 가까웠다.`),
+GO('c3e'),
+L('c3c'),
+J(`맞히면 월세 깎아주실 거예요?`),
+Y(`그건 안 되지.`),
+J(`그럼 안 맞힐래요.`),
+N(`입꼬리가 아주 조금 올라갔다 내려갔다. 웃은 건지 비웃은 건지 알 수 없었다.`),
+L('c3e'),
+J(`이 건물에 10년 넘게 있었어요. 아침에 돌아오는 사람이랑 밤에 나가는 사람은 걸음이 달라요. 대충은 알아요. 대충요.`),
+J(`이따 저녁에 계량기 확인하러 올라올게요. 입주 기준값 적어둬야 나중에 안 싸우거든요.`),
+Y(`이사 온 당일에요?`),
+J(`당일이니까요.`),
+N(`종호는 클립보드를 옆구리에 끼고 돌아섰다. 계단 쪽으로 사라지기 전에 어깨 너머로 한마디를 덧붙였다.`),
+J(`박스는 층계참에 내려놓지 마시고요, 형.`),
+Y(`알았다니까.`),
+N(`혼자 남은 현관에서 윤호는 작게 중얼거렸다.`),
+I(`까다롭네.`),
+I(`…그래도 눈은 좋다.`),
+
+BG('hall'),
+N(`박스 아홉 개를 올리는 데 사십 분이 걸렸다. 층계참에는 한 개도 내려놓지 않았다. 이 층을 지날 때는 문틈으로 텔레비전 소리가 새어 나왔고, 윤호는 저도 모르게 발소리를 죽였다.`),
+BG('room'),
+N(`301호는 다섯 평 남짓이었다. 서쪽으로 난 창, 낡았지만 깨끗한 싱크대, 오래 손을 탄 장판. 창으로 들어온 오후 빛이 바닥에 비스듬히 누워 있었다.`),
+N(`윤호는 짐을 풀기 전에 전신거울부터 꺼냈다. 호스트에게 거울은 가구가 아니라 장비다. 현관 옆 벽에 세워 놓고, 옷걸이용 못을 벽에 하나 박았다. 그리고 거울 앞에 섰다.`),
+N(`숨을 한 번 들이마시고, 내쉬었다.`),
+N(`거울 속 얼굴이 바뀌었다. 눈꼬리가 내려가고, 입꼬리가 올라가고, 어깨에서 힘이 빠졌다. 누구라도 먼저 말을 걸고 싶어지는 얼굴. 오래 써서 길이 난 표정이었다.`),
+N(`그리고 표정을 풀었다. 웃음은 늘 조금 늦게 사라진다. 입가에 흔적이 남은 얼굴이 거울에 서 있었다.`),
+I(`늘 있는 일이다. 거울은 아무것도 묻지 않는다.`),
+BG('cut43'),
+N(`마지막 박스를 열었을 때, 맨 아래에서 낡은 운동화 한 켤레가 나왔다. 앞코가 닳고 밑창이 얇아진 연습용 신발이었다.`),
+N(`윤호는 그것을 한참 내려다보다가, 도로 박스 맨 밑에 넣고 뚜껑을 닫았다.`),
+I(`버려야지 하면서, 이사 때마다 들고 다닌 지 7년째다.`),
+N(`노크 소리가 났다.`),
+J(`계량기 확인이요.`),
+N(`종호는 현관 옆 계량기를 손전등으로 비추다가 문득 고개를 들었다. 시선이 거울에 가 닿았다.`),
+J(`거울 크네요. 벽에 못 박지 마세요. 후크는 접착식만 돼요.`),
+N(`윤호는 대답 대신 벽을 한 번 쳐다봤다. 종호의 시선도 따라갔다. 옷걸이용 못이 거기 박혀 있었다.`),
+CH('못 이야기에 대해',[
+ {t:`"…이미 하나 박았어요. 죄송합니다."`,go:'d1a',fx:{jongho:1}},
+ {t:`"저게 못이에요? 원래 있던 건데."`,go:'d1b',fx:{jongho:-1,mask:1}}]),
+L('d1a'),
+J(`하나요. 그냥 말씀하시지. 나갈 때 구멍 메우는 비용은 보증금에서 뺄 거예요.`),
+Y(`솔직하게 말했는데 벌금이네.`),
+J(`솔직한 건 알겠어요. 그래도 벌금은 벌금이고요.`),
+GO('d1e'),
+L('d1b'),
+J(`원래 있던 거면 여기 먼지는 왜 새거예요?`),
+N(`종호가 손가락 끝을 들어 보였다. 하얀 석고 가루가 묻어 있었다.`),
+Y(`……`),
+J(`작은 거짓말이 제일 눈에 띄어요, 형.`),
+L('d1e'),
+J(`기준값은 적었어요. 그럼 쉬세요.`),
+N(`문을 닫기 전에 종호는 거울을 한 번 더 봤다.`),
+J(`좋은 거울이네요. 싸구려는 아니고.`),
+N(`문이 닫혔다. 윤호는 거울 속의 자기 얼굴과 눈이 마주쳤다.`),
+I(`싸구려는 아니다. …볼 줄은 아는 사람이네.`),
+
+BG('room_night'),
+N(`6시 40분. 창밖이 주황색에서 남색으로 넘어가는 시간이었다.`),
+N(`샤워를 하고, 셔츠를 입고, 슬랙스와 재킷. 오른쪽 손목에 시계, 목덜미에 향수 한 번. 마지막으로 머리를 손으로 한 번 헝클였다가 정리한다. 너무 완벽하면 사람들은 거리를 둔다.`),
+N(`거울 앞에서 눈꼬리를 휘었다. 이번에는 꺼내 쓰기 위한 표정이었다.`),
+N(`현관을 나서자 계단참이 조용했다. 윤호는 발뒤꿈치부터 내려놓으며 내려갔다.`),
+
+BG('street'),
+BG('host_exterior'),
+N(`번화가 한복판은 아니었다. 그 바깥, 간판들이 한 겹 덜 번쩍이는 골목. 지하로 내려가는 계단 끝에 검은 문이 있고, 문 옆에 은색 글씨로 작게 적혀 있었다.`),
+N(`클럽 앙코르. 남성 전용, 예약제.`),
+BG('host_entry'),
+DH(`형, 오셨어요! 오늘 예약판 보셨죠?`),
+Y(`아직. 몇 개야?`),
+DH(`열한 개요.`),
+Y(`열한 개면 평소 정도지.`),
+DH(`형한테 평소가 다른 형들한테는 신기록이에요.`),
+BG('host_corridor'),
+BG('backroom'),
+N(`대기실은 영업 전 특유의 소란으로 가득했다. 거울 앞에서 넥타이를 고쳐 매는 선수들, 얼음을 씹는 소리, 누군가의 향수와 헤어스프레이 냄새가 뒤섞인 공기.`),
+P1(`윤호 형 왔다. 형, 오늘 임 대표님 오시는 날이죠?`),
+Y(`아마도. 예약이 9시 반이라던데.`),
+P1(`그 대표님은 형 아니면 안 앉잖아요.`),
+HS(`정윤호. 예약판.`),
+N(`한 실장이 화이트보드를 손가락으로 두드렸다. 윤호의 이름 옆에는 11이라는 숫자가 있었다. 다른 이름들 옆 숫자는 전부 한 자리였다.`),
+HS(`그리고 이번 주에 신입이 하나 들어왔어. 아직 홀엔 안 서고 교육 중인데, 이름 들어봤어?`),
+Y(`아뇨.`),
+HS(`곧 보게 될 거야. 입이 좀 험한 친구라 한 번은 부딪힐 거다. 미리 말해둔다.`),
+Y(`저랑요? 왜요?`),
+HS(`이 바닥에서 네 위로 올라가고 싶은 놈은, 일단 널 보게 돼 있어.`),
+N(`윤호는 어깨를 으쓱했다. 이런 소리를 들을 때 어떤 표정을 지어야 하는지는 이미 알고 있었다. 아무 일도 아닌 것처럼. 하지만 마음 한구석이 아주 조금 팽팽해진 것도 사실이었다.`),
+
+BG('bar'),
+BG('bar_counter'),
+N(`9시. 홀의 조명이 한 단계 낮아졌다.`),
+N(`윤호는 홀에 서자마자 달라졌다. 걸음이 느려지고, 목소리가 반 톤 내려가고, 눈은 방 안의 테이블을 한 번에 훑었다. 누가 웃고 있고, 누가 웃는 척하고 있고, 누가 오늘 누군가에게 기대고 싶은지.`),
+BG('bar_table'),
+N(`첫 번째 테이블은 생일 파티였다. 30대 초반 남자 넷, 이미 한 병을 비운 상태. 윤호는 앉자마자 잔을 들었다.`),
+Y(`오늘 주인공이 누구세요? 저한테 말도 안 하고 한 살 드시면 안 되죠.`),
+N(`웃음이 터졌다. 4분 뒤, 테이블의 분위기는 윤호의 손안에 있었다.`),
+N(`두 번째 테이블은 반대였다. 혼자 온 손님이 말없이 얼음만 돌리고 있었다. 윤호는 잔을 권하지 않았다. 옆에 앉아서, 그냥 옆에 있었다. 20분 뒤, 그 손님이 먼저 입을 열었다.`),
+N(`두 사람이 같은 사람에게 접대받았다는 걸 알아볼 사람은 없었다. 윤호는 테이블마다 다른 사람이었고, 그게 이 가게에서 그가 가진 가장 큰 재능이었다.`),
+N(`9시 반, 임 대표가 들어왔다. 마흔하나. 회사를 세 개째 굴리는 사람. 보통은 들어서자마자 웃으며 농담부터 던지는데, 오늘은 달랐다.`),
+N(`넥타이를 느슨하게 푼 채 소파에 앉더니, 잔 대신 손바닥으로 얼굴을 한 번 문질렀다.`),
+IM(`윤호야, 오늘은 좀 조용히 마시자.`),
+Y(`네. 대표님 오시는 날엔 제가 늘 조용히 마시는데요.`),
+IM(`거짓말.`),
+Y(`아, 들켰네.`),
+N(`평소라면 웃었을 사람이 웃지 않았다.`),
+CH('임 대표 옆에서',[
+ {t:`가볍게 분위기를 띄워 본다. "대표님, 오늘 표정이 이 집 얼음보다 차가운데요?"`,go:'e1a',fx:{mask:1}},
+ {t:`아무 말 하지 않고 잔을 채운 뒤, 옆에서 기다린다.`,go:'e1b'},
+ {t:`"지난번에 말씀하신 따님 발표회는 어떻게 됐어요?"`,go:'e1c'}]),
+L('e1a'),
+IM(`하하… 너는 진짜.`),
+N(`웃음은 나왔는데 눈은 웃지 않았다. 윤호는 거기서 멈췄다. 한 번 더 밀면 오늘 밤이 망가진다.`),
+Y(`아니다. 죄송해요. 오늘은 다르시네요, 대표님.`),
+IM(`…다르지.`),
+GO('e1e'),
+L('e1b'),
+N(`윤호는 말을 아꼈다. 얼음 부딪히는 소리가 2분쯤 이어졌다.`),
+IM(`야, 사람 불편하게 만들 줄도 아네.`),
+Y(`불편하세요?`),
+IM(`아니. 이상하게 안 불편해.`),
+GO('e1e'),
+L('e1c'),
+N(`임 대표의 손이 멈췄다.`),
+IM(`…기억하고 있었냐.`),
+Y(`중요한 날이라고 하셨잖아요. 연습하다가 울었다는 얘기도 하셨고.`),
+IM(`오늘이었어, 그게. 근데 나는 회의 때문에 못 갔다.`),
+N(`여기서부터는 윤호가 말할 차례가 아니었다.`),
+L('e1e'),
+N(`한 시간 뒤, 임 대표는 많은 이야기를 했다. 윤호가 한 일은 질문 두 개와 끄덕임 몇 번이 전부였다.`),
+IM(`야, 너 진짜 사람 마음을 읽는다.`),
+Y(`대표님이 잘 보여주신 거예요.`),
+IM(`아니야. 나는 안 보여주고 싶었는데, 네 앞에서는 다 보이네.`),
+N(`칭찬이었다. 윤호는 웃으며 받았다.`),
+I(`읽는 건 쉬운데.`),
+I(`읽히는 건, 아직도 영 어렵다.`),
+N(`머릿속 한쪽에서 아까 현관에서 만난 둥근 얼굴이 잠깐 지나갔다. 윤호는 잔을 들어 그 생각을 지웠다.`),
+
+N(`새벽 4시, 마지막 손님이 나가고 홀의 조명이 전부 켜졌다. 의자를 정리하던 윤호의 등 뒤에서 구둣발 소리가 멈췄다.`),
+SH(`정윤호.`),
+Y(`아, 형. 오셨어요?`),
+N(`박성화. 셔츠 맨 위 단추를 채우지 않은 사람. 깃 사이로 짙은 용 비늘의 끝자락이 보였다. 까무잡잡한 얼굴에 눈이 가늘고 길어서, 웃지 않아도 어딘가를 겨누고 있는 인상이었다.`),
+SH(`오늘 임 대표 테이블. 네가 받았지.`),
+Y(`네.`),
+SH(`계산, 다른 날의 두 배더라.`),
+Y(`대표님이 오늘 기분이 좀 그러셔서요.`),
+SH(`기분 좋은 날에도 그만큼은 안 쓰고 가던데.`),
+N(`질문인지 칭찬인지 알 수 없는 말투였다. 이 사람은 늘 그랬다.`),
+SH(`이번 주 매출도 네가 1등이다.`),
+CH('성화의 말에',[
+ {t:`"형이 일을 잘 주신 덕이죠."`,go:'f1a',fx:{mask:1}},
+ {t:`"오늘은 좀 피곤하네요. 칭찬은 내일 다시 해주세요."`,go:'f1b',fx:{seonghwa:1}},
+ {t:`"형, 밥은요? 저번에도 안 드셨잖아요."`,go:'f1c',fx:{seonghwa:1}}]),
+L('f1a'),
+SH(`입에 침이나 바르고 말해라.`),
+N(`말은 그렇게 했어도, 성화의 시선이 아주 잠깐 풀렸다.`),
+GO('f1e'),
+L('f1b'),
+SH(`피곤하면 자. 그걸 왜 나한테 말해.`),
+Y(`형이 물어보셔서요.`),
+SH(`…내가?`),
+N(`성화는 말없이 시선을 돌렸다. 대답하기 곤란한 질문을 받은 사람처럼.`),
+GO('f1e'),
+L('f1c'),
+SH(`네가 내 밥을 왜 챙겨.`),
+Y(`형은 제 밥 챙겨주시잖아요. 지난주에 국밥.`),
+SH(`그건 네 얼굴이 허옇길래.`),
+N(`변명이라고 하기엔 너무 구체적이었다.`),
+L('f1e'),
+SH(`집은 옮겼다며.`),
+Y(`네, 어제요.`),
+SH(`어디.`),
+Y(`삼호 빌딩이라고, 골목 안쪽에 있는 데요.`),
+SH(`…가게에서 먼 데를 잡았네.`),
+Y(`월세가 맞아서요.`),
+SH(`주소는 한 실장한테도 말해둬라.`),
+Y(`알겠어요.`),
+N(`한 문장이었다. 그 말은 보호이기도 했고 감시이기도 했다. 이 가게에서 그 둘은 늘 같은 말투로 온다는 걸 윤호는 알고 있었다.`),
+SH(`신입 얘기는 들었냐.`),
+Y(`한 실장님이 말씀하셨어요. 입이 험하다고.`),
+SH(`말만 험하면 다행이고.`),
+N(`성화는 더 설명하지 않고 가게 안쪽으로 걸어갔다.`),
+BG('back_exit'),
+
+BG('dawn'),
+N(`택시에서 내린 건 5시 오십 분이었다.`),
+N(`서울의 새벽은 밤과 아침 사이에서 길을 잃은 색이다. 가로등은 아직 켜져 있는데 하늘은 이미 회색으로 번지고 있었다.`),
+N(`몸이 무거웠다. 술은 거의 마시지 않았지만, 사람을 마시고 오면 이상하게 속이 피곤했다. 삼호 빌딩 현관 앞에 한 사람이 서 있었다.`),
+J(`형.`),
+Y(`…너, 지금 6시야.`),
+J(`저는 이 시간에 일어나요.`),
+N(`종호의 손에는 노란 비닐봉투가 들려 있었다. 윤호가 어제 현관 옆에 내놓은 이삿짐 포장재였다.`),
+J(`이거 형 거죠. 종이랑 비닐 섞여 있어요. 종이는 종이, 비닐은 비닐, 테이프는 떼서 따로. 수거는 오늘 오전 7시고요.`),
+Y(`지금 6시인데…`),
+J(`그래서 지금 말씀드리는 거예요.`),
+N(`해가 뜨는 시간에, 한 사람은 일어나고 한 사람은 눕는다. 두 사람은 그 경계선 위에 마주 서 있었다.`),
+CH('새벽의 분리수거',[
+ {t:`"미안. 내가 지금 바로 정리할게."`,go:'g1a',fx:{jongho:1}},
+ {t:`"이거 안 하면 안 돼? 나 정말 자야 하거든."`,go:'g1b',flag:'bicker'},
+ {t:`"그럼 네가 해줘. 월세 올려도 되니까."`,go:'g1c',flag:'bicker'}]),
+L('g1a'),
+J(`…네.`),
+N(`종호는 봉투를 건네려다 말고, 잠깐 윤호의 얼굴을 봤다.`),
+J(`그럼 같이 해요. 어차피 제가 7시 전에 끝내야 하니까.`),
+Y(`같이?`),
+J(`형이 뭘 잘 모르는 것 같아서요.`),
+GO('g1e'),
+L('g1b'),
+J(`안 돼요.`),
+Y(`한 번만. 오늘만.`),
+J(`그 말 하는 사람들 매번 있어요. 그래서 한 번도 안 봐줬고요.`),
+Y(`지금 너, 한 발도 안 물러날 얼굴인데.`),
+J(`물러날 일 아니에요.`),
+N(`정색하는 목소리가 너무 진지해서 윤호는 하마터면 웃을 뻔했다.`),
+Y(`알았어. 한다, 해.`),
+GO('g1e'),
+L('g1c'),
+J(`제가요?`),
+Y(`집주인이 건물을 깨끗하게 쓰고 싶은 거잖아.`),
+J(`…형.`),
+Y(`응?`),
+J(`저 물러날 일 아니에요.`),
+Y(`알아. 이미 그 얼굴이야.`),
+J(`그럼 알아서 하세요. 대신 한 번에 제대로요.`),
+L('g1e'),
+N(`윤호는 현관 옆 구석에 쪼그려 앉아 박스에서 테이프를 떼어내기 시작했다. 종호는 팔짱을 끼고 지켜보다가, 몇 초 뒤 장갑 한 켤레를 던졌다.`),
+J(`맨손으로 하면 손 베여요.`),
+N(`정확하고 무뚝뚝한 친절이었다.`),
+CUT(37),
+IF('formal','gf'),
+Y(`종호야, 비닐은 이쪽이지?`),
+J(`네, 그쪽이요.`),
+GO('g2'),
+L('gf'),
+Y(`종호 씨, 이건… 아니, 그냥 종호야. 이건 어느 쪽이야?`),
+N(`종호의 손이 멈췄다.`),
+J(`방금 뭐라고 했어요.`),
+Y(`종호야.`),
+J(`…네. 그쪽이요.`),
+N(`대답이 짧았다. 하지만 아까보다 덜 날카로웠다.`),
+L('g2'),
+N(`테이프를 다 떼고 나서야, 7시 20분 전쯤 종호가 불쑥 말했다.`),
+J(`형.`),
+Y(`응.`),
+J(`얼굴이 많이 안 좋아 보여요.`),
+N(`윤호는 고개를 들었다.`),
+Y(`걱정해 주는 거야?`),
+J(`아니요.`),
+J(`월세 밀릴까 봐서요.`),
+N(`그렇게 말하고 종호는 시선을 돌렸다. 윤호는 그 대답이 진짜인지 아닌지 가려낼 수 없었다. 가려내는 건 윤호의 일인데도.`),
+I(`읽히는 건 어렵다. 읽는 쪽이 이쪽인지 저쪽인지는, 더 어렵고.`),
+BG('room'),
+N(`봉투를 내려놓고 올라온 301호. 창밖은 이미 환했다. 커튼 틈으로 들어온 빛이 거울에 부딪혀 바닥에 길게 떨어졌다.`),
+N(`윤호는 신발을 벗고, 재킷을 의자에 걸고, 거울 앞에서 표정을 풀었다.`),
+N(`이번에는 웃음이 사라지는 데 시간이 더 오래 걸렸다.`),
+{nx:2}
+];
+const SCRIPTS={1:CH1};
+const CHTITLE={1:'CHAPTER 01 — 새로운 방'};
+/* ---------- STORY (ch02-30) ---------- */
+const C={},RT={28:{},29:{},30:{}},RTT={28:{},29:{},30:{}};
+C[2]=['에이스는 준비 중',`
+BG backroom
+N 앙코르의 대기실은 낮에도 향수 냄새가 났다. 윤호는 저녁 8시에 도착해 늘 앉던 거울 앞에 앉았다. 거울 옆 전구 하나가 나갔는데, 아무도 갈지 않았다.
+DH 형, 오늘 예약 꽉 찼어요. 임 대표님은 10시고요.
+Y 알았어. 동혁이 밥은 먹었어?
+DH 저요? 아직요. 형 먼저 드세요.
+N 동혁은 문 앞을 지키는 덩치였지만, 윤호 앞에서는 늘 군기 든 신입 같았다. 윤호가 편의점 김밥을 던져주자 동혁은 두 손으로 받았다.
+HS 윤호야, 잠깐.
+N 한 실장이 서류철을 들고 들어왔다. 오십 줄의 단정한 사람이었다. 목소리가 낮고 흔들리지 않아서, 가게에서 가장 믿을 만한 사람이라고들 했다.
+HS 오늘부터 한 사람이 같이 일한다. 다른 가게에서 넘어온 애야. 에이스 소리 듣던 앤데, 네가 좀 챙겨라.
+Y 챙길 게 있을까요. 알아서 잘하겠죠.
+N 그때 대기실 문이 열렸다.
+WY 아, 여기가 그 에이스 자리구나. 거울 제일 좋은 데.
+N 날카로운 눈매에 어깨가 반듯한 남자였다. 시선은 피하지 않고 정면으로 꽂혔다.
+WY 정우영. 앞으로 거기 앉을 사람.
+? 우영의 첫마디에 윤호는
+- 웃으면서 자리를 비켜준다|mask+1,wooyoung+1||WY 어? 이걸 진짜 비켜줘? 재미없게.//N 우영이 인상을 썼다. 기대한 반응이 아니었던 모양이다.
+- 자리는 안 줘. 옆자리는 빌려줄게|honest+1,wooyoung+1||WY 말은 잘하네. 두고 보지, 뭐.
+- 대꾸 없이 파우치를 닫는다|night+1||N 윤호가 말없이 파우치를 닫자 우영은 코웃음을 치고 다른 의자를 끌어다 앉았다.
+BG bar
+N 영업이 시작되자 홀은 조명이 한 단계 낮아졌다. 윤호는 첫 테이블에서 웃었고, 두 번째 테이블에서 상대가 원하는 말을 했고, 세 번째 테이블에서는 말을 거의 하지 않았다. 그게 가장 잘 팔렸다.
+N 10시 정각, 임 대표가 들어왔다. 마흔한 살, 사업가. 양복 윗주머니에 딸의 사진이 든 지갑을 넣고 다니는 사람이었다.
+IM 오늘은 좀 일찍 끝내고 싶어서 왔어요. 윤호 씨 얼굴 보면 하루가 끝나는 느낌이라.
+Y 대표님, 그건 칭찬이죠? 아니면 퇴근 시간 알림이에요?
+IM 둘 다. 하하.
+N 윤호는 술을 따르며 임 대표의 이야기를 들었다. 딸이 학원을 옮기고 싶어 한다고 했다.
+? 임 대표의 이야기에 윤호는
+- 아빠 마음 이해한다고 공감해 준다|mask+1||IM 이 일 하면서 이런 얘길 들어주는 사람이 있다는 게 신기해요.
+- 딸이 원하는 걸 먼저 들어보라고 말한다|honest+1||IM 그렇죠. 제가 답을 정해놓고 물어봤네.
+- 화제를 돌려 웃긴 얘기를 한다|mask+1,night+1||IM 하하, 맞다, 오늘 이런 얘기 하러 온 게 아니었지.
+BG backroom
+N 새벽 1시, 우영이 첫 테이블에서 돌아왔다. 넥타이를 풀면서 아무에게도 아닌 곳에 대고 말했다.
+WY 여긴 웃기만 하면 되는 줄 알았는데, 말을 하네. 다들.
+Y 여기 손님은 웃음보다 말이 필요해서 오니까.
+WY 그걸 에이스가 가르쳐주는 거냐.
+N 그 순간 문틈으로 낯익은 얼굴이 보였다. 성화였다. 검은 코트를 입은 그는 아무 말 없이 윤호를 한 번 보고 한 실장에게 서류를 건넸다.
+SH 새로 온 애, 문제없지.
+HS 지금까진요.
+SH 그럼 됐다.
+N 성화는 돌아서다가 윤호 쪽을 힐끗 보았다.
+SH 밥은 먹었냐.
+? 성화의 질문에 윤호는
+- 먹었어요, 형. 걱정 마요|mask+1||SH 걱정 아니다. 확인이지.
+- 사실 아직요|honest+1,seonghwa+1||SH 그럼 끝나고 나와라.
+- 웃기만 한다|||SH 대답 안 하면 안 먹은 걸로 한다.
+N 문이 닫혔다. 우영이 눈을 가늘게 떴다.
+WY 저 사람, 너한테만 말을 거네.
+N 윤호는 대답하지 않았다. 첫날이 이렇게 끝나고 있었다.
+
+N 그날 밤 윤호는 평소보다 오래 잠들지 못했다.
+I 누군가와 가까워지는 건, 생각보다 조용한 일이었다.
+N 이름 하나가 머릿속에서 쉽게 지워지지 않았다.`];
+
+C[3]=['새벽의 청소',`
+BG dawn
+N 새벽 5시, 거리는 밤도 아침도 아닌 색이었다. 윤호는 택시에서 내려 3호 빌딩 앞에 섰다. 현관 유리문 안쪽에 불이 켜져 있었다.
+BG hall
+N 계단참에서 물소리가 났다. 종호가 대걸레를 밀고 있었다. 트레이닝복 소매를 걷은 팔이 단단했다.
+J 이 시간에 들어오시네요.
+Y 아, 일찍 일어나시네. 종호야, 이거 매일 해?
+J 매일요. 아버지가 하던 거라서.
+N 종호는 말을 끊고 계단 손잡이를 닦았다. 윤호는 아버지라는 말의 무게를 눈치채고, 더 묻지 않았다.
+J 형은 밤에 일하시죠.
+N 윤호는 잠깐 숨을 멈췄다. 종호의 목소리에는 추궁이 없었다. 날씨 이야기를 하는 말투였다.
+? 종호의 말에 윤호는
+- 응, 서비스 쪽이야. 사람 만나는 일|honest+1,jongho+1||J 네. 그 정도면 됐어요.//N 종호는 고개를 한 번 끄덕이고 대걸레를 다시 밀었다.
+- 웃으며 얼버무린다|mask+1||J 그럼 그렇게 알고 있을게요. 근데 거짓말은 싫어해요.
+- 종호야, 나 청소 좀 도울까?|jongho+1||J 돼요. 근데 형 손 약해 보여서.//N 말과 달리 종호는 걸레 하나를 윤호에게 넘겼다.
+BG building
+N 분리수거 날이었다. 종호는 박스를 접고 병을 종류별로 나눴다. 손이 빨랐다. 윤호는 옆에서 캔 하나를 들었다가 잘못된 통에 넣었다.
+J 그건 알루미늄이 아니고 철이에요.
+Y 캔이 캔이지, 뭐가 달라.
+J 달라요. 자석 붙어요. 해 보세요.
+N 윤호가 자석을 붙여 보았다. 캔은 철컥 붙었다. 윤호가 웃었고, 종호는 짧게 이겼다는 표정을 지었다.
+J 양보하기 싫어서요. 사소한 것도.
+Y 그럼 나랑 가위바위보 하면 되겠네.
+J 이기면요?
+Y 월세 한 번만 미뤄줄래?
+J ...해 봐요.
+N 윤호는 가위를 냈고, 종호는 바위를 냈다.
+J 월세는 제날에 내세요.
+? 지고 나서 윤호는
+- 한 판 더 하자고 한다|jongho+1||J 한 판이면 충분해요. 근데... 더 해요, 그럼.
+- 졌다고 인정하고 커피를 산다|honest+1||J 커피는 받을게요. 월세랑 별개로.
+- 종호에게 장난을 더 친다|mask+1||J 형, 그거 안 통해요.
+N 계단 위에서 2층 문이 열렸다. 노부부 중 할머니가 슬리퍼를 신고 나왔다.
+@할머니 새벽부터 시끄럽네. 총각들 이리 와봐, 이거 호박 줄게.
+J 할머니, 또 호박이에요?
+@할머니 호박이 얼마나 좋은데.
+N 윤호는 호박을 안고 301호로 올라가다가 뒤를 돌아보았다. 종호가 현관 앞에서 신발 먼지를 털고 있었다. 이 건물에서는 누구도 윤호에게 무엇을 요구하지 않았다. 그게 이상하게 오래 남았다.
+
+N 종호가 돌아간 뒤 윤호는 한동안 현관 앞에 서 있었다.
+I 이 사람은 무심한 척하면서도 이상하게 오래 남는다.
+N 방 안으로 들어온 윤호는 웃다가 혼자 고개를 저었다.`];
+
+C[4]=['국밥',`
+BG street
+N 가게 앞 골목은 새벽 2시에도 환했다. 윤호가 마지막 손님을 택시에 태우고 돌아서자, 검은 승용차 옆에 성화가 서 있었다.
+SH 타.
+Y 형, 저 오늘은...
+SH 국밥. 먹고 가.
+BG taxi
+N 차 안은 조용했다. 성화는 운전하는 동안 한마디도 하지 않았다. 윤호는 창밖 불빛이 흘러가는 걸 보며, 말이 없어서 편한 사람이 이 세상에 있다는 걸 오랜만에 떠올렸다.
+BG cafe
+N 국밥집은 새벽에도 불이 켜져 있었다. 손님은 트럭 기사 둘뿐이었다. 성화가 앉자 주인아주머니가 묻지도 않고 국밥 두 그릇을 내왔다.
+SH 먹어.
+Y 형은 여기 자주 오세요?
+SH 가끔.
+N 성화는 숟가락을 들었다. 소매 아래로 용의 꼬리 끝이 살짝 비쳤다. 윤호는 시선을 돌렸다.
+SH 새로 온 놈, 정우영. 어떠냐.
+? 우영에 대한 질문에 윤호는
+- 성격은 거칠어도 일은 잘해요|honest+1,wooyoung+1||SH 말만 험하면 다행이지.
+- 아직 잘 모르겠어요. 좀 지켜볼게요|seonghwa+1||SH 지켜보는 건 네 일 아니다. 문제 생기면 말해.
+- 걔 눈이 좀 불안해 보여요|honest+1||SH ...눈은 맞게 봤네.//N 성화는 그 이상 말하지 않았다.
+SH 너 집 옮겼더라.
+Y 알고 계셨어요?
+SH 알아야 하는 일이라서.
+N 윤호는 숟가락을 내려놓았다. 성화의 목소리에는 위협이 없었다. 그래서 더 어려웠다.
+SH 누가 널 찾아오면 나한테 말해라. 그게 전부야.
+? 윤호는
+- 알겠어요, 형|seonghwa+1||SH 대답이 빠르네.
+- 제 집까지 알 필요는 없잖아요|honest+1||SH 필요 없다고 생각하면 안 알아도 되지. 알아 버렸을 뿐이다.
+- 걱정해 주시는 거예요?|seonghwa+1,mask+1||SH 관리다. 걱정 아니고.//N 그렇게 말하며 성화는 윤호 그릇에 깍두기를 덜어 주었다.
+N 계산은 성화가 했다. 윤호가 지갑을 꺼내자 성화는 손바닥으로 지갑을 눌러 닫았다.
+SH 넣어 둬라. 다음엔 네가 사.
+N 다음이 있다는 말이었다. 윤호는 그 말을 오래 곱씹었다.
+
+N 식사를 마치고 성화가 윤호를 바라봤다.
+SH 다음에 또 밥 먹자.
+Y 약속이에요?
+SH 싫으면 말고.
+Y 아니요. 좋아요.
+N 성화는 대답 대신 시동을 걸었다. 윤호는 괜히 창밖을 보며 웃었다.`];
+
+C[5]=['거울 앞의 얼굴',`
+BG room_night
+N 오후 4시에 일어났는데도 301호는 이미 어두웠다. 윤호는 박스 맨 밑에서 낡은 연습화 한 켤레를 꺼냈다. 밑창이 닳아 한쪽이 기울어 있었다.
+I 7년째 이걸 들고 다닌다. 버리지도 못하고 신지도 못하면서.
+N 연습화를 바닥에 내려놓고 윤호는 거울 앞에 앉았다. 얼굴을 한 번 비벼 보았다. 입꼬리를 끌어올리면 강아지 같은 웃음이 되고, 힘을 풀면 사라진다.
+I 올리고, 내리고. 올리고, 내리고.
+N 내릴 때마다 약간씩 느렸다.
+BG bar
+N 그날 밤 임 대표는 평소보다 일찍 왔다. 룸 안은 조용했고, 임 대표는 잔을 한참 만지작거렸다.
+IM 윤호 씨, 딸이 오늘 나한테 처음으로 소리 질렀어요. 아빠는 맨날 돈 얘기만 한다고.
+Y 대표님은 어떻게 하셨어요?
+IM 아무 말도 못 했어요. 사업은 말 잘하는데.
+N 윤호는 말없이 잔을 채웠다. 이럴 때 상대가 원하는 말이 무엇인지 윤호는 알았다. 위로, 혹은 정답.
+? 윤호는
+- 대표님 잘못 아니에요, 그 나이 땐 다 그래요|mask+1||IM 윤호 씨는 늘 내 편이네요.//N 임 대표가 웃었지만 눈은 웃지 않았다.
+- 소리 지른 건 아빠를 믿어서일 수도 있어요|honest+1||IM ...그럴 수도 있겠네요. 그 생각은 못 해봤어.
+- 오늘은 아무 말 안 해도 돼요. 앉아 계세요|night+1||IM 이런 건 윤호 씨만 해주더라.
+BG backroom
+N 새벽, 대기실에서 우영이 윤호의 뒷모습을 보았다. 윤호가 거울을 보며 웃음을 끄는 걸 우영은 놓치지 않았다.
+WY 방금 그거, 뭐냐.
+Y 뭐가?
+WY 웃음 거두는 거. 기계처럼 깔끔하네.
+Y 그냥 피곤해서.
+WY 피곤한 사람은 웃음이 천천히 사라지지. 넌 탁, 하고 꺼져.
+N 윤호는 처음으로 우영을 똑바로 보았다. 우영은 어깨를 으쓱했다.
+WY 나도 해 봤으니까 아는 거야. 비밀 아니니까 쫄지 마.
+? 윤호는
+- 그럼 너도 있다는 거네, 그런 표정|honest+1,wooyoung+1||WY 있지. 근데 난 자랑 안 해.
+- 눈 좋네. 칭찬해 줄게|mask+1||WY 칭찬 필요 없고.
+- 말을 돌려 퇴근 준비를 한다|night+1||WY 그래, 도망가라.
+BG building
+N 아침 7시. 윤호가 현관에 들어서자 종호가 쓰레기봉투를 들고 서 있었다.
+J 얼굴이 많이 안 좋아요, 형.
+Y 걱정해 주는 거야?
+J 아니요. 월세 밀릴까 봐서요.
+N 윤호는 그 대답이 진짜인지 가려낼 수 없었다. 가려내는 건 윤호의 일인데도.
+BG room
+N 301호에 올라와 신발을 벗다가, 윤호는 현관에 서 있는 연습화에 시선이 닿았다. 밤새 거기 있었던 것처럼.
+I 내일은 박스에 넣자. 내일은.
+
+N 거울 앞에서 우영이 말했다.
+WY 넌 사람 볼 때 너무 오래 본다.
+Y 네가 신경 쓰여서 그래.
+N 우영이 잠깐 말을 잃었다.
+WY 그런 말 아무렇지 않게 하지 마.
+Y 왜.
+WY 내가 진짜로 받아들이면 곤란하니까.`];
+
+C[6]=['일요일 같은 월요일',`
+BG building
+N 월요일 오후, 3호 빌딩 계단에서 쿵 소리가 났다. 윤호가 내려가 보니 2층 할머니가 장바구니를 든 채 층계참에 서 있었다.
+@할머니 아이고, 무릎이 또 말을 안 들어.
+Y 할머니, 제가 들어 드릴게요.
+@할머니 총각이 301호 새로 온 이지? 얼굴이 좋네. 우리 영감이 좋아하겠어.
+N 장바구니에는 대파와 두부와 계란이 들어 있었다. 2층 집 문 안쪽에서 텔레비전 소리가 흘러나왔다.
+@할머니 잠깐 들어와, 차 한잔하고 가.
+? 윤호는
+- 네, 잠깐만 앉았다 갈게요|jongho+1,honest+1||@할머니 그래그래. 종호도 맨날 안 들어와. 바쁘다고만 해.
+- 다음에 꼭 올게요, 오늘은 약속이 있어서|mask+1||@할머니 약속은 지켜야지. 다음에 꼭이다.
+- 짐만 올려 드리고 인사한다|||@할머니 착하네. 호박 줄까?
+BG convenience
+N 저녁 무렵 윤호는 편의점에서 라면과 계란을 집어 들었다. 계산대 앞에 서 있던 종호와 눈이 마주쳤다. 종호의 바구니에도 라면이 있었다.
+J 형도 라면 사세요.
+Y 종호는 안 먹을 줄 알았는데.
+J 사람은 누구나 라면 먹어요.
+Y 계란은?
+J 안 넣어요. 끓이다가 터뜨리면 맛이 흐려져서.
+Y 그건 반칙이지. 라면은 계란이야.
+N 종호가 순간 눈썹을 올렸다. 지는 걸 싫어하는 사람의 표정이었다.
+J 그럼 오늘 증명해 봐요. 형 집에서.
+? 윤호는
+- 좋아, 올라와. 301호로|jongho+1||J ...진짜 가요?//N 종호는 당황한 얼굴로 신발 끈을 다시 묶었다.
+- 내가 내려갈게, 네 집에서 끓이자|jongho+1,honest+1||J 거긴 좁아요. 근데... 와도 돼요.
+- 농담이야, 오늘은 혼자 먹을게|||J 그럼 농담이라고 해 둘게요.
+BG room
+N 301호에서 끓인 라면은 조금 불었다. 종호는 계란 하나를 건져 먹다가 입을 다물었다.
+J ...맛있네요.
+Y 졌지?
+J 오늘만요.
+N 둘은 아무 말 없이 국물을 마셨다. 종호가 먼저 입을 열었다.
+J 형, 여긴 시끄러워도 돼요. 안 내쫓아요. 누구든.
+N 윤호는 젓가락을 내려놓았다. 그 말이 누구에게 하는 말인지는 분명했다.
+Y 고마워, 종호야.
+J 월세는 제날에 내세요.
+N 종호가 웃었다. 처음 보는 웃음이었다.
+BG rooftop
+N 종호가 돌아간 뒤, 윤호는 옥상에 올라갔다. 도시는 낮은 지붕들로 이어져 있었다. 휴대폰에 음악 뉴스 알림이 떠 있었다.
+@알림 신인 보컬 그룹 데뷔 앨범 공개. 프로듀서 김홍중.
+N 윤호는 휴대폰을 쥔 채 오래 서 있었다. 이름 석 자가 화면에서 조금도 낡지 않았다.
+I 홍중 형.
+N 아무 일도 없었다는 듯 밤바람이 불었다. 윤호는 화면을 껐다가 다시 켰다. 이름은 그대로 있었다.
+
+BG cut48
+N 종호는 현관까지 배웅해 놓고 문을 닫지 않았다.
+Y 왜 안 닫아?
+J 형이 계단 내려가는 거 보고 닫으려고요.
+N 윤호는 계단을 두 칸 내려가다 돌아봤다.
+Y 잘 자, 종호야.
+J 네. 형도요.
+N 문이 닫히는 소리가 평소보다 늦게 들렸다.`];
+
+C[7]=['다시 만난 사람',`
+BG cafe
+N 며칠 뒤 오후, 윤호는 동네 카페에서 아메리카노를 받아 돌아서다가 걸음을 멈췄다. 창가 자리에 헤드폰을 낀 남자가 앉아 있었다. 작은 어깨, 안경, 손가락으로 허벅지를 두드리는 박자.
+I 아니겠지. 이런 동네에.
+N 남자가 고개를 들었다. 헤드폰이 천천히 내려갔다.
+HJ ...윤호야?
+N 10년 가까운 시간이 한 단어에 접혔다. 윤호는 표정을 만들 틈이 없었다.
+? 윤호는
+- 홍중 형, 오랜만이에요|honest+1,hongjung+1||HJ 오랜만이다, 진짜. 얼굴이 하나도 안 변했네.
+- 사람 잘못 보셨어요, 하고 웃는다|mask+1||HJ 아, 죄송해요. 너무 닮아서... 아니다, 윤호 맞는데.
+- 말없이 서 있는다|||HJ 놀랐지. 나도 놀랐어.
+N 홍중은 의자를 빼 주었다. 윤호는 앉았다. 앉은 뒤에야 손에 든 컵이 흔들리는 걸 알았다.
+HJ 이 근처에 스튜디오 있어. 작은 데. 신인 작업하느라 맨날 여기서 커피 사.
+Y 프로듀서 하신다고, 뉴스에서 봤어요.
+HJ 뉴스에 나왔어? 아, 그 앨범. 나 이름만 올라간 거야, 반은.
+N 홍중은 웃었다. 예전과 같은 웃음이었는데, 끝이 조금 짧았다.
+HJ 너는? 지금 뭐 해?
+N 윤호는 컵 뚜껑을 만졌다.
+? 윤호는
+- 서비스업이에요. 사람 만나는 일|honest+1||HJ 서비스. 너한테 어울린다. 사람 좋아했잖아.
+- 그냥 이것저것 해요|mask+1||HJ 이것저것이면 바쁘겠네. 몸 챙겨.
+- 형이야말로 어때요, 요즘|hongjung+1||HJ 나? 망한 아이돌이 프로듀서 하는 중이지. 나름 괜찮아.
+HJ 그때 왜 연락 안 받았어?
+N 낮고 느린 말투였다. 책망이 아니라 오래 넣어둔 질문처럼 들렸다. 카페의 음악이 한 박자 늦게 들리는 것 같았다.
+? 윤호는
+- 그땐 제가 제정신이 아니었어요|honest+1||HJ 알아. 알면서도 궁금했어.
+- 번호를 바꿨어요. 그냥 그렇게 됐어요|mask+1||HJ 그냥. 그래, 그냥이겠지.
+- 지금은 말 못 하겠어요. 다음에|hongjung+1||HJ 다음이 있다는 거지? 그럼 됐어.
+N 홍중은 휴대폰을 내밀었다.
+HJ 번호 줘. 이번엔 안 바꾸는 걸로.
+N 윤호는 번호를 눌렀다. 한 자리씩 누를 때마다 가슴 어딘가가 눌렸다.
+BG street
+N 카페를 나서자 해가 기울고 있었다. 윤호는 한참 걷다가 연습화 생각을 했다. 그리고 곧 출근 시간이 다가온다는 사실을 떠올렸다. 웃는 얼굴을 꺼내 쓸 시간이었다.
+
+N 카페 앞에서 홍중이 윤호를 불러 세웠다.
+HJ 윤호야.
+Y 네, 형.
+HJ 다음에 또 보자.
+N 짧은 말이었는데 이상하게 약속처럼 들렸다.
+Y 네. 다음에 봐요.
+N 둘 다 한동안 먼저 돌아서지 않았다.`];
+
+C[8]=['2차',`
+BG bar
+N 금요일 밤 11시, 앙코르에 단체 손님이 들어왔다. 건설회사 회식 2차였다. 정장 차림의 남자 다섯이 홀로 들어오는데, 맨 뒤에서 걸어오던 남자가 윤호를 보고 멈췄다.
+N 날카롭고 맹한 인상. 윤호는 그 눈을 알고 있었다.
+MG ...정윤호?
+N 윤호의 입꼬리가 올라갔다. 올라가다가 중간에서 멈췄다.
+Y 어서 오세요. 앙코르입니다.
+MG 뭐야, 너 여기서 뭐 해.
+N 민기의 동료가 웃었다. 과장이 어깨를 툭 쳤다.
+@과장 송 대리, 아는 사람이야? 얼굴 좋네. 이 친구 앉혀 줘.
+N 민기는 주먹을 쥐었다 폈다. 입술이 굳어 있었다.
+? 윤호는
+- 우선 손님으로 정중하게 대한다|mask+2,mingi+1||MG 손님? 지랄하네.
+- 민기야, 잠깐 나갈래|honest+1,mingi+1||MG ...나가자.
+- 모른 척하고 웃는다|mask+1,night+1||MG 모른 척이냐? 좋아. 해 봐.
+BG alley
+N 윤호와 민기는 가게 뒷골목에 나란히 섰다. 담배 연기 대신 차가운 밤공기가 입으로 들어왔다.
+MG 언제부터 했어.
+Y 한 6년쯤.
+MG 6년. 내가 몰랐던 6년.
+N 민기는 담벼락에 등을 기댔다. 한동안 말이 없었다.
+MG 너 연습생 때 갑자기 연락 끊었잖아. 그때 나 죽는 줄 알았다. 집에도 가봤어. 아무도 없더라.
+? 윤호는
+- 미안해. 그땐 누구한테도 말 못 했어|honest+1,mingi+1||MG 미안하다고 할 줄은 아네.
+- 이유가 있었어. 지금은 말 못 해|mask+1||MG 이유는 맨날 있지, 너한텐.
+- 넌 잘 살았잖아. 그럼 된 거 아니야|mingi-1||MG ...야, 이 새끼야.
+N 민기가 코를 훌쩍였다. 추워서인지 아닌지 알 수 없었다.
+MG 앞으로 내가 올 때마다 담당은 네가 아니야. 딴 사람 앉혀.
+Y 왜?
+MG 네 앞에선 술이 안 넘어가.
+N 윤호는 웃었다. 오랜만에 꾸밀 필요 없는 웃음이었다.
+BG backroom
+N 새벽 대기실, 우영은 의자에 앉아 윤호를 쳐다보았다.
+WY 아까 그 사람 누구야. 손님 같지가 않던데.
+Y 오래된 친구.
+WY 친구한테 담당 빠지라고까지 하더라. 너 친구가 있긴 했네.
+Y 너는 있냐?
+WY 없어. 필요도 없고.
+N 윤호는 우영의 말끝에서 마른 기침 같은 외로움을 들었다. 그리고 모르는 척했다.
+N 휴대폰에 새 메시지가 떴다. 민기였다.
+@민기 번호 안 바꿨네. 다행이다.
+N 윤호는 한참 화면을 쳐다보다가 짧게 답장을 썼다.
+Y 이번엔 안 바꿀게.
+
+N 민기는 헤어지기 직전 윤호를 바라봤다.
+MG 너 웃을 때 예전이랑 똑같다.
+Y 너도 여전히 시끄럽고.
+MG 그건 칭찬이지?
+Y 네가 듣고 싶은 대로 들어.
+N 민기는 한참 웃었다. 오래된 사이에서만 나오는 편안한 웃음이었다.`];
+
+C[9]=['산의 연락',`
+BG convenience
+N 편의점 앞 벤치에서 윤호는 삼각김밥을 까고 있었다. 퇴근길 샐러리맨 사이에서 낯익은 어깨가 걸어왔다. 근육으로 단단한 몸. 작업복 점퍼.
+SN 윤호.
+N 윤호는 삼각김밥을 쥔 채 일어났다.
+Y 산아.
+SN 살아 있었네.
+Y 너도.
+N 산은 어색하게 옆자리에 앉았다. 둘 사이에 편의점 불빛이 번졌다.
+SN 어디서 일해.
+? 윤호는
+- 앙코르라는 데야. 블랙오션 때랑 비슷한 곳|honest+1,san+1||SN ...다시 그 일이냐.
+- 서비스업이야. 그냥 사람 만나는 일|mask+1||SN 거짓말 말고. 네 얼굴에 써 있다.
+- 너는 어때, 물류회사 다닌다며|san+1||SN 다닌다. 평범하게. 네가 그렇게 말해줬잖아, 평범하게 살라고.
+N 산은 무릎 위에 두 손을 올렸다. 한쪽 손목에 오래된 흉터가 있었다. 윤호는 그 흉터의 이유를 알고 있었다.
+SN 내가 그만둔 건 후회 안 해. 근데 네가 아직 거기 있다는 게 화난다.
+Y 산아.
+SN 화난다고. 나한테 화나는 거야, 너한테 화나는 거야, 나도 모르겠다.
+? 윤호는
+- 그때 나 대신 맞아서 미안했어|honest+1,san+1||SN 미안하단 말은 하지 마. 내가 한 일이다.
+- 네가 화낼 일 아니야. 내 선택이야|mask+1,san-1||SN ...그래. 니 선택이지.
+- 걱정해 줘서 고마워|san+1||SN 고맙단 말도 하지 마. 어색하다.
+N 산은 일어나 봉지에서 두유 하나를 꺼내 윤호 무릎에 올려놓았다.
+SN 밤새 마셨지. 마셔라.
+N 투박한 배려였다. 윤호는 두유 빨대를 꽂으며 웃었다.
+Y 아직도 이런 거 사 다니냐.
+SN 응. 아직도.
+BG street
+N 둘은 골목 끝에서 헤어졌다. 산이 마지막으로 돌아서서 말했다.
+SN 일 그만두고 싶어지면 말해. 같이 방법 찾아줄게.
+N 윤호는 대답 대신 손을 흔들었다. 대답을 하면 약속이 되는 말이었다.
+
+N 산은 돌아가기 전 윤호를 한 번 더 불렀다.
+SN 연락해.
+Y 무슨 일 없는데도?
+SN 없어도 해.
+N 윤호는 잠시 대답하지 못했다.
+Y 알았어.
+N 산은 그제야 돌아섰다. 윤호는 그 뒷모습을 보며 작게 웃었다.`];
+
+C[10]=['여상의 문자',`
+BG cafe
+N 낮 12시에 문자가 한 통 왔다.
+@여상 윤호야, 잘 지내? 나 이사 갔어. 새 집에서 된장찌개 끓였는데 너 생각났어. 먹으러 올래?
+N 윤호는 웃음이 나는 걸 막지 못했다. 여상은 여전했다. 헤어진 사람에게 보내는 문자가 아니라 같은 집에 사는 사람에게 보내는 문자였다.
+Y 갈게. 주소 보내줘.
+BG livingroom
+N 여상의 집은 판교 외곽의 작은 아파트였다. 거실 창으로 햇빛이 길게 들었고, 부엌에서 된장찌개 냄새가 났다.
+YS 어서 와. 신발 거기 놓고. 슬리퍼 새로 샀어. 네 사이즈로.
+Y 어떻게 알았어.
+YS 네 발 크기 기억하잖아. 이백칠십. 가끔 칠십오.
+N 여상은 후드티 소매를 걷으며 부엌으로 돌아갔다. 단단한 몸이 부엌에서는 늘 작아 보였다.
+YS 일은 어때? 콜센터 아직 하지?
+N 윤호는 숟가락을 들다 말았다.
+? 윤호는
+- 응, 아직 교대근무해|mask+2||YS 힘들겠다. 야간엔 잠은 잘 자?
+- 그만뒀어. 다른 일 해|honest+1,yeosang+1||YS 어, 그랬구나. 다른 일은 괜찮아?
+- 찌개나 먹자. 일 얘기는 나중에|||YS 그래. 따뜻할 때 먹어야지.
+N 여상은 윤호의 밥그릇 옆에 계란말이를 놓았다. 윤호가 좋아하던 간으로, 파가 조금 많이.
+YS 너 양치하고 컵 뒤집어 놓는 거, 새 컵에도 해?
+Y 응?
+YS 어제 컵 하나 샀는데, 뒤집어 놓고 있더라. 나도 모르게. 네가 올 것 같아서.
+N 윤호는 울컥하는 걸 숟가락질로 삼켰다.
+? 윤호는
+- 그 습관, 아직 안 고쳤어|honest+1,yeosang+1||YS 나도 안 고치려고.
+- 내 습관이 옮았네|yeosang+1||YS 응. 너 간 뒤로 습관이 하나 늘었어.
+- 웃으며 화제를 돌린다|mask+1||YS 윤호야, 나한테는 안 해도 돼.
+N 여상은 그 말을 하고 아무렇지 않게 설거지를 시작했다. 윤호는 거품 소리를 들으며 생각했다. 이 사람 앞에서는 표정을 챙길 필요가 없었던 시절이 있었다. 그 시절이 끝난 건 윤호가 웃는 얼굴을 쓴 채로 이 집에서 나왔기 때문이었다.
+BG taxi
+N 돌아오는 택시에서 윤호는 여상이 싸준 반찬통을 무릎에 얹고 있었다. 뚜껑 위에 포스트잇이 붙어 있었다. '전자레인지 말고 냄비에 데워 먹어.' 작은 글씨였다.
+
+N 여상은 현관 앞에서 윤호의 외투를 건네주었다.
+YS 다음엔 그냥 와. 연락 안 하고.
+Y 그래도 돼?
+YS 너잖아.
+N 짧은 말 하나가 이상하게 따뜻했다. 윤호는 고개를 끄덕였다.`];
+
+C[11]=['비 오는 날',`
+BG rain
+N 비가 쏟아지는 오후였다. 윤호는 우산 없이 3호 빌딩 앞 골목을 달려 현관으로 뛰어들었다. 관리실 문틈에 불이 켜져 있었다.
+BG hall
+N 계단에 물이 샜다. 종호가 양동이를 들고 2층 복도에서 윤호를 올려다보았다.
+J 옥상 방수가 또 터졌어요. 형 방은 괜찮아요?
+Y 확인 안 했는데, 같이 가볼까?
+J 일단 같이요.
+N 301호 천장 모서리에 물이 맺히고 있었다. 종호가 의자 위에 올라서 수건을 끼웠다. 그의 어깨선이 가까웠다. 윤호는 시선을 아래로 돌렸다.
+J 이런 건 아버지가 잘 알았는데.
+N 종호의 목소리가 평소보다 낮았다.
+? 윤호는
+- 아버지 얘기, 해도 괜찮아?|honest+1,jongho+1||J ...네. 괜찮아요.
+- 괜히 말하지 마. 지금은 비 오니까|jongho+1||J 네. 그럼 비 얘기만 해요.
+- 가만히 수건을 건넨다|||J 고마워요.
+N 종호는 의자에서 내려와 바닥에 앉았다. 비가 창문에 부딪혔다.
+J 3년 전에 돌아가셨어요. 새벽에 건물 앞을 쓸다가요. 저는 학교에 있었고요.
+Y ...
+J 그 뒤로 건물을 맡았어요. 대학은 그만뒀고. 어머니는 부산에 계세요. 혼자 있는 게 싫다고 하셔서요.
+N 종호는 거짓말을 싫어한다고 했다. 윤호는 그 말이 어디에서 나온 건지 이제 알 것 같았다.
+? 윤호는
+- 힘들었겠다, 라고 말한다|honest+1,jongho+1||J 힘들다고 말하는 건 사치 같았어요. 근데 오늘은 안 사치네요.
+- 잘하고 있다고 말해 준다|jongho+1||J ...그런 소리는 처음 들어봐요.
+- 말없이 옆에 앉아 있는다|jongho+2||J 말 안 해도 되는 게 편하네요.
+J 형은 가족 없어요?
+N 윤호는 처음으로 잠깐 침묵했다.
+Y 있기는 한데, 연락은 안 해.
+J 이유 안 물을게요.
+Y 고마워.
+J 대신 형도 제 얘기 들었으니까 하나는 빚졌어요.
+N 종호가 젖은 머리를 털며 웃었다. 윤호는 그 빚을 갚는 날을 상상했다. 아주 먼 날 같았고, 아주 가까운 날 같기도 했다.
+BG room_night
+N 밤이 되어도 비는 그치지 않았다. 윤호는 출근 가방을 챙기며 문 앞에서 우산을 찾았다. 현관 문손잡이에 검은 우산이 걸려 있었다. 포스트잇이 붙어 있었다. '돌려주지 않아도 돼요.'
+N 글씨는 반듯하고 짧았다. 윤호는 우산을 펴고 계단을 내려갔다.
+
+N 비가 잦아들 무렵 종호가 말했다.
+J 다음에 비 오면 또 와도 돼요.
+Y 비 올 때만?
+J …그건 아니고요.
+N 종호가 말을 흐렸다. 윤호는 모른 척 웃었다.
+Y 알았어. 다음엔 맑은 날에도 올게.`];
+
+C[12]=['연락을 끊은 이유',`
+BG cut44
+N 홍중의 스튜디오는 지하 1층에 있었다. 문 앞에 '반딧불 스튜디오'라는 작은 간판이 붙어 있었다. 윤호는 문 앞에서 한참 서성이다가 노크했다.
+HJ 들어와, 열려 있어.
+N 좁은 방, 믹서와 모니터, 벽 가득한 방음재. 구석에는 낡은 기타와 오래된 마이크가 놓여 있었다.
+HJ 여기가 내 세계야. 세계가 좀 좁지.
+Y 형답네요. 좁은데 알찬.
+HJ 말 한마디도 안 지는 건 여전하다.
+N 홍중은 의자를 돌려 앉았다. 모니터에 신인의 데모 파형이 떠 있었다.
+HJ 윤호야, 나 오늘 물어봐도 돼?
+N 윤호는 의자 등받이에 손을 얹었다.
+? 윤호는
+- 네, 물어보세요|honest+2,hongjung+1||HJ 고마워.
+- 먼저 노래 하나 들려주세요|hongjung+1||HJ 그래. 이거 어때, 방금 만든 거.
+- 오늘은 좀 곤란해요|mask+1||HJ 알겠어. 기다릴게.
+HJ 네가 번호 바꿨을 때 나 한 달쯤 문자 보냈어. 읽지는 못했겠지. 데뷔 직후라 바빴는데도, 밤마다 보냈어.
+N 윤호는 눈을 감았다.
+HJ 다 받았어? 번호가 없어졌다는 안내만 나왔어?
+Y 번호를 바꾸기 전에 마지막으로 온 문자는 읽었어요.
+HJ 뭐라고 썼는지 기억나?
+Y 나이 때문이래도 우린 같이 연습한 사이라고요.
+N 홍중은 숨을 한 번 내쉬었다.
+? 윤호는
+- 그때 형한테 부끄러웠어요. 형은 데뷔했는데 저는 잘렸으니까|honest+2,hongjung+2||HJ 부끄러울 일 아니었는데. 그런 말 하는 거 아니야.
+- 그때는 누구한테도 얼굴 못 들었어요|honest+1,hongjung+1||HJ 알아. 이제 알겠다.
+- 그냥 그땐 삶이 그랬어요|mask+1||HJ 그냥이 아니잖아, 너한테.
+N 홍중은 오래 말을 고르는 사람처럼 한참 가만히 있었다.
+HJ 나는 그때 네가 나 싫어서 연락 끊은 줄 알았어. 내가 데뷔했다고 눈치 줘서 그런 줄 알았어.
+Y 아니에요. 절대로.
+HJ 그래, 아닌 거 알아. 이제.
+N 홍중은 헤드폰을 만지작거리다 웃었다. 눈가가 조금 붉었다.
+HJ 근데 윤호야, 하나만 더. 그날 밤에, 퇴출 소식 들은 날. 왜 나한테 안 왔어? 나 기숙사 앞에서 두 시간 기다렸어.
+N 윤호는 입을 열었다가 닫았다. 그 질문 앞에서는 웃음도 소용없었다.
+? 윤호는
+- 그건 아직 말할 수 없어요. 미안해요|honest+1,hongjung+1||HJ 그래. 말할 수 있을 때 해줘.
+- 그날은 아무 데도 갈 수 없었어요|hongjung+1||HJ 아무 데도. 그래.
+- 화제를 돌려 노래를 듣자고 한다|mask+1||HJ 네가 정 그렇다면.
+N 홍중은 스피커 볼륨을 올렸다. 데모 음원이 방에 번졌다. 가사 없이 멜로디만 있는 곡이었다. 윤호는 그 멜로디를 끝까지 들었다.
+HJ 이 곡 가이드, 네가 불러줄래? 한 번만.
+? 윤호는
+- 해 볼게요|dream+2,hongjung+1||HJ 진짜? 고마워.
+- 지금은 못 해요. 목이 닫혔어요|dream-1||HJ 괜찮아. 문은 열어 둘게.
+- 웃으며 농담으로 넘긴다|mask+1,night+1||HJ 그래, 농담 좋아하지.
+N 녹음실을 나서자 밤이었다. 윤호는 거리에서 오래 서 있다가, 휴대폰으로 가게에 지각 문자를 보냈다. 처음으로 웃는 얼굴을 만들지 않고 출근하는 날이었다.
+
+N 녹음실 문 앞에서 홍중이 말했다.
+HJ 오늘은 그냥 가도 돼.
+Y 형은요?
+HJ 나는 조금 더 있을 거야.
+Y 그럼 저도 조금 더 있을게요.
+N 홍중이 윤호를 바라봤다.
+HJ 그러면 노래 하나 더 들려줄게.
+N 둘은 한동안 같은 곡을 들었다.`];
+
+C[13]=['한강의 민기',`
+BG cut46
+N 일요일 저녁, 한강 둔치에는 자전거와 돗자리가 가득했다. 민기가 편의점 봉지를 들고 윤호 옆에 털썩 앉았다.
+MG 캔맥주. 네 거는 무알코올.
+Y 뭐야, 내 몫만 왜.
+MG 너 밤새 마시잖아. 쉬는 날은 쉬어.
+N 민기는 투덜대면서도 윤호의 캔을 먼저 따서 건넸다. 윤호는 웃음이 나오려는 걸 눌렀다.
+MG 야, 고등학교 때 여기 왔던 거 기억나냐. 너 노래한다고 난간에 올라가서.
+Y 올라간 건 너였잖아.
+MG 아니거든. 네가 올라가고 내가 밑에서 잡아줬거든.
+N 두 사람은 같은 기억을 서로 다르게 말했다. 그래도 한강의 불빛은 같은 색이었다.
+? 윤호는
+- 그래, 네 기억이 맞다고 해 줄게|mingi+1||MG 건방지게 져주지 마.
+- 아니야, 내 기억이 맞아|honest+1||MG 이 새끼 진짜.
+- 민기가 편하니까 말없이 웃는다|mingi+1||MG 웃지 마. 기분 나쁘게 잘생겨서.
+N 민기는 맥주를 한 모금 마시고 강을 바라보았다.
+MG 윤호야. 나 그날 이후로 한참 노래 안 들었다. 네 노래 생각나서.
+Y 무슨 날?
+MG 네가 연락 끊은 날.
+N 윤호는 입술을 깨물었다.
+? 윤호는
+- 그때 내가 너한테 얼마나 못났었는지 알아?|honest+1,mingi+1||MG 못났어도 친구는 친구거든.
+- 이제는 안 그럴게|mingi+1||MG 말뿐인 약속은 질린다. 행동으로 해.
+- 잠시 침묵한다|||MG 대답 안 해도 돼. 옆에만 있어.
+MG 근데 하나만 약속해. 일하다가 힘들면 나한테 먼저 연락해. 산이나 다른 놈한테 말고.
+Y 산이를 알아?
+MG 너 친구 중에 나만 알겠냐. 나도 얼마 전에 알았지. 네 번호 가진 놈들 단체방 만들까 생각 중이다.
+Y 하지 마.
+MG 농담이다. 반만.
+N 민기가 웃었다. 맹하고 날카로운 얼굴이 처음으로 풀려 있었다.
+BG street
+N 돌아가는 길, 지하철역 앞에서 민기가 갑자기 윤호의 어깨를 잡았다.
+MG 윤호야. 나 아직도 네 사진 가지고 있다. 열여덟 살 때 찍은 거. 이거 안 지울 거다.
+Y 지워 줘. 쪽팔려.
+MG 싫은데.
+N 민기는 지하철 계단을 뛰어 내려갔다. 윤호는 그 뒷모습이 완전히 사라질 때까지 서 있었다.
+
+N 민기는 집에 돌아가기 전 윤호에게 말했다.
+MG 다음 주에도 한강 올 거냐.
+Y 네가 부르면.
+MG 그럼 부른다.
+N 너무 당연하게 오가는 대화였다. 그래서 윤호는 더 오래 기억했다.`];
+
+C[14]=['산의 걱정',`
+BG alley
+N 3시, 앙코르 뒷골목. 윤호는 가게 문을 닫고 나왔다가 벽에 기대 서 있는 사람을 보고 멈췄다. 산이었다. 작업복 점퍼 차림이었다.
+Y 산아. 이 시간에 왜.
+SN 지나가다가.
+Y 물류센터가 여기 근처야?
+SN ...아니.
+N 산은 어색하게 시선을 피했다. 윤호는 웃음이 새는 걸 숨기지 않았다.
+SN 웃지 마. 걱정돼서 왔다.
+? 윤호는
+- 고마워. 근데 매일 이러면 곤란해|honest+1,san+1||SN 매일 안 와. 가끔.
+- 걱정은 고마운데, 나 괜찮아|mask+1,san-1||SN 괜찮다는 말, 블랙오션 때도 했다.
+- 같이 해장국이나 먹을래?|san+1||SN ...그래.
+BG convenience
+N 편의점 파라솔 아래에서 해장국 컵라면이 불어갔다. 산은 젓가락을 쥔 채 한참 말이 없었다.
+SN 그때 그 손님 기억나냐. 룸에서 네 팔 잡던.
+Y 기억나.
+SN 나는 그날 문 앞에서 소리 듣고 들어갔다. 네가 웃고 있더라. 맞고 있으면서 웃고 있었다.
+N 윤호는 컵라면 국물을 내려다보았다.
+SN 그게 제일 화났다. 도와달라고 안 하는 거. 웃으면서 견디는 거.
+? 윤호는
+- 도와달라고 하는 법을 몰랐어|honest+2,san+1||SN ...이제라도 알아라.
+- 그게 내 방식이었어|mask+1||SN 방식 같은 소리 하네.
+- 산이 덕분에 살았어. 진심이야|san+2||SN 진심이라고 말하지 마. 낯간지러워.
+N 산은 손목의 흉터를 손바닥으로 가렸다.
+SN 병원 갔다 온 뒤에 가게에서 날 쫓아냈다. 보상은 줬는데, 나는 그딴 돈 필요 없었다. 너 혼자 거기 남겨놓은 게 제일 걸렸다.
+Y 산아.
+SN 이제 와서 그만두라고 하는 게 이기적인 거 안다. 그래도 하고 싶은 말이다.
+? 윤호는
+- 생각해 볼게|honest+1,san+1,night-1||SN 생각만 해도 된다.
+- 지금은 그만둘 수 없어. 이유가 있어|mask+1,night+1||SN 이유는 뭔데.
+- 그만둘 수 있을지도 모르겠다|san+1,dream+1||SN 그럼 같이 방법 찾자.
+SN 아무튼 쉬는 날 하루만 줘. 밥은 내가 산다.
+Y 너 월급 얼마 받는데.
+SN 많이는 안 받는다. 그래도 밥은 산다.
+N 산이 컵라면 뚜껑을 정리하며 일어났다. 윤호는 문득 뒷모습이 어깨 넓은 아이 같다고 생각했다. 어른이 되어서도 어떤 사람은 그렇게 서 있다.
+
+N 산은 윤호가 집에 들어가는 걸 확인하고서야 돌아섰다.
+Y 산아.
+SN 왜.
+Y 오늘 와줘서 고마워.
+SN 다음엔 고맙다고 하지 마.
+Y 왜?
+SN 그냥 또 올 거니까.
+N 윤호는 대답 대신 웃었다.`];
+
+C[15]=['우영의 사연',`
+BG bar
+N 그날 밤 우영은 눈에 띄게 예민했다. 손님이 던진 농담에 대답이 늦었고, 컵을 내려놓는 소리가 거칠었다. 한 실장이 눈짓으로 윤호를 불렀다.
+HS 저 애 오늘 좀 봐줘라. 돈 얘기가 나오면 날카로워져.
+Y 돈 얘기요?
+HS 내 입으로 할 얘긴 아니다.
+BG rooftop
+N 새벽 2시, 가게 옥상에서 전화 통화 소리가 들렸다. 윤호는 문 앞에서 걸음을 멈췄다. 우영의 목소리였다.
+WY 엄마, 병원비는 내가 어떻게든 한다고. 아버지한테 연락 오면 받지 마. 내가 정리할 테니까.
+N 우영의 목소리는 평소의 거친 반말과 달랐다. 낮고 급했다.
+WY 동생 등록금은 이번 학기까지 냈어. 걱정 마. 아니야, 나 힘들지 않아.
+N 전화를 끊고 우영은 난간에 이마를 기댔다. 윤호는 발소리를 낼까 말까 잠깐 고민했다.
+? 윤호는
+- 일부러 발소리를 내고 나가 모른 척한다|mask+1,wooyoung+1||WY 뭐야, 언제부터 있었어.
+- 조용히 돌아가 못 들은 걸로 한다|honest+0,wooyoung+1||N 계단을 내려오는 윤호의 가슴이 내내 무거웠다.
+- 말없이 다가가 캔커피를 건넨다|wooyoung+2||WY ...들었냐.
+BG rooftop
+N 우영은 캔커피를 받지 않았다. 대신 담배 한 개비를 꺼냈다가 다시 넣었다.
+WY 들었으면 동정은 하지 마. 꺼져.
+Y 동정 아니야.
+WY 그럼 뭔데.
+Y 그냥 같은 가게 사람으로.
+N 우영은 코로 웃었다.
+WY 아버지가 빚 남기고 사라졌어. 엄마는 병원 다니고, 동생은 대학 다니고. 돈 안 되면 다 끝나. 이게 전부야.
+? 윤호는
+- 혼자 다 지려고 하지 마|honest+1,wooyoung+1||WY 안 지면 누가 지는데.
+- 힘들면 힘들다고 해도 돼|honest+1,wooyoung+1||WY 힘들다고 하면 돈이 생기냐.
+- 나도 비슷한 게 있어. 말은 못 해도|honest+1,wooyoung+2||WY ...너가?
+N 우영은 한참 말이 없었다. 그러다 갑자기 난간을 걷어찼다.
+WY 나 너 싫어. 알지?
+Y 알아.
+WY 근데 오늘 일은 말하지 마. 한 실장님한테도.
+Y 약속할게.
+WY 약속 같은 거 안 믿어. 근데... 고맙다.
+N 마지막 말은 거의 바람에 섞여 들렸다.
+BG backroom
+N 새벽, 대기실. 우영은 벌써 거울 앞에 앉아 있었다. 웃는 연습을 하고 있었다. 입꼬리를 올렸다 내렸다. 다시 올렸다 내렸다.
+Y 야.
+WY 뭐.
+Y 웃을 때 입꼬리부터 올리지 말고 눈부터 해 봐.
+WY 훈수 두냐?
+Y 에이스의 팁.
+N 우영은 눈썹을 찡그렸다가, 천천히 눈에 힘을 풀었다. 입꼬리가 따라 올라왔다.
+WY ...됐네.
+Y 그치.
+WY 그래도 네가 1위인 건 인정 안 해.
+N 윤호는 웃었다. 이번에는 꾸미지 않았다.
+
+N 우영은 문을 열기 전에 윤호를 돌아봤다.
+WY 오늘 있었던 얘기는 잊어.
+Y 네가 먼저 말했잖아.
+WY 그러니까 더 잊어.
+N 윤호는 고개를 끄덕였다.
+Y 대신 다음엔 네가 먼저 얘기해.
+N 우영이 피식 웃었다.`];
+
+C[16]=['일요일 새벽',`
+BG dawn
+N 일요일 새벽 6시. 윤호는 잠이 오지 않아 골목을 걷다가 검은 승용차 한 대가 낡은 요양원 앞에 서 있는 걸 보았다. 시동은 꺼져 있었다.
+N 요양원 현관에서 성화가 나왔다. 손에는 작은 쇼핑백이 들려 있었다. 평소의 검은 코트가 아니라 회색 점퍼였다.
+SH ...너 여기서 뭐 하냐.
+Y 산책이요. 형은요?
+SH 방문.
+N 성화는 윤호의 얼굴을 한참 보았다. 거짓말을 가려내는 눈이었다.
+SH 타라. 얘기해 줄 테니까.
+BG taxi
+N 차 안은 요양원 근처 골목에 세워져 있었다. 성화는 핸들에 손을 얹은 채 앞만 보았다.
+SH 순자 아줌마. 보육원 때 날 키워준 사람이다. 지금은 치매가 와서 날 못 알아본다.
+Y 매주 오세요?
+SH 일요일 새벽. 아무도 모르게.
+N 성화의 목소리는 평소처럼 건조했다. 하지만 핸들을 쥔 손등의 힘줄이 도드라졌다.
+? 윤호는
+- 저한테 말해줘서 고마워요, 형|honest+1,seonghwa+2||SH 말한 게 아니라, 들킨 거다.
+- 못 알아봐도 계속 가시는 거, 대단해요|seonghwa+2||SH 대단한 거 아니다. 그냥 간다.
+- 아무 말 안 하고 조용히 앉아 있는다|seonghwa+1||SH 시끄럽지 않아서 좋다.
+SH 보스가 날 거둬줬다. 열아홉 살에 등에 용 새길 때 인정받는 줄 알았다. 지금은 자랑스럽기도 하고, 후회되기도 하고.
+Y 어느 쪽이 더 커요?
+SH 날마다 다르다.
+N 성화는 처음으로 윤호를 바라보았다.
+SH 너는 왜 웃냐. 안 웃어도 되는데.
+Y 습관이에요.
+SH 습관은 고치면 되는 거다.
+? 윤호는
+- 형 앞에서는 안 웃어도 되겠네요|honest+1,seonghwa+1||SH 그렇게 하든가.
+- 고치는 법을 모르겠어요|honest+2,seonghwa+1||SH 나도 모른다. 같이 몰라보자.
+- 웃음이 나오는 걸 어떡해요|mask+1||SH ...그럼 웃어라.
+BG cut45
+CUT(38)
+N 차에서 내리자 성화는 골목 모퉁이의 길고양이에게 사료를 부어주고 있었다. 고양이는 익숙하게 성화의 발목에 몸을 비볐다.
+SH 이름은 없다. 이름 붙이면 정이 든다.
+Y 벌써 든 것 같은데요.
+SH 시끄럽다.
+N 윤호는 웃었다. 이번에는 웃음이 입보다 눈에서 먼저 올라왔다. 성화가 그걸 보았다.
+SH 방금 그건 괜찮네.
+Y 뭐가요?
+SH 웃는 거. 켠 게 아니라 그냥 나온 거.
+N 아침 해가 골목을 비췄다. 윤호는 처음으로 성화가 가게의 자산이 아니라 사람 한 사람으로 서 있는 걸 보았다.
+
+N 차에서 내리기 전 성화가 말했다.
+SH 일요일엔 시간 비워 둬.
+Y 무슨 일인데요?
+SH 그냥 같이 걷자.
+N 윤호는 잠깐 놀랐다가 웃었다.
+Y 알겠어요, 형.
+SH 그래. 그럼 됐다.`];
+
+C[17]=['여상의 부엌',`
+BG livingroom
+N 토요일 오후, 윤호는 여상의 집 부엌에 서 있었다. 여상이 칼질을 하고 윤호는 옆에서 양파를 까는 중이었다.
+YS 눈 매우면 안경 써. 내 거 빌려줄게.
+Y 안경 도수 안 맞아.
+YS 그래도 눈은 보호되잖아.
+N 여상은 서랍에서 안경을 꺼내 윤호의 얼굴에 씌웠다. 도수가 안 맞아 세상이 흔들렸다.
+Y 어지러워.
+YS 응. 예뻐.
+Y 안 예쁘잖아, 어지러운데.
+YS 어지러운 윤호가 예뻐.
+N 말도 안 되는 소리를 아무렇지 않게 하는 사람이었다. 윤호는 웃음이 새는 걸 막지 못했다.
+? 윤호는
+- 엉뚱하다고 핀잔을 준다|yeosang+1||YS 응. 칭찬으로 들을게.
+- 안경을 쓴 채 어지러운 얼굴로 연기한다|yeosang+2||YS 풉. 그거야, 그거.
+- 가만히 여상을 바라본다|yeosang+1||YS 왜?
+YS 윤호야, 우리 같이 살 때 기억나? 네가 새벽에 들어와서 몰래 라면 끓이던 거.
+Y 알고 있었어?
+YS 알았지. 냄새로. 계란 넣는 타이밍도 알았고. 네가 먼저 끓는 물에 넣고 면을 넣잖아.
+Y 그건 규칙이야.
+YS 규칙이 좋더라. 네가 하는 건 다.
+N 윤호의 가슴이 조용히 내려앉았다. 이 사람은 윤호가 거짓말을 한 줄 몰랐다. 아니, 어쩌면 알고도 말하지 않는 사람이었다.
+? 윤호는
+- 사실 새벽에 들어온 건 콜센터 때문이 아니었어|honest+2,yeosang+1||YS 응. 알아.//N 여상은 아무렇지 않게 양파를 계속 썰었다. 윤호는 그 말이 무슨 뜻인지 알 수 없었다.
+- 그때 라면이 제일 맛있었어|yeosang+1||YS 그치. 내가 끓일 때보다.
+- 말없이 양파를 썬다|mask+1||YS 눈 매우면 말해.
+YS 너 밤에 힘들어 보여서 가끔 걱정돼. 그런데 안 물어봤어. 물어보면 네가 거짓말을 해야 하잖아.
+N 윤호는 칼질을 멈췄다. 여상의 말이 마음속으로 무겁게 가라앉았다.
+Y 여상아.
+YS 응?
+Y 내가 거짓말하는 사람으로 보여?
+YS 아니, 말을 아끼는 사람.
+N 여상은 도마 위의 양파를 접시에 쓸어 담았다. 눈동자가 매워서인지 아닌지 붉었다.
+YS 말하고 싶어지면 해. 언제든. 한 시간 뒤에도, 10년 뒤에도.
+BG livingroom
+N 저녁상에는 김치찌개와 계란말이와 콩나물무침이 올라왔다. 두 사람은 말없이 먹었다. 어색한 침묵이 아니라, 오래 같이 산 사람들의 침묵이었다.
+N 설거지를 끝낸 여상이 컵을 뒤집어 놓았다. 윤호도 옆에서 컵을 뒤집었다. 둘이 동시에 쳐다보다가 같이 웃었다.
+`];
+
+C[18]=['누구와 시간을 보낼까',`
+BG room
+N 일요일 아침, 윤호는 달력을 들여다보았다. 이번 주는 가게가 쉬는 날이 하루 있었다. 그리고 그 하루를 누가 가져갈지 몰랐다.
+N 휴대폰에는 메시지가 여러 개 와 있었다. 홍중은 녹음실에 와서 노래를 불러 달라고 했고, 민기는 한강에서 치킨을 먹자고 했다. 산은 밥 사준다고 했고, 여상은 새로 만든 요리를 맛보라고 했다.
+N 그리고 밤에는 성화와 우영과 종호가 있었다.
+I 하루를 나눠야 하는데, 나눌 줄 몰라서 다 받고 싶다.
+? 낮에 윤호가 먼저 찾아간 사람은
+- 홍중의 녹음실|hongjung+2,dream+1||N 윤호는 지하 1층 계단을 내려갔다. 가이드 녹음 마이크 앞에 서자 목이 떨렸다. 홍중은 아무 말 없이 박자를 맞춰 주었다.
+- 한강의 민기|mingi+2||N 둔치에서 치킨 상자를 사이에 두고 두 사람은 중학교 때 이야기를 했다. 민기가 윤호의 어깨에 팔을 걸쳤다. 둘은 오래도록 그 자세로 있었다.
+- 산이 사준 점심|san+2||N 산은 고깃집에서 윤호의 접시에 고기를 쌓았다. 말은 투박했지만 젓가락은 끝까지 윤호 쪽이었다.
+- 여상의 새 집|yeosang+2||N 여상이 만든 파스타는 조금 짰고 윤호는 아무 말도 하지 않았다. 여상은 다 알면서 물을 한 잔 더 따라주었다.
+? 밤에 윤호가 마지막으로 마주친 사람은
+- 새벽 골목의 성화|seonghwa+2||N 성화는 아무 말 없이 윤호 옆에 서서 길고양이에게 사료를 주었다. 그 침묵이 하루의 피로를 풀어 주었다.
+- 가게 옥상의 우영|wooyoung+2||N 우영은 옥상 난간에 기대 있었다. 윤호가 캔커피를 건네자 말없이 받았다. 둘은 도시의 불빛을 보았다.
+- 3호 빌딩 관리실의 종호|jongho+2||N 종호는 관리실에서 컴퓨터로 장부를 정리하다가 윤호를 보고 의자를 하나 끌어다 놓았다. 아무 말도 없이 믹스커피를 타 주었다.
+- 아무도 안 만나고 혼자 방에 앉는다|honest+1,dream+1||N 윤호는 301호에서 혼자 연습화를 만지작거렸다. 낮의 소리들이 하나씩 가라앉았다.
+N 하루가 끝나갈 무렵, 윤호는 알았다. 이 일곱 명 중에 누군가는 자기 마음속에서 조금 더 크게 자리 잡고 있다는 것을. 그게 누구인지는 아직 자신에게도 묻지 못한 질문이었다.
+* PICK
+
+N 하루를 마치고 윤호는 휴대폰 화면을 오래 바라봤다.
+I 가까워지는 건 생각보다 조용한 일이었다.
+I 어려운 건 그 사람이 특별해졌다는 걸 인정하는 순간이었다.
+N 윤호는 결국 아무 메시지도 보내지 않고 화면을 껐다. 그래도 표정은 조금 풀려 있었다.`];
+
+C[19]=['겹치는 약속',`
+BG room
+N 토요일 낮, 윤호의 휴대폰에는 약속이 세 개나 겹쳐 있었다. 거절 한 번이면 정리될 일을, 윤호는 늘 거절하지 못했다. 거절은 상대가 원하는 말이 아니니까.
+I 다 갈 수 있다. 시간만 잘 짜면.
+BG street
+N 저녁이 되자 약속은 서로 밀리기 시작했다. 윤호는 택시 안에서 휴대폰을 번갈아 보며 사과 문자를 보냈다. 보낸 문자는 전부 같은 문장이었다. 미안, 조금만 늦을게.
+* FAVGO c
+# c_hongjung
+BG recording
+N 녹음실 문을 열었을 때는 약속 시간에서 40분이 지나 있었다. 홍중은 믹서 앞에서 가이드 녹음 파일을 조용히 듣고 있었다.
+HJ 왔네. 바쁜 거 알아. 괜찮아.
+N 홍중은 웃었다. 평소보다 한 박자 느린 웃음이었다. 윤호의 휴대폰이 또 울렸고, 홍중의 시선이 화면을 스쳤다가 돌아갔다.
+? 윤호는
+- 전화를 꺼 두고 홍중에게 집중한다|hongjung+1||HJ 나한테 맞춰 주려고 안 해도 돼. 그래도... 고맙다.
+- 전화를 받고 나가서 통화한다|hongjung-1||HJ 응, 받아. 급한 거겠지.
+> cj
+# c_seonghwa
+BG taxi
+N 약속 장소 앞에 검은 승용차가 서 있었다. 성화가 조수석 문을 열고 말했다.
+SH 타. 오늘 어디 가냐.
+Y 친구 만나러요.
+SH 누구.
+N 질문은 짧았다. 윤호는 처음으로 그 짧은 질문이 질투처럼 들렸다. 아니, 착각일 수도 있었다.
+? 윤호는
+- 솔직하게 누굴 만나는지 말한다|seonghwa+1,honest+1||SH ...알았다. 데려다주마.
+- 그냥 친구예요, 하고 얼버무린다|seonghwa-1,mask+1||SH 말하기 싫으면 안 해도 된다.
+> cj
+# c_yeosang
+BG livingroom
+N 여상은 현관 불을 켜 놓고 기다리고 있었다. 식탁 위의 찌개는 한 번 식었다가 다시 데워져 있었다.
+YS 왔어? 괜찮아. 오래 안 기다렸어.
+N 식탁 위의 수저는 두 벌이었고, 한 벌은 이미 씻은 흔적이 있었다. 먼저 먹지 않고 윤호 몫을 기다린 흔적이었다.
+? 윤호는
+- 미안해, 하고 진심으로 사과한다|yeosang+1,honest+1||YS 응, 괜찮아. 대신 다음엔 미리 말해줘.
+- 일이 있었어, 하고 둘러댄다|yeosang-1,mask+1||YS 응. 다음에 꼭 말해줘.
+> cj
+# c_san
+BG street
+N 약속 장소인 고깃집 앞에서 산이 팔짱을 낀 채 서 있었다. 시계를 두 번 보았다.
+SN 한 시간 10분.
+Y 미안, 일이 길어져서...
+SN 일, 일. 맨날 일.
+N 산의 목소리는 화가 났지만, 눈은 화보다 걱정에 가까웠다.
+? 윤호는
+- 변명하지 않고 사과한다|san+1,honest+1||SN ...들어가자. 고기 식는다.
+- 산이 이해해 줄 줄 알았어, 라고 말한다|san-1||SN 이해하는 사람은 화도 못 내냐.
+> cj
+# c_mingi
+BG hangang
+N 한강 벤치에서 민기는 캔맥주 세 개를 따놓고 있었다. 한 개는 이미 비어 있었다.
+MG 내 약속은 맨날 꼴찌더라.
+Y 아니야, 민기야.
+MG 맞거든. 다 알아. 네가 누구한테 달려가는지.
+N 민기는 시선을 강 쪽으로 돌렸다. 퉁명스러운 말 끝에 마른 자존심이 묻어 있었다.
+? 윤호는
+- 네 약속이 꼴찌인 적 없어. 지금 여기 왔잖아|mingi+1||MG ...닭살 돋는 소리 하네.
+- 다음엔 제일 먼저 잡을게. 너부터.|mingi+2,honest+1||MG ...그 말 취소하지 마라. 진짜로.
+- 어쩔 수 없었어, 라고 지친 얼굴로 말한다|mingi-1||MG 어쩔 수 없다는 말, 질린다.
+> cj
+# c_wooyoung
+BG bar
+N 가게에 도착하니 우영이 윤호의 첫 테이블을 대신 치르고 있었다. 이마에 땀이 맺혀 있었다.
+WY 늦었네. 에이스가.
+Y 미안. 땜빵해 줘서 고맙다.
+WY 땜빵 아니고 기회야. 네 자리, 내가 하루 더 앉았으면 뺏었을 텐데.
+N 우영은 어깨를 으쓱였지만 목소리는 평소만큼 날카롭지 않았다.
+? 윤호는
+- 그럼 다음엔 네가 하는 걸로 하자|wooyoung+1||WY 진심이냐. 그럼 나야 좋지.
+- 고마워, 하고 커피를 산다|wooyoung+1,honest+1||WY 커피 한 잔으로 때우려고?
+> cj
+# c_jongho
+BG building
+N 약속은 건물 복도의 누수 점검이었다. 종호는 사다리 위에서 천장을 보고 있었다. 윤호가 들어오자 고개를 돌리지 않았다.
+J 괜찮아요. 안 오셔도 되는 일이었어요.
+N 존댓말이 평소보다 반듯했다. 가장 거리가 먼 목소리였다.
+? 윤호는
+- 사다리를 잡아 준다|jongho+1||J ...고마워요. 한 단 더 올라갈게요.
+- 바빠서 미안해, 라고 변명한다|jongho-1,mask+1||J 바쁜 건 알아요.
+> cj
+# c_none
+BG street
+N 윤호는 택시에서 내려 휴대폰 화면을 한참 들여다보았다. 약속을 하나씩 취소했다. 취소 문자를 보낼 때마다 누구에게도 가지 못하는 사람이 되어갔다.
+N 가로등 아래 서서 윤호는 생각했다. 거절하지 못하는 것과 선택하지 못하는 것은 같은 걸까.
+? 윤호는
+- 오늘은 혼자 걷는다|honest+1||N 윤호는 천천히 걸었다. 발소리가 오랜만에 또렷했다.
+- 가게에 일찍 출근한다|night+1||N 가게 문이 열리고, 윤호의 얼굴에 웃음이 얹혔다.
+> cj
+# cj
+BG room_night
+N 새벽에 돌아온 301호는 조용했다. 윤호는 거울 앞에 앉아 입꼬리를 올렸다 내렸다. 웃을 때와 아닐 때의 차이가 점점 흐려졌다.
+I 약속은 지켜야 하는 거다. 그런데 누구의 약속을 먼저 지켜야 하는지는 아무도 안 가르쳐줬다.
+`];
+
+C[20]=['들켜버린 밤',`
+BG street
+N 새벽 1시, 앙코르 간판의 네온이 골목을 붉게 물들였다. 윤호는 손님을 택시에 태워 보내고 간판 아래에서 숨을 돌렸다.
+N 그때 골목 저편에서 사람들의 목소리가 들렸다. 윤호는 고개를 들었다.
+* FAVGO c
+# c_hongjung
+N 회식을 마친 신인 가수들 사이에서 안경 쓴 남자가 걸어오고 있었다. 홍중이었다. 홍중은 간판을 올려다보다가 시선을 아래로 내렸다. 윤호의 얼굴과 간판의 글씨가 한 줄에 놓였다.
+HJ 윤호야...?
+N 윤호는 웃지도, 웃음을 거두지도 못했다.
+? 윤호는
+- 사실대로 말한다. 이게 내 일이에요|honest+2,hongjung+1||HJ 알겠어. 말해 줘서 고마워. 놀란 건 사실인데.
+- 아니에요, 아르바이트예요|mask+2,hongjung-1||HJ ...그래.
+> cj
+# c_seonghwa
+N 골목 끝에 검은 승용차가 서 있었다. 성화가 운전석에서 내려 윤호 쪽으로 걸어왔다. 평소보다 걸음이 빨랐다.
+SH 들어가. 오늘은 밖에 나오지 마라.
+Y 무슨 일이에요?
+SH 보스가 와 있다. 네 얼굴 보면 곤란하다.
+N 성화는 윤호의 어깨를 잡아 안쪽으로 밀어 넣었다. 말은 차가웠지만 손은 조심스러웠다.
+? 윤호는
+- 형, 위험한 거예요?|seonghwa+1||SH 위험은 없다. 내가 있는 한.
+- 알겠어요. 조용히 들어갈게요|seonghwa+1,mask+1||SH ...잘했다.
+> cj
+# c_yeosang
+N 골목 끝에서 회식을 마친 직장인들이 걸어왔다. 맨 뒤의 후드티 입은 남자가 윤호를 향해 손을 흔들다가, 간판에 눈이 닿자 천천히 손을 내렸다. 여상이었다.
+YS 윤호야... 여기서 일해?
+N 목소리가 낮고 느렸다. 놀라서인지, 놀라지 않아서인지 알 수 없었다.
+Y 여상아. 이건...
+YS 콜센터라고 했지.
+? 윤호는
+- 미안해. 거짓말했어|honest+3,yeosang+1||YS 미안하다고 하지 마. 그냥 얘기해줘, 천천히.
+- 아르바이트야, 잠깐 도와주는 거야|mask+2,yeosang-2||YS ...그렇구나. 그렇다고 해줄게.
+> cj
+# c_san
+N 골목 끝에서 산이 가게 문 앞으로 걸어오고 있었다. 동혁이 문을 막아섰다.
+DH 안 됩니다. 예약제예요.
+SN 비켜라.
+Y 산아, 그만해.
+N 산은 윤호의 얼굴을 보고 멈췄다. 화가 난 눈이 점점 슬픈 눈으로 바뀌었다.
+? 윤호는
+- 밖으로 나가 산을 데리고 골목 끝으로 간다|san+1,honest+1||SN 그냥 얼굴이라도 보려고 온 거다.
+- 괜찮으니까 돌아가라고 말한다|san-1,mask+1||SN 괜찮지 않아. 너도 알잖아.
+> cj
+# c_mingi
+N 회식 2차 손님들 사이에서 민기가 투덜대며 걸어왔다. 윤호를 보자 걸음이 멈췄다. 동료 하나가 윤호를 가리켰다.
+@동료 저 사람 가게에서 유명해. 얼굴 좋아서 줄 선대.
+N 민기의 눈에서 불꽃이 튀었다.
+MG 입 닥쳐라. 저 새끼 내 친구다.
+? 윤호는
+- 민기 어깨를 잡고 말린다|mingi+1||MG 말리지 마. 참을 수가 없다.
+- 웃으며 괜찮다고 한다|mask+1,mingi-1||MG 괜찮긴 뭐가 괜찮아, 이 새끼야.
+> cj
+# c_wooyoung
+BG bar
+N 가게 안에서 순위 발표가 있었다. 한 달 매출 1위는 윤호, 2위는 우영. 우영은 아무 표정 없이 박수를 쳤다.
+WY 축하한다. 에이스.
+N 박수가 끝나자 우영은 대기실로 걸어갔다. 윤호는 따라갔다.
+? 윤호는
+- 다음 달은 네가 1위일 거야|wooyoung+1||WY 위로하지 마. 더 빡친다.
+- 순위는 의미 없어. 다 같이 먹고사는 건데|wooyoung-1||WY 먹고사는 문제니까 순위가 의미 있는 거야.
+> cj
+# c_jongho
+BG building
+N 윤호가 새벽에 현관을 열자, 종호는 대걸레를 든 채 서 있었다. 평소와 다른 눈빛이었다.
+J 형. 오늘은 물어볼게요. 무슨 일 하세요?
+N 거짓말을 싫어하는 사람의 질문이었다. 윤호는 거울 없이 표정을 거뒀다.
+Y 호스트야. 남자 손님 상대로.
+N 종호는 눈을 한 번 깜빡였다.
+? 종호의 반응을 기다리며 윤호는
+- 변명하지 않고 가만히 기다린다|jongho+2,honest+1||J 말해줘서 고마워요. 월세 안 밀리면 됐어요.
+- 이해 안 되면 나가라고 해도 돼, 라고 말한다|jongho+1,honest+1||J 그런 소리 하지 마요. 나가라는 말 안 해요.
+> cj
+# c_none
+N 윤호는 간판 아래에서 휴대폰을 꺼냈다. 누구에게도 연락하지 않았다. 직업을 알고 있는 사람, 모르는 사람, 알고도 모르는 척하는 사람이 머릿속에 줄지어 섰다.
+? 윤호는
+- 누구에게 말할지 정리해 본다|honest+1||N 정리된 이름은 한 사람도 없었다.
+- 아무 생각 하지 않는다|night+1||N 네온 불빛이 눈 속에서 번졌다.
+> cj
+# cj
+N 새벽이 천천히 밝아왔다. 윤호는 직업이 들키는 일이 이렇게 조용히 일어나는 것이라는 걸 처음 알았다.
+`];
+
+C[21]=['가면 속의 얼굴',`
+BG bar
+N 그날 밤 윤호는 열이 있었다. 점심부터 목이 아팠는데, 가게에 나와서는 괜찮은 척했다. 괜찮은 척하는 건 윤호의 가장 능숙한 일이었다.
+IM 윤호 씨, 얼굴이 안 좋은데요. 오늘은 얘기 안 해도 돼요.
+Y 아니에요, 대표님. 괜찮아요.
+N 임 대표는 한참 윤호를 보다가 지갑에서 현금 한 장을 꺼내 놓았다.
+IM 오늘은 이걸로 일찍 들어가세요. 내가 한 실장님한테 말해 놓을게요.
+N 윤호는 그 마음을 거절하지 못했다. 가게를 나서자 다리가 휘청거렸다.
+* FAVGO c
+# c_hongjung
+BG cut47
+N 윤호는 어느새 녹음실 문을 두드리고 있었다. 홍중이 문을 열었다가 윤호를 부축했다.
+HJ 야, 뜨겁다. 소파에 누워. 담요 가져올게.
+N 소파는 낡았지만 따뜻했다. 홍중은 이마에 물수건을 얹어 주며 낮게 말했다.
+HJ 열 날 때는 아무한테도 연락 안 하는 거, 여전하네.
+? 윤호는
+- 형한테는 오고 싶었어요|honest+2,hongjung+1||HJ ...그럼 됐다. 자.
+- 괜찮아요. 금방 일어날게요|mask+1||HJ 일어나지 마. 오늘은.
+> cj
+# c_seonghwa
+BG taxi
+N 가게 앞에 검은 승용차가 서 있었다. 성화는 윤호의 이마에 손등을 대고 인상을 썼다.
+SH 열난다. 타.
+N 병원 대신 성화는 자기 집으로 갔다. 정리된 거실, 아무것도 놓이지 않은 탁자. 냉장고에는 죽 포장 용기가 하나 있었다.
+SH 먹어라. 약은 저기.
+? 윤호는
+- 형, 왜 이렇게까지 해줘요?|seonghwa+1,honest+1||SH 관리다. ...아니, 모르겠다. 먹어.
+- 고마워요. 신세 질게요|seonghwa+1||SH 신세 아니다. 자라.
+> cj
+# c_yeosang
+BG livingroom
+N 현관문이 열리자 여상이 안경을 쓴 채 서 있었다. 윤호가 문자 한 통 보냈을 뿐인데 이미 이불까지 깔려 있었다.
+YS 열 나지. 죽 끓였어. 계란 넣었어, 네가 좋아하는 타이밍으로.
+N 여상은 윤호의 신발을 벗기고 양말까지 갈아 신겼다. 윤호는 그 손길이 너무 익숙해서 눈을 감았다.
+? 윤호는
+- 고마워, 라고 작게 말한다|yeosang+1||YS 응. 자.
+- 미안해, 계속 신세만 져서|yeosang+1,honest+1||YS 신세 아니야. 우리 집이잖아.
+> cj
+# c_san
+N 산은 어두운 골목에서 윤호를 발견하고 말없이 업었다.
+SN 가만있어라.
+Y 산아, 내려줘...
+SN 병원. 오늘은 안 놓는다.
+N 응급실 대기석에서 산은 윤호의 손목을 쥔 채 놓지 않았다. 수액이 한 방울씩 떨어졌다.
+CUT(40)
+? 윤호는
+- 이제 알겠다, 네가 왜 화났는지|san+2,honest+1||SN 알았으면 됐다. 자라.
+- 별일 아니야. 감기야|san-1,mask+1||SN 감기가 이 정도면 네가 문제지.
+> cj
+# c_mingi
+BG room
+N 윤호의 문 앞에서 민기가 서성이고 있었다. 한 손에는 약국 봉지, 한 손에는 편의점 죽.
+MG 아프다며. 한 실장이 연락 줬다. 놀란 거 아니고 그냥 온 거다.
+N 민기는 투덜대며 윤호의 이마를 짚었다. 손이 의외로 서툴렀다.
+? 윤호는
+- 고마워. 이번엔 진짜|mingi+1,honest+1||MG 닭살 돋으니까 약이나 먹어.
+- 오지 마라니까, 하고 웃는다|mingi-1,mask+1||MG 오지 말라고 하면 더 오는 거 알면서.
+> cj
+# c_wooyoung
+BG backroom
+N 대기실 의자에 앉아 있던 윤호는 눈앞이 흐려졌다. 우영이 약통을 윤호 무릎에 던졌다.
+WY 쓰러지면 내가 1위 되는 거 알지? 그래서 주는 거야. 먹어.
+Y 고맙다.
+WY 고맙긴. 빚이다. 갚아.
+N 말은 거칠었지만 물 한 컵이 따라 놓여 있었다.
+? 윤호는
+- 빚이면 갚을게, 약속|wooyoung+1,honest+1||WY 약속 안 믿는다고 했잖아.
+- 그래, 1위 줄게. 하하|wooyoung-1,mask+1||WY 장난으로 말하지 마.
+> cj
+# c_jongho
+BG building
+N 현관을 열자마자 종호가 윤호의 이마에 손을 얹었다.
+J 열나요. 안 되겠다, 우리 집으로 가요.
+N 관리실 겸 종호의 집은 좁았지만 온돌이 따뜻했다. 종호는 윤호를 눕히고 이불을 덮어 주었다. 물을 한 잔 갖다 놓고, 말없이 불을 낮췄다.
+? 윤호는
+- 가지 마, 하고 작게 말한다|jongho+2,honest+1||J 안 가요. 여기 있을게요.
+- 괜찮아, 혼자 있을게|jongho-1,mask+1||J 안 괜찮아 보이니까 그냥 있을게요.
+> cj
+# c_none
+BG room
+N 윤호는 혼자 301호로 올라가 이불을 뒤집어썼다. 열이 오르는 동안 아무에게도 전화하지 않았다. 문 앞에는 누군가 두고 간 죽과 약이 놓여 있었지만, 누가 두고 갔는지는 알 수 없었다.
+? 윤호는
+- 누가 놓았는지 확인하지 않고 먹는다|honest+1||N 죽은 따뜻했고, 손글씨는 없었다.
+- 포장지의 상호를 확인해 본다|||N 건물 근처 죽집의 이름이 적혀 있었다.
+> cj
+# cj
+N 열은 사흘 만에 내렸다. 윤호는 그동안 처음으로 웃는 얼굴을 한 번도 꺼내지 않았다는 걸 알았다. 아무도 그걸 지적하지 않았다.
+`];
+
+C[22]=['임 대표의 제안',`
+BG office
+N 임 대표가 윤호를 불러낸 곳은 가게가 아니라 그의 사무실이었다. 유리창 너머로 도시가 내려다보였다. 책상 위에 딸의 사진이 놓여 있었다.
+IM 윤호 씨. 내가 투자한 작은 기획사가 있어요. 대형은 아닌데, 성인 솔로를 키우고 싶다고 하더라고요. 노래 했다면서요.
+Y 대표님, 제가요?
+IM 스물여덟이 늦었다고 누가 정했어요. 내가 소개는 해줄 수 있어요. 선택은 윤호 씨 몫이고.
+N 윤호는 손가락 끝이 차가워지는 걸 느꼈다. 7년째 박스 맨 밑에 있던 연습화가 눈앞에 떠올랐다.
+BG bar
+N 같은 날 밤, 한 실장도 윤호를 대기실로 불렀다.
+HS 나 몇 년 뒤에 접는다. 가게를 맡아 줄 사람이 필요하다. 윤호야, 네가 해보지 않겠냐.
+N 두 개의 문이 동시에 열렸다. 한쪽은 7년 전에 닫힌 문, 한쪽은 지금 서 있는 문.
+* FAVGO c
+# c_hongjung
+BG recording
+N 윤호가 제안을 말하자 홍중은 믹서 위의 손을 멈췄다. 한참 뒤에야 입을 열었다.
+HJ 하고 싶으면 해. 나는 네 노래 먼저 들은 사람으로 만족해.
+N 말과 달리 홍중의 목소리는 가늘게 떨렸다.
+? 윤호는
+- 형이 같이 가 주면 해 볼 수 있을 것 같아요|hongjung+1,dream+1||HJ ...그건 반칙이다.
+- 아직 모르겠어요|honest+1||HJ 모르는 게 정직한 거야.
+> cj
+# c_seonghwa
+BG taxi
+N 성화는 운전대를 잡은 채 오래 말이 없었다.
+SH 가게를 맡으면 나랑 얽힌다. 안 얽히는 길이 있으면 그쪽이 낫다.
+Y 형은 제가 떠나길 바라세요?
+SH ...바라는 게 아니라, 놓아야 하는 거다.
+? 윤호는
+- 놓지 마세요, 형|seonghwa+2,night+1||SH 그런 말 하지 마라.
+- 형 말이 맞을지도 모르겠어요|seonghwa+1,dream+1||SH 알았으면 됐다.
+> cj
+# c_yeosang
+BG livingroom
+N 여상은 파를 썰다가 칼을 내려놓았다. 윤호가 모든 걸 말해 놓고도 여상은 놀라지 않았다.
+YS 윤호야, 노래 하고 싶었잖아. 그건 기억해.
+Y 그때 얘기잖아.
+YS 지금 얘기도 되던데.
+? 윤호는
+- 해 보고 싶어, 사실은|yeosang+1,dream+2,honest+1||YS 응. 해 봐.
+- 가게도 놓기 어려워|yeosang+1,night+1||YS 둘 다 어려워도 되지.
+> cj
+# c_san
+BG alley
+N 산은 윤호의 이야기를 끝까지 듣고 담벼락을 주먹으로 쳤다. 아프지 않은 정도로.
+SN 가게는 안 된다. 그건 안 된다.
+Y 산아.
+SN 노래는... 해라. 해 보고 싶으면. 내가 어떻게든 돕는다.
+? 윤호는
+- 같이 방법 찾아 줄 거지?|san+1,dream+1||SN 찾는다. 약속한다.
+- 한 실장님 제안도 가볍지 않아|san-1,night+1||SN 가볍지 않은 걸로 네가 망가지는 게 싫다.
+> cj
+# c_mingi
+BG hangang
+N 민기는 한강 난간에 팔을 걸치고 강을 보았다. 오랫동안 아무 말도 하지 않았다.
+MG 노래해라. 내가 첫 번째 관객 할게.
+Y 가게는?
+MG 그건 네 일이니까 네가 정해. 근데 나는 노래하는 네가 더 낫다.
+? 윤호는
+- 고마워. 마음이 한결 가볍다|mingi+1,dream+1||MG 가벼워지라고 한 말이다.
+- 아직 결정 못 하겠어|mingi+1,honest+1||MG 그것도 괜찮다.
+> cj
+# c_wooyoung
+BG rooftop
+N 우영은 옥상 난간에 기대어 윤호의 말을 들었다. 중간중간 콧방귀를 뀌었다.
+WY 기회가 두 개나 와? 재수도 좋네, 에이스는.
+Y 부럽냐.
+WY 부럽지. 근데 하나만 골라라. 둘 다 잡으려다 놓치는 꼴은 못 본다.
+? 윤호는
+- 너라면 어느 쪽 고를 거야?|wooyoung+1||WY 나 같으면 돈 되는 쪽. 근데 넌... 노래가 어울려.
+- 놓치는 꼴이 보고 싶은 거 아니야?|wooyoung-1||WY 아니거든. 진짜.
+> cj
+# c_jongho
+BG hall
+N 종호는 계단을 쓸던 빗자루를 멈추고 한참 윤호를 보았다.
+J 형이 하고 싶은 쪽이 맞아요. 근데 하나만 약속해 주세요.
+Y 뭔데.
+J 여기서 나가더라도, 한 번은 돌아와서 얼굴 보고 가요. 말 없이 가지 말고.
+? 윤호는
+- 약속할게, 종호야|jongho+2,honest+1||J 약속 안 지키면 월세 두 배예요.
+- 안 갈지도 몰라. 모르겠다|jongho+1||J 그럼 그 말도 고맙네요.
+> cj
+# c_none
+BG room_night
+N 윤호는 제안서와 가게 인수 서류를 한쪽씩 책상에 펼쳐 놓았다. 어느 쪽도 손이 가지 않았다.
+? 윤호는
+- 기획사 쪽 명함을 쥐어 본다|dream+2||N 명함 모서리가 손바닥에 파고들었다.
+- 한 실장의 서류를 읽어 본다|night+2||N 숫자들은 이상하게 안정적이었다.
+> cj
+# cj
+N 윤호는 그날 밤 잠들지 못했다. 한 번도 가져 본 적 없는 선택지 두 개가 천장에 겹쳐 있었다.
+`];
+
+C[23]=['사고',`
+BG street
+N 새벽 2시, 앙코르 앞에서 고성이 터졌다. 만취한 손님 하나가 간판을 걷어차며 소리를 질렀다. 동혁이 팔을 벌려 막아섰다.
+DH 손님, 돌아가세요. 영업 끝났습니다.
+N 취객이 병을 들었다. 윤호는 생각보다 몸이 먼저 움직였다.
+Y 동혁아, 비켜!
+N 병이 부서지는 소리와 함께 윤호의 손목에 뜨거운 것이 스쳤다. 조직의 사람들이 몰려나왔고, 취객은 곧 조용해졌다. 폭력의 장면은 윤호의 기억에서 끊겼다.
+* FAVGO c
+# c_hongjung
+BG backroom
+N 연락을 받고 달려온 홍중이 윤호의 붕대 감은 손목을 보았다. 숨을 한 번 들이쉬었다.
+HJ 손으로 노래한 적 없지. 그래도 다치면 안 되잖아.
+? 윤호는
+- 미안해요, 형. 놀라게 해서|hongjung+1||HJ 놀랐지. 그건 맞아.
+- 괜찮아요. 별일 아니에요|mask+1,hongjung-1||HJ 별일이야. 나한테는.
+> cj
+# c_seonghwa
+N 성화는 뒷정리를 끝내고 윤호의 손목을 말없이 잡았다. 붕대를 확인하고 나서야 숨을 내쉬었다.
+SH 앞으로 이런 일 있으면 먼저 나한테 말해라. 네가 막지 마.
+Y 동혁이가 위험했어요.
+SH 네가 위험한 건 괜찮냐.
+? 윤호는
+- 형 말대로 할게요|seonghwa+1||SH ...그래.
+- 사람을 두고 볼 수는 없잖아요|seonghwa+1,honest+1||SH 네 성격이 문제다. 그게 또 틀린 것도 아니라서.
+> cj
+# c_yeosang
+BG livingroom
+N 여상은 연락을 받자마자 택시를 타고 와 윤호를 데려갔다. 거실 소파에서 붕대 위에 새 거즈를 감아 주었다.
+YS 일하다 다친 거지? 무슨 일인지 말 안 해도 돼. 그냥 아프지 마.
+? 윤호는
+- 사실 가게에서 생긴 일이야|honest+2,yeosang+1||YS 응, 들었어. 알면서 물어보지 않은 거야.
+- 콜센터에서 다쳤다고 하긴 좀 그렇지, 하고 웃는다|mask+1,yeosang-1||YS 웃지 마. 웃지 마, 윤호야.
+> cj
+# c_san
+BG street
+N 산은 가게 앞에서 화를 참느라 어깨가 떨렸다. 윤호의 손목을 쥔 손이 너무 세서 윤호가 인상을 썼다.
+SN 이래서 그만두라고 했다.
+Y 산아, 아파.
+SN 나는 더 아팠다.
+? 윤호는
+- 이번엔 네 말이 맞았어, 산아|san+2,honest+1,night-1||SN ...됐다.
+- 이건 내 일이야. 걱정하지 마|san-2,mask+1||SN 걱정을 안 하게 해라, 그럼.
+> cj
+# c_mingi
+BG room
+N 민기는 한밤중에 달려와 문을 두드렸다. 붕대를 보자 욕이 튀어나왔다.
+MG 이 새끼가 진짜. 네 몸은 안 아끼냐.
+Y 안 아껴서 미안하다.
+MG 사과하지 마. 아껴. 그게 사과야.
+? 윤호는
+- 알았어. 아낄게|mingi+1,honest+1||MG 약속했다. 증인은 나다.
+- 웃어넘긴다|mingi-1,mask+1||MG 웃지 마라. 안 웃기다.
+> cj
+# c_wooyoung
+BG backroom
+N 우영은 윤호의 붕대를 보고 바로 말이 나오지 않았다. 뒤돌아서 서랍을 뒤졌다.
+WY 바보 아니야? 병은 피하는 거지. 맞으러 가는 게 아니라.
+Y 동혁이가...
+WY 알아. 근데 에이스는 몸이 자산이잖아. 그게 내 자리 위협하는 거야.
+? 윤호는
+- 걱정해 준 거 맞지?|wooyoung+1||WY 아니거든.
+- 네 말대로 몸을 아낄게|wooyoung+1,honest+1||WY 진작 그랬어야지.
+> cj
+# c_jongho
+BG building
+N 새벽에 돌아온 윤호의 붕대를 보고 종호는 말을 잃었다. 대걸레 손잡이를 쥔 손가락 마디가 하얗게 변했다.
+J 누가 그랬어요.
+Y 취객이야. 별거 아니야.
+J 별거 아니면 왜 이 시간에 이렇게 하고 와요.
+N 종호는 윤호의 손목을 조심스럽게 들어 올렸다. 목소리가 낮고 갈라졌다.
+? 윤호는
+- 괜찮아. 내가 막지 않았으면 동혁이가 다쳤어|jongho+1||J ...그래도 형이 다치는 건 싫어요.
+- 걱정해 줘서 고마워, 종호야|jongho+2,honest+1||J 걱정 아니라고... 아니, 맞아요. 걱정이에요.
+> cj
+# c_none
+BG room_night
+N 혼자 붕대를 갈면서 윤호는 문득 알았다. 이 일이 없었다면 누구에게도 연락하지 않았을 거라는 걸. 연락할 사람은 많은데 연락할 사람이 없었다.
+? 윤호는
+- 일단 오늘은 푹 쉰다|honest+1||N 붕대 위로 손을 올려놓고 눈을 감았다.
+- 가게에 휴가를 신청한다|night-1,dream+1||N 휴가 문자를 쓰다가 몇 번이나 지웠다.
+> cj
+# cj
+N 손목의 흉터는 가늘고 짧았다. 윤호는 붕대를 풀면서 처음으로 몸이 자기 것이라는 걸 느꼈다.
+`];
+
+C[24]=['그날 밤의 진실',`
+BG cut42
+N 윤호는 박스 맨 밑에서 연습화를 꺼냈다. 7년 만에 처음으로 끈을 풀어 신발 속을 만져 보았다. 안쪽에 연필로 쓴 글씨가 희미하게 남아 있었다. '정윤호, 하고 싶은 것 하자.'
+I 이건 열여섯 살의 내가 쓴 거다.
+N 그날 밤의 기억이 천천히 올라왔다. 스물한 살 겨울, 연습생 퇴출 통보를 받던 날.
+N 사무실에서 나이가 많다는 이유로 계약이 끝났다는 말을 들었다. 윤호는 웃으며 알겠다고 했다. 처음으로 웃음을 가장한 날이었다.
+BG room_night
+* FAVGO c
+# c_hongjung
+BG recording
+N 윤호는 녹음실 소파에 앉아 홍중에게 말을 꺼냈다.
+Y 그날 밤 형이 기숙사 앞에서 기다린 거, 알고 있었어요. 건너편 골목에서 봤어요.
+HJ ...
+Y 가려고 했는데, 못 갔어요. 형은 데뷔했고 저는 잘렸고, 어떤 얼굴로 가야 할지 몰랐어요. 그날 한강 난간 앞에서 밤새 서 있었어요.
+N 홍중의 눈이 붉어졌다. 안경을 벗어 손등으로 눈가를 눌렀다.
+HJ 나는 그날 네가 오기를 두 시간 기다렸다. 그리고 내가 뭘 잘못했는지 한참 생각했다.
+? 윤호는
+- 형은 잘못한 거 없어요. 제가 도망친 거예요|honest+2,hongjung+2||HJ 이제 도망 안 쳐도 돼.
+- 미안해요, 형. 정말로|honest+1,hongjung+1||HJ 사과는 한 번이면 돼. 받았다.
+> cj
+# c_seonghwa
+BG taxi
+N 성화의 차 안에서 윤호는 오래 말하지 않다가 입을 열었다.
+Y 형, 저 연습생이었어요. 열네 살부터 6년. 스물한 살에 나이 많다고 잘렸어요.
+SH ...
+Y 그날 밤 웃으면서 인사하고 나왔어요. 그게 처음 억지로 웃은 거예요.
+N 성화는 핸들에 이마를 대고 한참 숨을 골랐다.
+SH 나한테 말해 줘서 고맙다는 말은 못 하겠다. 나는 그런 말에 약해서.
+? 윤호는
+- 그냥 들어주기만 해도 돼요, 형|honest+1,seonghwa+2||SH 들었다. 끝까지.
+- 이 얘기 처음 해요|honest+2,seonghwa+1||SH ...그럼 내가 처음이냐.
+> cj
+# c_yeosang
+BG livingroom
+N 여상의 거실에서 윤호는 이불을 끌어안고 앉아 말을 시작했다. 여상은 말없이 따뜻한 보리차를 따라 주었다.
+Y 나 사실 콜센터 다닌 적 없어. 호스트로 일해. 지금도.
+YS 응. 알아.
+Y 알았어?
+YS 같이 살 때 새벽에 들어오는 냄새로. 향수 냄새랑 술 냄새. 근데 안 물었어. 네가 말하고 싶어질 때까지.
+N 윤호는 입을 막았다. 여상은 윤호의 어깨를 가볍게 두드렸다.
+? 윤호는
+- 미안해. 계속 속여서|honest+2,yeosang+2||YS 속이는 거 아니었잖아. 말을 아낀 거지.
+- 연습생 때 얘기도 해도 돼?|honest+2,yeosang+1||YS 응. 오늘 밤 다 해도 돼.
+> cj
+# c_san
+BG alley
+N 산은 윤호의 말을 듣는 내내 주먹을 쥐었다 폈다. 윤호가 이야기를 끝내자 한참 침묵했다.
+SN 그걸 혼자 짊어지고 여기까지 왔냐.
+Y 습관이 됐어.
+SN 습관은 고치는 거다. 나랑 같이.
+? 윤호는
+- 같이 고치자, 산아|honest+1,san+2||SN 약속이다.
+- 고치기엔 너무 오래됐어|san+1,mask+1||SN 오래됐다고 못 고치는 건 아니다.
+> cj
+# c_mingi
+BG hangang
+N 한강 둔치에서 윤호는 민기에게 모든 걸 털어놓았다. 민기는 말없이 캔맥주를 땄다가 내려놓았다.
+MG 야. 그날 내가 너희 집 찾아갔다. 아무도 없더라. 그때 네가 한강에 있었다는 말이지.
+Y 응.
+MG 개새끼야. 연락을 했어야지.
+N 민기가 윤호의 머리를 헝클어뜨렸다. 거칠었지만 떨리고 있었다.
+? 윤호는
+- 이제 다 말했어. 미안하다, 민기야|honest+2,mingi+2||MG 지랄하네. 이제 안 놓는다.
+- 네가 있어서 오늘 말할 수 있는 거야|mingi+2||MG ...그 말은 비겁하게 효과 있네.
+> cj
+# c_wooyoung
+BG rooftop
+N 우영은 옥상에서 윤호의 이야기를 듣다가 중간에 담배를 껐다.
+WY 나이가 많다고 잘렸다고? 스물한 살이?
+Y 응.
+WY 그 새끼들 눈 삐었네. 너 내가 본 사람 중에 제일 눈에 띄는데.
+N 우영은 말을 해 놓고 스스로 인상을 썼다. 귀가 붉었다.
+? 윤호는
+- 칭찬이야?|wooyoung+1||WY 아니거든.
+- 고맙다. 처음으로 들은 말이야|wooyoung+2,honest+1||WY 처음이냐. 그럼 앞으로 내가 자주 해줄게. 질리게.
+> cj
+# c_jongho
+BG building
+N 관리실 밥상에 마주 앉아 윤호는 입을 열었다. 종호는 수저를 내려놓고 끝까지 들었다.
+J 형. 연습화 아직 있어요?
+Y 응. 박스 맨 밑에.
+J 꺼내 놓으세요. 방에 두고 매일 보세요. 박스 안에 두면 없는 거랑 같아요.
+N 종호의 눈에 눈물이 맺혔다가 사라졌다.
+? 윤호는
+- 그렇게 해 볼게, 종호야|honest+1,jongho+2||J 고마워요. 말해줘서.
+- 보고 있으면 아파서 못 해|jongho+1||J 아파야 지나가는 것도 있어요.
+> cj
+# c_none
+BG hangang
+N 윤호는 한강 난간 앞에 혼자 서서 그날 밤을 되짚었다. 누구에게도 말하지 못한 이야기가 입 안에서 맴돌았다. 한 사람씩 떠올렸지만 어느 쪽에도 마음이 기울지 않았다.
+? 윤호는
+- 일기장에라도 적어 본다|honest+2||N 휴대폰 메모장에 처음으로 그날을 적었다.
+- 입을 다물고 돌아선다|mask+1||N 난간에서 손을 뗐다. 차가웠다.
+> cj
+# cj
+N 이야기를 다 하고 나자 새벽이 밝아 있었다. 윤호는 가벼워진 어깨를 의식하지 못한 채, 연습화를 방 한가운데에 놓았다.
+`];
+
+C[25]=['계약서와 사직서',`
+BG office
+N 한 실장은 서류철 두 개를 윤호 앞에 내려놓았다. 하나는 가게 운영 인수 계약서, 하나는 비어 있는 사직서였다.
+HS 둘 다 네 거다. 어느 쪽도 지금 안 써도 된다. 대신 이번 달 안에는 정해라.
+Y 실장님은 제가 어느 쪽이기를 바라세요?
+HS 나는 바라는 게 없다. 네가 다치지 않는 쪽이면 된다.
+N 한 실장은 처음으로 윤호의 어깨를 가볍게 두드렸다. 몇 년 만에 닿은 손이었다.
+? 윤호는
+- 사직서를 집어 든다|dream+2,night-1||HS 그래. 네가 정한 거니까.
+- 인수 계약서를 집어 든다|night+2,dream-1||HS 부담 갖지 마라. 언제든 바꿔도 된다.
+- 둘 다 두고 일어난다|honest+1||HS 시간 줄게. 천천히 생각해.
+BG street
+N 가게를 나서자 새벽 공기가 차가웠다. 윤호는 휴대폰을 꺼냈다. 연락할 사람은 많았다. 하지만 이 말을 먼저 하고 싶은 사람은 한 사람이었다.
+* FAVGO c
+# c_hongjung
+BG recording
+HJ 사직서를 썼든 안 썼든 내 대답은 같아. 네 노래는 내가 기다릴게.
+? 윤호는
+- 형, 같이 해줘요|hongjung+1||HJ 그럼 첫 앨범 프로듀서는 내가 한다.
+- 아직 마음이 반반이에요|honest+1||HJ 반반이면 반은 이미 온 거야.
+> cj
+# c_seonghwa
+BG taxi
+SH 가게를 맡든 떠나든 조직이 널 놓아줄지는 내가 정한다. 걱정 마라.
+? 윤호는
+- 형이 감당해야 하는 거 아니에요?|seonghwa+1,honest+1||SH 감당은 내 몫이다. 네 몫은 선택이고.
+- 형한테 폐 끼치기 싫어요|seonghwa-1||SH 폐가 아니라고 몇 번 말해야 알겠냐.
+> cj
+# c_yeosang
+BG livingroom
+YS 어느 쪽이든 밥은 먹자. 결정은 배부른 다음에 하는 거야.
+? 윤호는
+- 응, 같이 먹자|yeosang+1||YS 미역국 끓였어. 윤호야, 어느 쪽이든 오늘은 쉬어.
+- 결정부터 하고 먹을래|honest+1||YS 그럼 먹으면서 정해도 돼.
+> cj
+# c_san
+BG alley
+SN 사직서 쓰면 내가 돕는다. 이력서 쓰는 것부터. 안 쓰면... 그것도 네 선택이다. 근데 화는 낼 거다.
+? 윤호는
+- 산이 화내는 건 괜찮아|san+1||SN 괜찮다니 다행이다.
+- 사직서 쓸게. 도와줘|san+2,dream+1||SN 내일부터 시작이다.
+> cj
+# c_mingi
+BG hangang
+MG 어느 쪽이든 나한테 먼저 말해. 알았지. 이번엔 내가 제일 먼저다.
+? 윤호는
+- 응. 네가 제일 먼저야|mingi+1||MG 약속이다.
+- 산이한테도 말해야 하는데|mingi-1||MG ...그건 두 번째다.
+> cj
+# c_wooyoung
+BG rooftop
+WY 가게 맡아라, 에이스. 그럼 내가 쫓아낼 기회가 생기잖아.
+? 윤호는
+- 쫓아낼 자신 있어?|wooyoung+1||WY 있지. 근데 안 쫓아낼 것 같기도 하다.
+- 너 말고 다른 사람한테도 물어볼게|wooyoung-1||WY 마음대로 해. 나 안 서운하다.
+> cj
+# c_jongho
+BG building
+J 어느 쪽이든 월세는 제날에 내세요. 그리고 방은 비우지 마요.
+? 윤호는
+- 방은 안 비울게|jongho+2||J 그 말만 들어도 충분해요.
+- 이사 갈 수도 있어|jongho-1,honest+1||J ...알았어요.
+> cj
+# c_none
+BG room_night
+N 윤호는 서류 두 개를 머리맡에 놓고 누웠다. 어느 쪽도 쓰지 못했다. 이 선택에는 누구에게도 먼저 말하고 싶은 사람이 없었다는 게, 문득 쓸쓸했다.
+? 윤호는
+- 연락할 사람을 한 사람씩 떠올려 본다|honest+1||N 이름은 일곱이었다.
+- 눈을 감는다|||N 잠은 오지 않았다.
+> cj
+# cj
+N 윤호는 이틀 동안 서류를 가방에 넣어 다녔다. 누구에게도 꺼내 보이지 않았다.
+`];
+
+C[26]=['마지막 선택',`
+BG room_night
+N 한 달이 흘렀다. 윤호는 거울 앞에 서서 웃었다 거뒀다. 이제는 어느 쪽도 어색하지 않았다. 필요한 순간에 쓰는 도구가 되었다.
+N 휴대폰에는 메시지가 여럿 와 있었다. 일곱 명의 이름이 위아래로 줄지었다. 윤호는 한참 화면을 쓸어내렸다.
+I 누군가 한 사람을 고른다는 건, 나머지에게 등을 보이는 일일지도 모른다.
+BG rooftop
+N 옥상에서 도시를 내려다보며 윤호는 오늘이 마지막 고민이라고 생각했다. 내일부터는 방향을 정해야 한다.
+* FAVGO c
+# c_hongjung
+N 휴대폰이 울렸다. 홍중이었다. 홍중은 가이드 녹음 파일 하나를 보내왔다. 윤호의 목소리였다.
+@홍중 이거 들어봐. 네 목소리 이렇게 좋았다.
+N 윤호는 이어폰을 꽂았다. 목소리가 낯설었고, 그 낯섦이 가슴을 쳤다.
+? 윤호는
+- 홍중 형과 가 보고 싶다|hongjung+1||N 손끝이 떨렸다.
+- 아직 못 정하겠다|||N 이어폰을 뺐다.
+> cj
+# c_seonghwa
+N 성화의 문자는 짧았다.
+@성화 오늘 일요일이다. 나올래.
+N 윤호는 새벽 요양원 앞 골목을 떠올렸다. 길고양이와 회색 점퍼의 성화.
+? 윤호는
+- 성화 형과 가 보고 싶다|seonghwa+1||N 대답은 가볍게 나왔다.
+- 아직 못 정하겠다|||N 답장을 쓰다 말았다.
+> cj
+# c_yeosang
+N 여상의 문자에는 사진이 한 장 붙어 있었다. 식탁 위에 뒤집어 놓은 컵 두 개.
+@여상 컵 두 개가 됐어. 너 오면 쓰려고.
+N 윤호는 웃다가 울 뻔했다.
+? 윤호는
+- 여상이와 가 보고 싶다|yeosang+1||N 가슴이 따뜻해졌다.
+- 아직 못 정하겠다|||N 사진을 오래 들여다보았다.
+> cj
+# c_san
+N 산은 문자 대신 전화를 걸었다.
+SN 오늘 뭐 먹고 싶냐.
+Y 아무거나.
+SN 아무거나는 없다. 정해라.
+N 산의 목소리에는 변하지 않은 투박함이 있었다.
+? 윤호는
+- 산이와 가 보고 싶다|san+1||N 말문이 열렸다.
+- 아직 못 정하겠다|||N 대답이 늦어졌다.
+> cj
+# c_mingi
+N 민기가 문자를 보냈다.
+@민기 나 오늘 회식 안 간다. 한강 나와.
+N 윤호는 문득 민기가 아주 오래 같은 자리에 서 있었다는 걸 알았다.
+? 윤호는
+- 민기와 가 보고 싶다|mingi+1||N 마음이 가벼워졌다.
+- 아직 못 정하겠다|||N 휴대폰을 엎어 놓았다.
+> cj
+# c_wooyoung
+N 우영은 옥상 문을 열고 들어와 윤호 옆에 섰다.
+WY 야. 나 오늘 처음으로 너한테 지고 싶더라.
+Y 무슨 소리야.
+WY 몰라. 그냥. 지고 싶더라.
+? 윤호는
+- 우영이와 가 보고 싶다|wooyoung+1||N 말없이 우영 옆에 섰다.
+- 아직 못 정하겠다|||N 우영의 눈을 피했다.
+> cj
+# c_jongho
+N 종호가 옥상 문을 열고 올라왔다. 손에는 믹스커피 두 잔이 있었다.
+J 형. 여기 있을 줄 알았어요.
+N 종호는 커피 한 잔을 윤호에게 내밀었다. 손이 조금 떨렸다.
+? 윤호는
+- 종호와 가 보고 싶다|jongho+1||N 커피를 받아 들었다.
+- 아직 못 정하겠다|||N 커피를 만지작거렸다.
+> cj
+# c_none
+N 윤호는 누구에게도 답장하지 않았다. 일곱 개의 불빛이 화면에서 차례로 꺼졌다.
+? 윤호는
+- 정리하는 시간을 갖는다|honest+1||N 오래 앉아 있었다.
+- 다 같이 만나자고 단체로 문자를 보낸다|mask+1||N 문자를 보내고 한참을 후회했다.
+> cj
+# cj
+? 윤호의 마음은
+- 이 사람과 가 보겠다|||N 윤호는 심호흡을 했다. 처음으로 한 방향을 정했다.
+- 아직 못 정하겠다||retreat|N 윤호는 마음을 접었다. 결정은 미뤄졌다.
+N 도시의 불빛이 멀리서 흔들렸다. 어느 쪽이든, 내일은 오고 있었다.
+`];
+
+C[27]=['갈림길',`
+* ROUTE
+BG street
+N 이른 아침, 윤호는 골목을 걸었다. 어제의 선택이 오늘의 걸음 속에 섞여 있었다.
+* FAVGO c
+# c_hongjung
+BG recording
+HJ 윤호야, 오늘부터 정식 가이드 녹음 들어가자. 할 수 있겠어?
+Y 해 볼게요, 형.
+N 홍중은 마이크 높이를 윤호에게 맞추어 내렸다. 둘 사이에는 아무것도 확정되지 않았지만, 마이크 하나만큼의 거리가 있었다.
+> cj
+# c_seonghwa
+BG taxi
+SH 가게 일 정리는 내가 한다. 너는 서두르지 마라.
+Y 형은 괜찮아요?
+SH 괜찮지 않아도 한다. 그게 내 일이다.
+N 성화는 평소보다 낮은 목소리로 덧붙였다. 일요일에 같이 갈래, 하고.
+> cj
+# c_yeosang
+BG livingroom
+YS 오늘은 일찍 와. 같이 장 보러 가자. 계란이 세일이야.
+Y 계란이 세일이면 가야지.
+N 여상은 대수롭지 않게 웃었다. 둘의 관계에는 아직 이름이 없었다. 이름이 필요한 것인지도 몰랐다.
+> cj
+# c_san
+BG street
+SN 이력서 쓰는 거부터 시작한다. 오늘 저녁에 와라. 내가 PC 빌려줄게.
+Y 산아, 진짜 도와줄 거야?
+SN 도와준다고 했다.
+N 산의 투박한 말투가 오늘따라 믿음직했다.
+> cj
+# c_mingi
+BG hangang
+MG 야, 오늘은 내가 산다. 대신 앞으로 니 소식은 내가 제일 먼저 알아야 한다.
+Y 알겠어. 내가 먼저 연락할게.
+MG 말뿐이면 안 된다.
+N 민기의 말은 늘 퉁명스러웠지만, 윤호는 그 속의 온도를 오래 알고 있었다.
+> cj
+# c_wooyoung
+BG bar
+WY 이번 달 순위, 내가 1위 먹을 거다. 너 봐주면 안 된다.
+Y 봐줄 생각 없어.
+WY 나도 봐줄 생각 없어. 그러니까 제대로 하자.
+N 우영의 눈빛이 오랜만에 곧게 윤호를 향했다.
+> cj
+# c_jongho
+BG building
+J 301호 계약, 연장할래요?
+Y 응. 오래 있을 것 같아.
+J ...그럼 도배 새로 할게요. 형 취향 말해요.
+N 종호는 장부를 덮으며 시선을 돌렸다. 귀가 붉었다.
+> cj
+# c_none
+BG street
+N 윤호는 한 사람에게 가지 않기로 했다. 누구도 놓지 않았고 누구도 붙잡지 않았다. 그런 선택도 선택이라고, 윤호는 스스로에게 말했다.
+> cj
+# cj
+N 이야기는 여기서 갈라졌다. 윤호가 어느 길을 걷게 될지는, 이제 윤호가 정하는 일이었다.
+`];
+
+/* ===== 홍중 ===== */
+RTT[28].hongjung='녹음실의 불빛';RTT[29].hongjung='열려 있는 문';RTT[30].hongjung='다시, 처음부터';
+RT[28].hongjung=`
+BG recording
+N 녹음실에는 3시가 되도록 불이 켜져 있었다. 윤호는 헤드폰을 쓰고 마이크 앞에 서 있었다. 모니터 너머 홍중이 손가락으로 박자를 짚어 주었다.
+HJ 숨은 마지막에 쉬어. 네 숨소리까지 가사야.
+N 윤호는 노래했다. 7년 만에 처음으로 끝까지 부른 곡이었다. 녹음이 끝나자 부스 안에는 숨소리만 남았다.
+? 윤호는
+- 어땠는지 홍중에게 묻는다|rs+1,hongjung+1||HJ 좋았어. 진짜로. 근데 잠깐만, 나 울 것 같으니까 보지 마.
+- 괜찮았냐고 웃으며 장난을 친다|rs-1,mask+1||HJ 장난 아니고 진짜 좋았어. 장난으로 받아치지 마.
+- 잠시 아무 말도 하지 않는다|rs+2||HJ ...고마워. 불러줘서.
+BG street
+N 둘은 새벽 거리를 나란히 걸었다. 가로등 아래에서 홍중이 발을 멈췄다.
+HJ 윤호야. 나 아직 너한테 말 못 한 게 있어. 데뷔하고 한 달 뒤에 그룹 해체 얘기가 나왔을 때, 제일 먼저 네 생각이 났어. 네가 어떻게 견뎠을지.
+N 윤호는 입술을 깨물었다.
+? 윤호는
+- 그때 형도 힘들었잖아요. 저만 힘든 줄 알았어요|rs+2,honest+1||HJ 서로 모르고 각자 힘들었네. 이제라도 알았으니까.
+- 형은 그래도 데뷔라도 했잖아요|rs-1||HJ ...그래. 그건 맞아.
+- 말없이 홍중의 소매를 잡는다|rs+1,hongjung+1||HJ 소매 놓지 마. 오늘은.
+> END
+`;
+RT[29].hongjung=`
+BG recording
+N 앨범 마무리 작업이 이어졌다. 윤호는 낮에는 녹음, 밤에는 가게라는 두 개의 생활을 하고 있었다. 홍중은 그 사이에서 항상 먼저 문을 열어 놓았다.
+HJ 가게 쉬는 날 하루만 줘. 같이 밥 먹자.
+BG hangang
+N 한강 둔치. 홍중은 편의점 샌드위치와 캔커피 두 개를 들고 있었다. 눈앞의 강이 어두웠다.
+HJ 나 윤호 좋아해. 그때부터. 연습생 때부터 좋아했는지는 나도 몰라. 네가 연락 끊은 뒤에야 알았어.
+N 윤호는 샌드위치를 쥔 손을 멈췄다.
+? 윤호는
+- 저도요. 형 번호를 못 지웠어요|rs+2,honest+2||HJ ...그럼 됐다. 그럼 됐어.
+- 형, 제가 괜찮은 사람인지 모르겠어요|rs+1,honest+1||HJ 괜찮은 사람이 아니라 윤호면 돼.
+- 웃으며 농담으로 넘기려 한다|rs-2,mask+1||HJ 농담 아니야. 오늘은 피하지 말아줘.
+N 홍중이 안경을 벗었다. 얼굴이 가까웠다.
+? 윤호는
+- 먼저 홍중의 손을 잡는다|rs+2||N 손이 따뜻했다. 오래전 연습실에서 처음 잡았던 온도와 같았다.
+CUT(39)
+- 천천히 하자고 말한다|rs+1||HJ 천천히. 좋아. 네 속도로.
+- 눈을 피한다|rs-1||HJ 괜찮아. 기다릴게.
+N 두 사람은 한참 말 없이 강을 보았다. 이름이 필요한 시간이 천천히 흘러갔다.
+> END
+`;
+RT[30].hongjung=`
+BG stage
+N 작은 공연장 무대 뒤편에서 윤호는 마이크를 쥐고 서 있었다. 첫 솔로 무대. 객석 맨 뒷줄에 홍중이 서 있었다.
+N 무대 위 조명이 켜지고, 윤호는 처음으로 꾸밈없이 웃었다.
+? 마지막 노래가 끝나고 윤호는
+- 객석의 홍중을 똑바로 바라본다|rs+2||N 눈이 마주쳤다.
+- 인사를 하고 서둘러 내려온다|rs+0||N 무대 뒤에서 숨을 골랐다.
+- 두 사람의 이야기를 노래에 담았다고 말한다|rs+1||N 객석이 조용해졌다.
+% rs 8 t
+% rs 4 g
+E 김홍중 루트/그때처럼|BAD END — 그때처럼|윤호는 무대에 섰고 홍중은 객석에 있었다. 두 사람은 끝내 같은 자리에 서지 못했다.||서로의 마음을 말하지 못한 채 시간이 흘렀다. 홍중은 신인 작업에 몰두했고 윤호는 가게를 오갔다.||오랜 시간이 지나도 두 사람은 가끔 서로의 번호를 눌러 보았다. 통화 버튼은 누르지 못했다.
+# t
+E 김홍중 루트/다시 시작|TRUE END — 다시 시작|공연이 끝난 뒤 녹음실에서 홍중은 윤호의 연습화를 꺼내 들었다. 낡은 밑창에 새 밑창을 덧댄 신발이었다.||HJ 이제 이걸 신고 걸어가면 돼. 같이.||두 사람은 천천히 걸어갔다. 연습생 시절의 연습실에서 시작된 이야기가 이제야 새 문장으로 이어졌다. 이번에는 아무도 번호를 바꾸지 않았다.
+# g
+E 김홍중 루트/지금의 우리|GOOD END — 지금의 우리|윤호는 홍중의 스튜디오를 오가며 노래를 이어 갔다. 데뷔도 아니고 은퇴도 아닌, 천천히 이어지는 하루였다.||저녁이면 둘은 근처 편의점에서 컵라면을 먹었다. 홍중은 윤호가 계란을 넣는 타이밍을 틀렸다고 놀렸고 윤호는 졌다고 인정하지 않았다.||이름 붙이기에는 늦었고, 붙이지 않기에는 이미 충분했다. 지금의 우리가 둘의 가장 좋은 이름이었다.
+`;
+
+/* ===== 성화 ===== */
+RTT[28].seonghwa='밤이 끝나는 곳';RTT[29].seonghwa='일요일 새벽의 이름';RTT[30].seonghwa='문 앞에서';
+RT[28].seonghwa=`
+BG office
+N 성화는 한 실장과 마주 앉아 있었다. 윤호가 문틈으로 본 서류에는 조직 내부 정리 문서라는 글자가 적혀 있었다.
+SH 윤호는 가게 자산에서 뺀다. 이건 제 책임으로 가져가겠습니다.
+HS 보스가 허락하겠냐.
+SH 허락 안 받습니다. 통보합니다.
+N 한 실장은 오래 성화를 쳐다보다가 고개를 끄덕였다.
+BG street
+N 가게 앞에서 성화는 윤호를 기다리고 있었다. 평소의 검은 코트가 아니라 회색 점퍼였다.
+SH 말해 둔다. 너는 이제 가게 사람이 아니다. 나 때문에 다친 건 아니고, 네가 선택한 거다.
+? 윤호는
+- 형은 어떻게 되는 거예요?|rs+1,honest+1||SH 나는 알아서 한다.
+- 형이 책임질 필요 없어요|rs-1||SH 필요 없는 일을 하는 게 사람이다.
+- 가만히 성화의 점퍼 소매를 잡는다|rs+2||SH ...놔라. 아니다, 놓지 마라.
+BG convenience
+N 편의점 앞에서 성화는 오랜만에 캔커피를 샀다. 윤호의 것까지 두 개.
+SH 나 너 지키려고 한 거 아니다. 지키고 싶었던 건 맞는데, 그걸 이유로 하면 네가 부담스러울 것 같아서.
+? 윤호는
+- 지켜줘서 고마워요. 이제는 같이 지켜요|rs+2,honest+1||SH 같이라는 말, 오랜만에 듣는다.
+- 부담스러워요. 솔직히|rs-1,honest+1||SH ...알았다.
+> END
+`;
+RT[29].seonghwa=`
+BG dawn
+N 일요일 새벽, 윤호는 성화의 차 조수석에 앉아 있었다. 요양원 주차장에 도착하자 성화가 시동을 껐다.
+SH 올라갈래. 순자 아줌마한테 소개해 줄게.
+N 요양원 복도는 조용했다. 침대에 누운 작은 노인이 성화를 쳐다보았지만 눈에 초점이 없었다.
+SH 순자 아줌마. 나 왔어. 오늘은 사람 한 사람 데려왔어.
+N 노인은 윤호를 한참 보다가 천천히 미소 지었다. 성화는 그 미소를 보고 처음으로 눈가를 비볐다.
+? 윤호는
+- 안녕하세요, 윤호입니다. 성화 형 친구예요|rs+2||N 노인의 손이 윤호의 손등을 토닥였다.
+- 말없이 옆에서 인사만 한다|rs+1||N 성화가 윤호를 힐끗 보았다.
+- 어색해서 먼저 밖으로 나간다|rs-1||N 복도에서 윤호는 숨을 골랐다.
+BG street
+N 주차장에서 성화가 라이터를 꺼냈다가 다시 넣었다.
+SH 나 너 좋아한다. 이런 말 처음 해본다. 서툴러도 이해해라.
+N 윤호는 얼굴이 붉어지는 걸 막지 못했다.
+? 윤호는
+- 저도요, 형|rs+2,honest+2||SH ...그럼 됐다.
+- 형이 저한테 해 준 건 다 기억해요|rs+1,honest+1||SH 기억하지 마라. 쑥스럽다.
+- 아직 잘 모르겠어요. 시간 주세요|rs-1,honest+1||SH 시간은 많다. 기다린다.
+N 성화는 윤호의 손을 잡았다. 손바닥이 거칠고 따뜻했다. 아침 해가 주차장에 쏟아졌다.
+CUT(41)
+> END
+`;
+RT[30].seonghwa=`
+BG building
+N 성화가 3호 빌딩 앞에 서 있었다. 한 손에는 작은 쇼핑백이 들려 있었다. 안에는 사료 봉지와 새 연습화 한 켤레가 들어 있었다.
+SH 낡은 거 말고 새 거. 신고 걸어라.
+N 윤호는 쇼핑백을 받아 들었다.
+? 윤호는
+- 형, 같이 걸어요|rs+2||N 성화가 처음으로 활짝 웃었다.
+- 고마워요, 하고 조용히 받는다|rs+1||N 성화는 고개를 끄덕였다.
+- 이건 못 받겠어요|rs-2||N 성화의 얼굴이 굳었다.
+% rs 9 a
+% rs 6 b
+% rs 3 c
+E 박성화 루트/선을 넘지 못해서|BAD END — 선을 넘지 못해서|성화는 끝내 윤호의 문 앞에서 돌아섰다. 두 사람 사이의 선은 가늘었지만 끝내 넘어서지 못했다.||윤호는 가게를 떠났고 성화는 조직에 남았다. 일요일 새벽의 요양원 앞에서 가끔 같은 차가 서 있었다.||서로 인사 없이 지나치는 일이 반복되었다. 그래도 길고양이 밥그릇만은 비는 날이 없었다.
+# a
+E 박성화 루트/너만은|TRUE END — 너만은|윤호는 새 연습화를 신고 성화와 함께 요양원 계단을 올랐다. 순자 아줌마의 병실에 햇빛이 길게 들었다.||SH 나는 아무것도 못 바꾼다. 근데 너만은 지키고 싶다.||윤호는 그 말을 끝까지 들었다. 가게의 자산이었던 사람과 조직의 사람이었던 사람은 이제 이름으로 서로를 불렀다.
+# b
+E 박성화 루트/밤이 끝나면|GOOD END — 밤이 끝나면|윤호는 밤일을 정리했고, 성화는 조직 일에서 한 발 물러섰다. 새벽의 거리는 이전과 달리 조용했다.||두 사람은 새벽 국밥집에서 만났다. 밥값은 번갈아 냈다. 다음에는 네가 사라던 말이 이제는 약속이 되어 있었다.||밤이 끝나면 아침이 온다는 사실을 두 사람 다 이제야 믿기 시작했다.
+# c
+E 박성화 루트/같은 밤|NORMAL END — 같은 밤|두 사람은 여전히 같은 밤 속에 있었다. 가게도 조직도 끝나지 않았다. 하지만 새벽이면 같은 골목에 서 있었다.||말은 줄었고 침묵은 편해졌다. 길고양이가 두 사람의 발목에 번갈아 몸을 비볐다.||이름 붙이면 정이 든다던 성화는 어느새 고양이에게 이름을 붙여 주었다.
+`;
+
+/* ===== 여상 ===== */
+RTT[28].yeosang='컵을 뒤집어 놓는 사람';RTT[29].yeosang='계란을 넣는 타이밍';RTT[30].yeosang='돌아갈 곳';
+RT[28].yeosang=`
+BG livingroom
+N 윤호는 여상의 집에서 주말을 보냈다. 여상은 아침마다 된장국을 끓였고, 윤호는 컵을 뒤집어 놓았다. 말하지 않아도 되는 일이 하나씩 늘어났다.
+YS 우리 같이 살 때 말이야, 네가 가끔 한밤중에 들어와서 조용히 컵 두 개를 씻었잖아. 나는 그게 좋았어.
+Y 일부러 두 개 씻은 건 아니야.
+YS 알아. 그냥 습관이었지. 근데 나는 그 습관이 내 몫이라고 생각했어.
+? 윤호는
+- 그 습관, 나도 네 몫이라고 생각했어|rs+2,honest+1||YS 응. 알아.
+- 이상한 소리 한다|rs-1||YS 응. 이상하지. 근데 사실이야.
+- 컵 두 개를 조용히 뒤집어 놓는다|rs+1||YS ...그거야, 그거.
+BG livingroom
+N 저녁에 여상은 소파에 앉아 윤호의 연습화를 꺼내 보았다. 윤호가 방 한가운데 두었던 신발을 여상이 조심스럽게 손에 쥐었다.
+YS 이거 되게 낡았다. 근데 예뻐.
+? 윤호는
+- 이 신발 내 전부였어. 그래서 못 버렸어|rs+2,honest+2||YS 버리지 마. 안 버려도 돼.
+- 그건 그냥 신발이야|rs-1,mask+1||YS 그냥 신발이면 7년이나 안 들고 다녔겠지.
+- 아무 말 없이 여상 옆에 앉는다|rs+1||YS 같이 보자.
+> END
+`;
+RT[29].yeosang=`
+BG livingroom
+N 비 오는 토요일. 여상의 집 부엌에서 윤호는 라면 냄비를 지키고 있었다. 계란을 넣을 타이밍을 재던 중이었다.
+YS 지금이야. 지금 넣어. 아니, 조금 더. 지금.
+Y 너 때문에 헷갈려.
+YS 응. 나 때문에 헷갈려 줘.
+N 윤호는 웃다가 계란을 놓칠 뻔했다. 여상의 얼굴이 어깨 가까이에 있었다.
+? 윤호는
+- 헷갈리는 척하며 여상 쪽으로 몸을 기울인다|rs+2||YS 그거 반칙이야.
+- 라면에만 집중한다|rs-1||YS 아, 졌다.
+- 계란을 넣고 웃는다|rs+1||YS 좋아, 오늘 타이밍은 합격.
+BG livingroom
+N 식탁에 마주 앉자 여상이 젓가락을 내려놓았다.
+YS 나 윤호 좋아해. 같이 살 때부터. 근데 말하면 네가 도망갈까 봐 못 했어.
+N 윤호의 숟가락이 떨렸다.
+? 윤호는
+- 나도. 도망갈 곳이 없어졌어, 이젠|rs+2,honest+2||YS 응. 오늘은 잡았다.
+- 나 같은 사람이 괜찮을까|rs+1,honest+1||YS 너 같은 사람이 아니라 윤호잖아.
+- 웃음으로 대답을 미룬다|rs-2,mask+1||YS 웃지 마. 오늘은 안 해도 돼.
+N 여상은 윤호의 손등에 손을 얹었다. 국물이 식어 가는데 둘은 한참 움직이지 않았다.
+> END
+`;
+RT[30].yeosang=`
+BG building
+N 일요일 오후, 윤호는 3호 빌딩 앞에 서서 이사 박스를 내려다보았다. 박스 아홉 개와 캐리어 하나. 처음 왔을 때와 같은 양이었다.
+N 여상이 트럭 옆에 서서 손을 흔들었다. 종호가 현관에서 팔짱을 끼고 있었다.
+J 형. 월세는 마지막 달까지 받아요.
+Y 알았어, 종호야.
+? 윤호는
+- 여상에게 같이 가자고 먼저 말한다|rs+2||N 여상이 웃었다. 컵 두 개를 뒤집어 놓은 얼굴이었다.
+- 고맙다고 말하고 조용히 트럭에 오른다|rs+1||N 여상이 조수석 문을 열어 주었다.
+- 짐을 다시 들고 계단을 오른다|rs-2||N 여상은 아무 말도 하지 않고 지켜보았다.
+% rs 9 a
+% rs 6 b
+% rs 3 c
+E 강여상 루트/룸메이트|BAD END — 룸메이트|윤호는 짐을 다시 301호로 옮겼다. 여상은 끝내 하고 싶은 말을 삼켰다.||두 사람은 가끔 만나 밥을 먹었다. 서로의 안부는 변함없었지만 이름은 영영 붙지 않았다.||여상의 집 컵장에는 컵 두 개가 뒤집어진 채로 오래 남아 있었다.
+# a
+E 강여상 루트/돌아갈 곳|TRUE END — 돌아갈 곳|윤호는 여상의 집 현관에서 새 슬리퍼를 신었다. 이백칠십 사이즈, 가끔 칠십오.||YS 어서 와.||윤호는 처음으로 돌아갈 곳이 있다는 말의 뜻을 알았다. 현관 앞에서 얼굴의 힘이 저절로 풀렸다.
+# b
+E 강여상 루트/우리답게|GOOD END — 우리답게|두 사람은 같이 살지는 않았지만 거의 매일 얼굴을 보았다. 여상은 윤호의 도시락을 싸고, 윤호는 여상의 컵을 뒤집어 놓았다.||특별한 날은 없었다. 그게 둘에게는 가장 특별했다.||우리답게 살자는 말은 아무도 먼저 꺼내지 않았지만 둘 다 이미 그렇게 살고 있었다.
+# c
+E 강여상 루트/너무 늦게|NORMAL END — 너무 늦게|윤호가 마음을 정리했을 때 여상은 새로운 사람과 저녁을 먹고 있었다. 늦었다는 건 알았다.||그래도 윤호는 웃으며 축하해 주었다. 꾸밈없이 나온 웃음이었다.||집으로 돌아오는 길에 윤호는 오래 서서 하늘을 보았다. 너무 늦게 알게 된 것들은 오래 남았다.
+`;
+
+/* ===== 산 ===== */
+RTT[28].san='블랙오션 이후';RTT[29].san='천천히';RTT[30].san='네가 선택한 삶';
+RT[28].san=`
+BG alley
+N 산이 윤호를 데려간 곳은 물류센터 근처의 작은 식당이었다. 작업복 입은 사람들이 가득했고, 아주머니가 반찬을 계속 가져다주었다.
+SN 여기 사장님이 사람 구한다더라. 설거지랑 홀 정리. 월급은 적다.
+Y 나 설거지 못해.
+SN 배우면 된다.
+N 산은 젓가락을 윤호 쪽으로 밀어 놓았다. 윤호는 웃음이 나왔다. 걱정을 화로만 표현하던 사람이 이제는 방법을 가져온 것이었다.
+? 윤호는
+- 해 볼게. 일단 해 보자|rs+2,honest+1||SN ...그래. 내가 알려준다.
+- 너무 갑작스러워서 모르겠어|rs-1||SN 알았다. 시간 줄게.
+- 산이 얼굴을 한참 쳐다본다|rs+1||SN 뭘 쳐다보냐.
+BG convenience
+N 편의점 앞에서 산이 두유를 내밀었다.
+SN 블랙오션 이후로 내가 제일 후회한 건, 그날 너 혼자 두고 병원 간 거다.
+Y 산아.
+SN 이번엔 안 간다.
+? 윤호는
+- 이번엔 같이 있자|rs+2,honest+1||SN 약속했다.
+- 그날 네 잘못 아니야|rs+1||SN 알아. 근데 그래도 후회된다.
+- 대답을 하지 않고 두유를 마신다|rs-1||SN 그것도 대답이다.
+> END
+`;
+RT[29].san=`
+BG room
+N 산은 윤호의 301호에 이력서 양식을 인쇄해 왔다. 윤호는 빈칸을 보며 한참 펜을 돌렸다.
+SN 경력란에 호스트라고 못 쓰겠지.
+Y 쓰면 안 되지.
+SN 그럼 서비스업 6년이라고 써라. 거짓말 아니다.
+N 윤호는 웃음이 나왔다. 산은 진지했다.
+? 윤호는
+- 산이 말대로 쓴다|rs+1||SN 잘한다.
+- 연습생 6년도 경력에 쓸 수 있을까|rs+2,honest+1||SN 쓸 수 있다. 쓰자.
+- 펜을 내려놓는다|rs-1||SN 쉬어라. 오늘은.
+BG hangang
+N 저녁 한강 벤치. 산은 말없이 윤호 옆에 앉았다.
+SN 나 너 좋아하는 거 아냐고 물으면 모르는 척할 거냐.
+Y ...
+SN 모르는 척해도 된다. 근데 알고 있다는 건 알아라.
+? 윤호는
+- 나도 알아. 나도 같은 마음이야|rs+2,honest+2||SN 그럼 됐다.
+- 시간을 줘. 천천히 갈게|rs+1,honest+1||SN 천천히 가자. 나는 느려도 안 놓는다.
+- 대답 대신 어깨에 기댄다|rs+1||SN 어깨 아프니까 오래는 안 된다.
+N 산의 어깨는 넓고 단단했고, 윤호가 기대자 처음으로 조금 떨렸다.
+> END
+`;
+RT[30].san=`
+BG street
+N 마지막 영업일, 윤호는 가게 문 앞에서 한 실장과 마주 섰다. 한 실장은 말없이 윤호의 손에 작은 봉투를 쥐여 주었다.
+HS 퇴직금이다. 적다. 그래도 받아라.
+N 윤호는 허리를 숙여 인사했다. 문 밖에서는 산이 기다리고 있었다.
+? 윤호는
+- 산에게 달려가 안긴다|rs+2||N 산이 윤호를 받아 안았다. 서투르고 단단한 포옹이었다.
+- 천천히 걸어 나와 산 옆에 선다|rs+1||N 산은 말없이 윤호의 보폭을 맞췄다.
+- 문 앞에서 한참 망설인다|rs-2||N 산이 한 걸음 다가왔다가 멈췄다.
+% rs 9 a
+% rs 6 b
+E 최산 루트/그만해|BAD END — 그만해|윤호는 가게에 남았고 산은 이 일을 그만하라는 말조차 더는 하지 못했다.||산은 새벽마다 가게 근처를 서성이다 돌아갔다. 두 사람은 서로의 안부를 먼 곳에서 확인했다.||그만해라는 말은 입 밖에 나오지 못한 채 한쪽이 지쳐서 끝났다.
+# a
+E 최산 루트/네가 선택한 삶|TRUE END — 네가 선택한 삶|윤호는 작은 식당에서 일하기 시작했다. 서툴렀고 자주 접시를 깼지만 산은 한 번도 화내지 않았다.||SN 네가 선택한 거니까 괜찮다.||가끔 윤호는 노래를 흥얼거렸다. 산은 못 들은 척하며 귀를 기울였다. 꾸밈없는 하루가 평범하게 쌓여 갔다.
+# b
+E 최산 루트/천천히|GOOD END — 천천히|윤호는 몇 달에 걸쳐 가게 일을 정리했다. 산은 재촉하지 않고 옆에서 도왔다.||퇴근길마다 두유 하나를 건네는 산을 윤호는 놀리지 않았다. 천천히, 아주 천천히, 둘은 서로의 속도에 익숙해졌다.||서두르지 않는 사랑도 사랑이었다.
+`;
+
+/* ===== 민기 ===== */
+RTT[28].mingi='오래된 우정';RTT[29].mingi='한강에서';RTT[30].mingi='오래된 사람';
+RT[28].mingi=`
+BG hangang
+N 민기는 한강 둔치에 돗자리를 펴고 편의점 봉지를 풀었다. 치킨, 맥주, 무알코올 맥주. 윤호의 몫이 늘 따로 있었다.
+MG 나 대리 달았다. 말 안 했지.
+Y 축하해. 왜 말 안 했어.
+MG 네가 먼저 물어봐 주길 바랐지. 근데 네가 안 물어보더라.
+N 윤호는 웃음을 삼켰다. 민기는 투덜댔지만 눈가가 부드러웠다.
+? 윤호는
+- 미안. 이제는 먼저 물어볼게|rs+2,honest+1||MG 말뿐이면 안 된다.
+- 그럼 한 잔 사줄게|rs+1||MG 네가 사는 건 무알코올이잖아.
+- 웃으며 얼버무린다|rs-1,mask+1||MG 웃음으로 넘어가려는 거 다 보여.
+BG street
+N 둘은 새벽 지하철역 앞까지 걸었다. 민기가 갑자기 윤호의 어깨를 잡았다.
+MG 야. 나 너한테 화낸 거 사실 대부분 내 얘기였다. 네가 연락 끊고 나서 나도 같이 멈췄더라.
+? 윤호는
+- 우리 둘 다 멈췄었구나|rs+2,honest+1||MG ...이제 같이 가자.
+- 그건 네 선택이었잖아|rs-1||MG 알아. 알아서 더 억울하다.
+- 말없이 민기의 어깨를 두드린다|rs+1||MG 이거 좀 좋네. 한 번 더.
+> END
+`;
+RT[29].mingi=`
+BG hangang
+N 한강 위로 불꽃이 올라가는 밤이었다. 두 사람은 난간에 나란히 기대어 섰다. 폭죽 소리가 지나가고 나서도 한참 말이 없었다.
+MG 윤호야. 너 나 어떻게 생각하냐. 친구냐.
+Y 친구지.
+MG 그게 전부냐.
+N 민기의 목소리가 약간 쉬어 있었다.
+? 윤호는
+- 친구가 전부는 아닌 것 같아|rs+2,honest+2||MG ...그럼 뭔데.
+- 솔직히 잘 모르겠어. 근데 네가 없으면 안 돼|rs+1,honest+1||MG 그 정도면 시작이다.
+- 친구가 맞아. 그 이상은 아니야|rs-2||MG ...그래. 알았다.
+N 민기는 난간을 잡은 손을 풀고 윤호를 쳐다보았다. 맹하고 날카로운 얼굴이 처음으로 진지했다.
+MG 나는 열여덟 때부터 네가 좋았다. 그걸 몰랐던 게 아니라 인정을 안 한 거다.
+? 윤호는
+- 나도 이제 인정할게|rs+2||N 민기가 코를 훌쩍였다. 불꽃 때문이라고 우겼다.
+- 고마워. 이제 천천히 알아가 보자|rs+1||MG 천천히 해라. 대신 도망가지 마라.
+- 대답을 미룬다|rs-1||MG 알았다. 기다릴게. 근데 오래는 안 된다.
+> END
+`;
+RT[30].mingi=`
+BG building
+N 민기가 3호 빌딩 앞에 도착했을 때, 윤호는 현관에서 종호와 이야기를 나누고 있었다. 민기가 팔짱을 끼고 두 사람을 보았다.
+MG 야, 저 사람 누구냐.
+Y 집주인. 종호야, 내 친구 민기야.
+J 안녕하세요. 월세는 제날에 내라고 전해 주세요.
+MG ...뭐야 이 사람.
+N 윤호는 웃음이 터졌다. 민기는 얼굴을 찌푸리며 윤호의 팔을 끌었다.
+? 윤호는
+- 민기의 손을 잡고 걷는다|rs+2||N 민기가 놀란 얼굴로 윤호를 보았다.
+- 웃으며 민기를 달랜다|rs+1||N 민기는 투덜대며 따라왔다.
+- 종호 쪽으로 돌아선다|rs-2||N 민기의 표정이 굳었다.
+% rs 9 a
+% rs 6 b
+% rs 3 c
+E 송민기 루트/모르는 사람|BAD END — 모르는 사람|윤호와 민기는 끝내 서로의 속마음을 열지 못했다. 민기는 승진했고 윤호는 새 일을 찾았다.||길에서 마주쳐도 서로를 알아보지 못한 척 지나쳤다. 그건 가장 오래된 사람을 모르는 사람처럼 대하는 일이었다.||밤마다 두 사람의 휴대폰에는 지우지 못한 번호가 남아 있었다.
+# a
+E 송민기 루트/오래된 사람|TRUE END — 오래된 사람|한강 벤치에 앉아 두 사람은 중학교 때 이야기를 나눴다. 난간에 올라간 사람이 누구였는지는 끝내 합의하지 못했다.||MG 그래도 너 옆에 있던 건 나였다.||윤호는 고개를 끄덕였다. 가장 오래된 사람이 가장 새로운 사람이 되는 일을, 둘은 천천히 배우고 있었다.
+# b
+E 송민기 루트/여전히 우리|GOOD END — 여전히 우리|두 사람은 이름 붙이지 않은 채 같이 시간을 보냈다. 민기는 퇴근길에 가끔 윤호의 집 앞에 서 있었다.||투덜대면서 사 온 치킨, 무알코올 맥주, 오래된 노래. 여전히 우리라는 말은 민기가 가장 좋아하는 문장이 되었다.||윤호는 그 말을 반박하지 않았다.
+# c
+E 송민기 루트/친구로|NORMAL END — 친구로|두 사람은 서로를 가장 가까운 친구로 두기로 했다. 그 선택은 슬프지도 나쁘지도 않았다.||민기는 가끔 윤호의 손을 잡았다가 놓았다. 윤호는 그걸 모른 척했다.||친구로 남은 둘은 오래도록 한강에서 같은 노을을 보았다.
+`;
+
+/* ===== 우영 ===== */
+RTT[28].wooyoung='1위의 자리';RTT[29].wooyoung='라이벌의 고백';RTT[30].wooyoung='같은 자리';
+RT[28].wooyoung=`
+BG bar
+N 이번 달 매출 순위표가 대기실 벽에 붙었다. 1위는 우영, 2위는 윤호. 지난 몇 달 동안 윤호가 챙기던 자리가 바뀐 것이다.
+WY 봤냐. 내가 1위다.
+Y 축하한다.
+WY 축하는 무슨. 네가 봐준 거 다 알아.
+N 우영은 순위표를 쳐다보다가 구겨서 쓰레기통에 던졌다. 윤호는 우영의 어깨가 떨리는 걸 보았다.
+? 윤호는
+- 봐준 거 아니야. 네가 잘한 거야|rs+2,honest+1||WY ...인정은 해.
+- 그럼 다음 달 다시 붙자|rs+1||WY 좋아. 이번엔 안 봐준다.
+- 봐준 거 맞아. 네 사정 알아서|rs-2,honest+1||WY 동정하지 말라고 했지.
+BG rooftop
+N 옥상에서 우영이 캔커피를 땄다. 이번에는 윤호 몫까지 챙겨 와 있었다.
+WY 병원비 다 갚았다. 엄마 퇴원했어.
+Y 잘됐다. 진짜로.
+WY 네 덕이라고는 안 한다. 근데 오늘은 너한테 말하고 싶었다.
+? 윤호는
+- 말해줘서 고마워|rs+2,honest+1||WY 고맙긴.
+- 이제 한시름 놨네|rs+1||WY 한시름은 아니고 반시름.
+- 웃으며 캔커피를 부딪힌다|rs+1||WY 쨍, 하고. 유치하다.
+> END
+`;
+RT[29].wooyoung=`
+BG backroom
+N 한 실장이 새 규칙을 발표했다. 에이스 두 사람이 매달 같이 홀을 맡는다는 것이다. 우영과 윤호는 거울 앞에 나란히 앉게 되었다.
+WY 이제 거울도 반 갈라 써야 하네.
+Y 불만이냐.
+WY 불만 아니고 아쉬움. 내 거울이었는데.
+N 윤호는 웃었다. 우영은 윤호의 웃음에서 처음으로 웃음을 꾸며내는 기척이 나지 않는 걸 눈치챘다.
+? 윤호는
+- 거울은 네가 써. 나는 옆자리가 좋아|rs+2||WY ...말은 잘하네.
+- 거울 같이 쓰자. 반반|rs+1||WY 반반은 내가 제일 싫어하는 숫자야.
+- 말을 돌려 화제를 바꾼다|rs-1,mask+1||WY 또 돌리네.
+BG rooftop
+N 그날 밤 옥상. 우영은 난간에 기대어 윤호가 올라오기를 기다렸다.
+WY 나 너 형이라고 안 부른다. 앞으로도.
+Y 알아.
+WY 근데 너 좋아하는 건 맞다. 이게 어떤 의미로 좋아하는 건지는 모르겠는데, 맞다.
+N 말이 끝나자 우영은 귀까지 빨개졌다.
+? 윤호는
+- 나도 널 좋아해. 그게 어떤 좋아함인지 같이 알아보자|rs+2,honest+2||WY ...같이는 좀 싫은데. 그래, 같이.
+- 고마워. 근데 아직은 잘 모르겠어|rs+1,honest+1||WY 알았다. 천천히 알아라. 나 기다리는 거 싫어하는데.
+- 장난으로 받아친다|rs-2,mask+1||WY 장난 아니야, 이 새끼야.
+> END
+`;
+RT[30].wooyoung=`
+BG stage
+N 가게 연말 이벤트 날. 홀 한가운데 두 사람이 나란히 서 있었다. 손님들의 박수 속에서 우영이 윤호에게 마이크를 건넸다.
+WY 네가 해. 에이스.
+? 윤호는
+- 마이크를 우영에게 되돌려준다|rs+2||N 우영이 눈을 크게 떴다.
+- 둘이 같이 하자고 한다|rs+1||N 우영이 투덜대며 마이크를 쥐었다.
+- 혼자 마이크를 받는다|rs-2||N 우영이 말없이 한 발 물러섰다.
+% rs 9 a
+% rs 5 b
+E 정우영 루트/패배|BAD END — 패배|1위를 놓고 다투던 둘은 끝내 서로에게 지는 법을 배우지 못했다. 우영은 가게를 옮겼고 윤호는 자리에 남았다.||몇 달 뒤 윤호는 대기실 벽의 우영 이름을 보았다. 이름 위에는 누군가 낙서한 한 줄이 있었다. 먼저 인정하는 사람이 지는 거다.||그 줄을 지운 건 윤호였다. 이미 늦은 뒤였다.
+# a
+E 정우영 루트/1위|TRUE END — 1위|우영은 처음으로 윤호에게 졌다고 말했다. 순위 얘기가 아니었다.||WY 너 좋아한다. 1위로.||윤호는 웃음이 터졌다. 에이스와 에이스, 라이벌과 라이벌이 같은 거울을 나눠 쓰게 된 밤이었다.
+# b
+E 정우영 루트/라이벌|GOOD END — 라이벌|두 사람은 여전히 서로를 이기려 들었다. 매달 순위표가 바뀌었고 매달 서로를 축하했다.||옥상에서 캔커피를 부딪치는 일은 한 번도 빠지지 않았다. 지지 않으려는 마음과 곁에 있고 싶은 마음은 같은 마음이었다.||라이벌이라는 이름은 둘이 서로에게 줄 수 있는 가장 단단한 이름이었다.
+`;
+
+/* ===== 종호 ===== */
+RTT[28].jongho='3호 빌딩 301호';RTT[29].jongho='계약서';RTT[30].jongho='같은 집';
+RT[28].jongho=`
+BG building
+N 종호는 아침 일찍부터 301호 도배를 시작했다. 윤호가 문을 열자 벽지 샘플 열 장이 방바닥에 펼쳐져 있었다.
+J 형 취향 말해요. 어느 게 좋아요.
+Y 다 비슷해 보이는데.
+J 다 달라요. 이건 회색이고, 이건 연회색이고.
+N 윤호는 웃음이 터졌다. 종호의 진지한 얼굴이 우스웠다. 종호는 얼굴을 붉히며 샘플을 모았다.
+? 윤호는
+- 종호가 골라 줘. 네 취향이 좋아|rs+2||J ...그럼 이걸로 할게요. 베이지.
+- 연회색. 단순한 게 좋아|rs+1||J 연회색. 알았어요.
+- 아무거나 괜찮아|rs-1||J 아무거나는 없어요. 정해요.
+BG room
+N 밤, 종호는 사다리 위에서 벽지를 붙이다 말고 입을 열었다.
+J 형. 형이 나가는 날은 언제예요?
+Y 나가는 날?
+J 언젠가 나갈 거잖아요. 사람들이 다 그렇게 나가요.
+N 윤호는 사다리 아래에서 올려다보았다. 종호의 목소리가 가늘어져 있었다.
+? 윤호는
+- 안 나가. 여기가 내 집이야|rs+2,honest+1||J 그 말, 기억할게요.
+- 아직은 모르겠어. 근데 생각은 안 해|rs+1||J 모르겠다는 말도 고마워요.
+- 사람 일은 모르는 거지|rs-2||J ...그렇죠.
+> END
+`;
+RT[29].jongho=`
+BG building
+N 새 계약서가 책상 위에 놓였다. 종호는 날짜와 월세 칸을 모두 비워 놓았다. 윤호가 의아하게 쳐다보자 종호가 시선을 돌렸다.
+J 칸은 형이 채워요.
+Y 월세도?
+J 월세는... 제가 정하면 형이 안 낼 것 같아서요.
+N 윤호는 펜을 들었다가 내려놓았다. 종호의 귀가 붉었다.
+? 윤호는
+- 월세는 제날에 낼게. 그건 약속이야|rs+2||J 월세는 제날에 내세요. 이번엔 진짜로.
+- 계약은 천천히 쓰자|rs+1||J 천천히요. 알았어요.
+- 이건 못 쓰겠어|rs-2||J ...그렇구나.
+BG rooftop
+N 옥상에 종호가 올라왔다. 옆자리에 앉아 믹스커피를 건넸다.
+J 형. 저 거짓말 싫어하잖아요. 그래서 하나만 말할게요.
+Y 응.
+J 저 형 좋아해요. 처음 봤을 때부터요. 계단에 짐 놓지 말라고 했을 때도요.
+N 윤호는 컵을 쥔 채 웃음이 터졌다. 눈가가 뜨거웠다.
+? 윤호는
+- 나도. 종호야, 나도야|rs+2,honest+2||J 그럼 월세는 안 받을래요. 아니, 받을게요. 근데 마음만큼 받을게요.
+- 시간을 조금 줘. 진심이야|rs+1,honest+1||J 시간은 줄게요. 거짓말은 안 할 거죠.
+- 웃음으로 얼버무린다|rs-2,mask+1||J 거짓말은 싫어하는데... 이건 괜찮아요. 지금은.
+> END
+`;
+RT[30].jongho=`
+BG hall
+N 첫눈이 내리던 아침, 종호가 계단을 쓸고 있었다. 윤호가 내려가 빗자루를 받아 들었다.
+J 형은 쓸 줄 몰라요.
+Y 배우면 되지. 네가 가르쳐 줘.
+N 종호는 웃으며 윤호의 손을 빗자루 위에 겹쳐 쥐었다.
+? 윤호는
+- 이대로 같이 쓸고 싶다고 말한다|rs+2||N 종호의 손이 잠깐 멈췄다가 더 단단히 쥐었다.
+- 웃으며 빗자루를 건넨다|rs+1||N 종호가 빗자루를 받았다.
+- 서둘러 출근해야 한다고 말한다|rs-2||N 종호의 손이 천천히 내려갔다.
+% rs 9 a
+% rs 6 b
+E 최종호 루트/계약 종료|BAD END — 계약 종료|윤호는 301호의 계약을 연장하지 않았다. 종호는 장부에 마지막 날짜를 적었다.||열쇠는 우편함에 들어 있었다. 종호는 한참 열쇠를 쥐고 있다가 301호 문을 닫았다.||계단은 매일 쓸렸다. 누구도 짐을 놓지 않는 계단이었다.
+# a
+E 최종호 루트/같은 집|TRUE END — 같은 집|윤호는 301호의 짐을 1층으로 옮겼다. 종호의 관리실은 두 사람이 지내기에는 좁았지만 온돌이 따뜻했다.||J 월세는 제날에 내세요.||윤호는 웃으며 지갑을 열었다. 연습화는 현관 선반 위에 놓였고, 그 옆에 종호의 낡은 작업화가 나란히 놓였다.
+# b
+E 최종호 루트/옆집 사람|GOOD END — 옆집 사람|윤호는 301호에 남았고 종호는 1층에 남았다. 매일 아침 계단에서 마주쳤고 매일 짧은 인사를 나눴다.||옆집 사람이라는 이름은 두 사람 사이의 거리를 정확히 알려 주었다. 가깝고, 조심스럽고, 서로의 문 앞에서 반 걸음.||그 반 걸음이 둘에게는 가장 편안한 거리였다.
+`;
+
+/* ===== 단독/특수 ===== */
+RTT[28].none='각자의 밤';RTT[29].none='혼자서 걷는 길';RTT[30].none='정윤호';
+RT[28].none=`
+* SOLO
+* KGO x
+# x_lonely
+BG room_night
+N 윤호의 휴대폰은 조용했다. 일곱 명의 이름 모두가 거리 너머로 사라진 느낌이었다. 연락하지 않은 건 윤호였다.
+? 윤호는
+- 먼저 한 사람에게 연락해 본다|rs+1||N 신호가 오래 갔다.
+- 연락하지 않고 시간을 보낸다|rs-1||N 휴대폰 화면이 꺼졌다.
+> END
+# x_all
+BG street
+N 윤호의 주변에는 사람이 많았다. 홍중의 녹음실, 민기의 한강, 산의 식당, 여상의 부엌, 성화의 새벽, 우영의 옥상, 종호의 관리실. 윤호는 모두의 곁에 조금씩 있었다.
+? 윤호는
+- 모두에게 솔직하게 현재를 알린다|rs+2,honest+1||N 문자를 쓰는 손이 가벼웠다.
+- 누구에게도 깊이 들어가지 않는다|rs-1,mask+1||N 모두와 친했지만 누구와도 가깝지 않았다.
+> END
+# x_dream
+BG recording
+N 윤호는 녹음실에서 노래 연습에 몰두했다. 관객도 연인도 없이 소리만이 남았다.
+? 윤호는
+- 마이크 앞에 서서 계속 부른다|rs+2,dream+1||N 목소리가 점점 단단해졌다.
+- 연습을 쉬고 잠시 바람을 쐰다|rs+0||N 거리의 소음이 오히려 선명했다.
+> END
+# x_night
+BG bar
+N 윤호는 가게에 남았다. 웃음은 능숙하게 얹혔고, 손님들은 만족했다. 밤은 익숙했고 편했다.
+? 윤호는
+- 가게 일에 책임감을 느낀다|rs+1,night+1||N 한 실장이 흡족하게 끄덕였다.
+- 마음 한구석의 공허를 들여다본다|rs+1,honest+1||N 거울 속 얼굴이 낯설었다.
+> END
+# x_solo
+BG rooftop
+N 윤호는 혼자 옥상에서 도시를 내려다보았다. 누구도 놓지 않았고 누구도 붙잡지 않았다.
+? 윤호는
+- 혼자서도 괜찮다고 스스로에게 말한다|rs+2,honest+1||N 바람이 시원했다.
+- 누군가에게 기대고 싶다고 인정한다|rs+2,honest+2||N 처음으로 입 밖에 낸 말이었다.
+> END
+`;
+RT[29].none=`
+* KGO y
+# y_lonely
+BG hangang
+N 한강 둔치에서 윤호는 오래 혼자였다. 연인들과 가족들이 지나갔고 그는 지나가는 불빛만 세었다.
+? 윤호는
+- 가장 가까운 사람에게 전화를 건다|rs+1||N 상대가 받자 윤호는 아무 말도 하지 못했다.
+- 한참 앉아 있다가 일어난다|rs-1||N 다리가 저렸다.
+> END
+# y_all
+BG cafe
+N 윤호는 약속을 정리하고 일곱 명과 한 사람씩 시간을 가졌다. 그 모든 시간이 진심이었다. 그래서 더 어려웠다.
+? 윤호는
+- 한 사람씩 솔직하게 마음을 전한다|rs+2,honest+2||N 모두가 놀랐지만 아무도 떠나지 않았다.
+- 모두에게 고마웠다는 말만 남긴다|rs-1,mask+1||N 작별 같은 인사가 되어 버렸다.
+> END
+# y_dream
+BG stage
+N 윤호는 작은 오디션에 나갔다. 심사위원 앞에서 처음으로 꾸밈없이 노래했다. 결과는 아직 알 수 없었다.
+? 윤호는
+- 끝까지 자기 목소리로 부른다|rs+2,dream+1||N 숨이 마지막 소절에서 떨렸다.
+- 긴장해서 가사를 놓친다|rs-1||N 심사위원이 조용히 메모했다.
+> END
+# y_night
+BG bar
+N 윤호는 한 실장의 후계를 준비했다. 장부를 배우고 직원 이름을 외웠다. 가게는 윤호의 일상이 되어 갔다.
+? 윤호는
+- 가게를 안정적으로 운영하겠다고 다짐한다|rs+2,night+1||N 한 실장의 눈빛이 부드러워졌다.
+- 이대로 괜찮은 건지 의문이 든다|rs+1,honest+1||N 거울 속 얼굴이 대답하지 않았다.
+> END
+# y_solo
+BG room
+N 윤호는 301호에서 천천히 일상을 정리했다. 연습화를 방 한가운데 두고, 아침마다 닦았다. 이 방은 어느새 윤호의 방이 되어 있었다.
+? 윤호는
+- 이 방에 오래 머물기로 한다|rs+2||N 창밖 햇빛이 길게 들었다.
+- 새 길을 찾아 나설 준비를 한다|rs+1||N 박스 몇 개를 정리했다.
+> END
+`;
+RT[30].none=`
+* KGO z
+# z_lonely
+BG room_night
+N 윤호는 한 해가 끝나가는 밤에도 혼자였다. 연락할 사람은 많았지만 연락한 사람은 없었다.
+E 특수 엔딩/LONELY BAD|BAD END — LONELY|윤호는 한 사람도 놓지 않았지만, 한 사람도 붙잡지 못했다. 일곱 개의 번호가 휴대폰에 남아 있었고 어느 번호도 눌리지 않았다.||웃음은 점점 얼굴에 눌어붙었다. 거울 속 얼굴이 웃고 있는지 아닌지 윤호도 알 수 없게 되었다.||밤은 길었고 새벽은 늦게 왔다. 아무도 윤호의 현관 앞에 서지 않았다.
+# z_all
+BG street
+N 일곱 명이 한자리에 모였다. 홍중이 기타를 들고 왔고 민기가 치킨을 들고 왔다. 산은 두유를, 여상은 반찬통을 들고 있었다. 성화는 말없이 길고양이 사료를 놓았고 우영은 캔커피를, 종호는 믹스커피를 건넸다.
+E 특수 엔딩/ALL RELATIONSHIP|SPECIAL END — ALL RELATIONSHIP|윤호는 누구도 고르지 않았고, 누구도 잃지 않았다. 일곱 명은 서로 어색하게 인사했고, 어색하게 같은 상을 차렸다.||이름은 정해지지 않았다. 연인도 친구도 가족도 아닌 이상한 이름들이 윤호의 하루에 겹겹이 쌓여 갔다.||윤호는 처음으로 꾸미지 않고 웃었다. 사람이 많다는 건 부담이 아니라 집이라는 걸 알게 된 날이었다.
+# z_dream
+BG stage
+N 작은 무대의 조명이 켜졌다. 객석에는 일곱 명이 한 줄로 앉아 있었다. 윤호는 마이크를 쥐고 숨을 골랐다.
+E 특수 엔딩/DREAM|SPECIAL END — DREAM|윤호는 스물아홉 살에 첫 솔로 앨범을 냈다. 크게 성공하지는 않았지만 노래는 누군가의 새벽에 오래 남았다.||연습화는 앨범 재킷의 맨 구석에 작게 찍혀 있었다. 7년을 박스 맨 밑에 있던 신발이 비로소 햇빛을 본 것이다.||윤호는 노래하는 사람으로 살기 시작했다. 늦었다고 말하는 사람은 아무도 없었다.
+# z_night
+BG bar
+N 영업 시작 10분 전. 윤호는 거울 앞에서 눈꼬리를 휘었다. 한 실장은 가게 열쇠를 윤호의 손에 올려놓았다.
+E 특수 엔딩/NIGHT|SPECIAL END — NIGHT|윤호는 앙코르의 책임자가 되었다. 한 실장의 자리를 이어받았고, 우영과 동혁과 직원들을 챙겼다.||웃음은 능숙하게 얹혔고 가끔 일부러 거두어졌다. 밤을 선택한 사람의 얼굴은 낮에도 단단했다.||이 가게에서 사람들은 하루를 견뎠다. 윤호는 그 하루의 끝을 지키는 사람이 되었다.
+# z_solo
+BG rooftop
+N 3호 빌딩 옥상에서 윤호는 새해 첫 일출을 보았다. 이번에도 혼자였다. 하지만 이번에는 혼자라는 말이 외롭다는 말과 같지 않았다.
+? 마지막으로 윤호는
+- 연습화를 신고 옥상을 걷는다|rs+2||N 밑창이 닳은 신발이 처음으로 제 길을 걸었다.
+- 신발을 박스에 다시 넣는다|rs-1||N 박스 뚜껑을 닫는 소리가 조용히 울렸다.
+- 하늘을 오래 올려다본다|rs+1||N 해가 천천히 떴다.
+% rs 6 a
+% rs 3 b
+E 단독 루트/오늘도 밤은 온다|NORMAL END — 오늘도 밤은 온다|윤호는 아무것도 바꾸지 못했다. 낮에는 자고 밤에는 가게로 나갔다. 박스 맨 밑의 연습화는 그대로였다.||하지만 오늘의 웃음은 어제보다 조금 느리게 올라왔다. 그 차이를 알아보는 사람은 없었다.||오늘도 밤은 오고, 윤호는 문을 열고 나선다. 내일은 모르는 채로.
+# a
+E 단독 루트/정윤호|TRUE END — 정윤호|윤호는 호스트라는 이름도, 연습생이라는 이름도 내려놓았다. 이름표 없이 이름만 남은 사람이 되었다.||그날 밤 윤호는 거울 앞에서 한참 입가를 만지작거리다 천천히 손을 뗐다. 웃지도 거두지도 않은 채 거울 속의 자기 얼굴을 바라보았다.||그 얼굴은 서른에 가까운 남자의 얼굴이었다. 웃고 있지는 않았지만, 괜찮아 보였다.
+# b
+E 단독 루트/새로운 시작|GOOD END — 새로운 시작|윤호는 가게를 정리하고 작은 카페에서 일하기 시작했다. 서툴렀고 자주 실수했지만 아무도 윤호에게 웃으라고 하지 않았다.||연습화는 방 한가운데에 놓여 있었다. 가끔 신어 보기도 했다. 밑창은 낡았지만 걷기에는 충분했다.||새로운 시작은 거창하지 않았다. 아침에 일어나 컵을 씻고 뒤집어 놓는 일. 그 정도면 충분했다.
+`;
+
+
+const SPK={Y:'윤호',J:'종호',SH:'성화',HJ:'홍중',YS:'여상',SN:'산',MG:'민기',WY:'우영',IM:'임 대표',HS:'한 실장',DH:'동혁'};
+let UID=0;
+function fxp(s){const o={};(s||'').replace(/([a-z]+)([+-]\d+)/g,(m,k,v)=>{o[k]=(o[k]||0)+ +v});return o}
+function ln(s,lab){
+  s=s.trim();const m=s.match(/^(\S+) ?([\s\S]*)$/);const c=m[1],t=m[2];
+  if(c==='N')return N(t);if(c==='I')return I(t);
+  if(SPK[c])return SP(SPK[c],t);
+  if(c[0]==='@')return SP(c.slice(1),t);
+  if(c==='BG')return BG(t);
+  {const cm=s.match(/^CUT\(?\s*(\d+)\s*\)?,?$/);if(cm)return CUT(+cm[1])}
+  if(c==='#')return L(lab(t));
+  if(c==='>')return GO(lab(t));
+  if(c==='$')return FX(fxp(t));
+  if(c==='!')return FL(t);
+  if(c==='^'){const a=t.split(' ');return IF(a[0],lab(a[1]))}
+  if(c==='%'){const a=t.split(' ');return {ge:[a[0],+a[1],lab(a[2])]}}
+  if(c==='*'){const a=t.split(' ');const k=a[0];
+    if(k==='NX')return {nx:+a[1]};if(k==='PICK')return {pick:1};if(k==='ROUTE')return {route:1};if(k==='SOLO')return {solo:1};
+    if(k==='FAVGO')return {favgo:lab(a[1])};if(k==='KGO')return {kgo:lab(a[1])}}
+  if(c==='E'){const i1=t.indexOf('|'),i2=t.indexOf('|',i1+1);return {ending:[t.slice(0,i1).trim(),t.slice(i1+1,i2).trim(),t.slice(i2+1).trim()]}}
+  throw new Error('bad line: '+s);
+}
+function P(text,pre){
+  const lab=x=>x==='END'?'r_end':pre+x,out=[];
+  const Ls=text.split('\n').map(x=>x.trim()).filter(x=>x);
+  for(let i=0;i<Ls.length;i++){const s=Ls[i];
+    if(s[0]==='?'){const op=[];while(Ls[i+1]&&(Ls[i+1][0]==='-'||(/^CUT\(\d+\)$/.test(Ls[i+1])&&op.length&&Ls[i+2]&&Ls[i+2][0]==='-'))){
+      if(Ls[i+1][0]==='-')op.push(Ls[++i].slice(1).trim().split('|').map(x=>x.trim()));
+      else{const o=op[op.length-1];while(o.length<4)o.push('');o[3]=(o[3]?o[3]+'//':'')+Ls[++i]}}
+      const id=pre+'q'+(UID++),jn=id+'j';
+      out.push(CH(s.slice(1).trim(),op.map((o,k)=>({t:o[0],go:id+k,fx:fxp(o[1]),flag:o[2]||undefined}))));
+      op.forEach((o,k)=>{out.push(L(id+k));(o[3]||'').split('//').forEach(x=>{if(x.trim())out.push(ln(x,lab))});out.push(GO(jn))});
+      out.push(L(jn));continue}
+    out.push(ln(s,lab))}
+  return out}
+const PARTS=n=>n<7?'1부 · 새로운 일상':n<13?'2부 · 다시 만난 사람들':n<19?'3부 · 가까워지는 관계':n<25?'4부 · 감정의 충돌':n<28?'5부 · 선택':'6부 · 개인 루트';
+const pad=n=>String(n).padStart(2,'0');
+for(const n in C){SCRIPTS[n]=[{card:['CHAPTER '+pad(n),C[n][0],PARTS(+n)]},...P(C[n][1],'')];if(+n<=27)SCRIPTS[n].push({nx:+n+1});CHTITLE[n]='CHAPTER '+pad(n)+' — '+C[n][0]}
+for(const n of [28,29,30]){const a=[{favgo:'r'}];
+  for(const k in RT[n]){a.push(L('r_'+k),{card:['CHAPTER '+n,RTT[n][k],PARTS(n)]},...P(RT[n][k],k+n+'_'))}
+  a.push(L('r_end'));if(n<30)a.push({nx:n+1});SCRIPTS[n]=a;CHTITLE[n]='CHAPTER '+n+' — 개인 루트'}
+
+const LBL={};for(const k in SCRIPTS){LBL[k]={};SCRIPTS[k].forEach((e,i)=>{if(e.L)LBL[k][e.L]=i})}
+
+/* ---------- engine ---------- */
+const $=id=>document.getElementById(id);
+const NC={'윤호':'var(--c-yunho)','종호':'var(--c-jongho)','성화':'var(--c-seonghwa)','홍중':'#f2c46d','여상':'#b9d98a','산':'#8fb5e8','민기':'#c9a0e0','우영':'#ff9f68','임 대표':'#d4c5a0','한 실장':'#a8b5c8','동혁':'#9fc5c0'};
+let S=null,typing=null,autoT=null,autoOn=false,skipOn=false,skipT=null,lineCount=0;
+const cfg=Object.assign({speed:1,auto:2200,size:100},store.get('cfg',{}));
+function applyCfg(){document.documentElement.style.setProperty('--fs',cfg.size/100);store.set('cfg',cfg)}
+applyCfg();
+const SPD=[60,30,14,0];
+
+function freshState(){return {ch:1,pc:0,bg:null,rel:{jongho:0,seonghwa:0,mask:0},flags:{},last:null,log:[],fav:null,route:null,kind:null}}
+function snap(){const c=JSON.parse(JSON.stringify(S));c.log=c.log.slice(-60);return c}
+function seenMax(){return (store.get('seen',{})[S.ch]||0)}
+function markSeen(){const s=store.get('seen',{});if((s[S.ch]||0)<S.pc){s[S.ch]=S.pc;store.set('seen',s)}}
+
+function run(){
+  const sc=SCRIPTS[S.ch];
+  while(S.pc<sc.length){
+    const e=sc[S.pc++];
+    if(e.L)continue;
+    if(e.nx){const c=store.get('cleared',[]);if(!c.includes(S.ch)){c.push(S.ch);store.set('cleared',c)}S.ch=e.nx;S.pc=0;clearStage();run();return}
+    if(e.pick){let b='none',m=4;for(const x of KEYS){if((S.rel[x]||0)>m){m=S.rel[x];b=x}}S.fav=b;continue}
+    if(e.favgo){S.pc=LBL[S.ch][e.favgo+'_'+(S.route||S.fav||'none')];continue}
+    if(e.route){const f=S.fav||'none';S.route=(S.flags.retreat||f==='none')?'none':f;S.rel.rs=S.route==='none'?0:Math.max(0,Math.min(2,Math.floor(((S.rel[f]||0)-5)/2)));continue}
+    if(e.solo){const r=S.rel;let tot=0,hi=0;for(const x of KEYS){tot+=r[x]||0;if((r[x]||0)>=3)hi++}const d=(r.dream||0)-(r.night||0);S.kind=d>=3?'dream':-d>=3?'night':hi>=4?'all':tot<8?'lonely':'solo';continue}
+    if(e.kgo){S.pc=LBL[S.ch][e.kgo+'_'+S.kind];continue}
+    if(e.ge){if((S.rel[e.ge[0]]||0)>=e.ge[1])S.pc=LBL[S.ch][e.ge[2]];continue}
+    if(e.if!==undefined){if(S.flags[e.if])S.pc=LBL[S.ch][e.go];continue}
+    if(e.go){S.pc=LBL[S.ch][e.go];continue}
+    if(e.bg){setBg(e.bg);continue}
+    if(e.cut){setBg('cut'+e.cut);continue}
+    if(e.fx){applyFx(e.fx);continue}
+    if(e.flag){S.flags[e.flag]=1;continue}
+    show(e);return;
+  }
+}
+const KEYS=['hongjung','seonghwa','yeosang','san','mingi','wooyoung','jongho'];
+function applyFx(o){for(const k in o)S.rel[k]=(S.rel[k]||0)+o[k]}
+function clearStage(){$('stage').innerHTML=''}
+function show(e,instant){
+  S.last=e;
+  $('game').classList.remove('cardon');
+  const fresh=!instant;
+  if(fresh){markSeen();lineCount++}
+  clearTimeout(autoT);
+  if(e.card){clearStage();renderCard(e.card);if(fresh)store.set('auto',snap());return}
+  if(e.ending){clearStage();renderEnding(e.ending);store.set('auto',snap());return}
+  if(e.end){clearStage();renderEnd();store.set('auto',snap());return}
+  if(e.c){clearStage();renderChoices(e);if(fresh)store.set('auto',snap());return}
+  clearStage();
+  const kind=e.n?'n':e.i?'i':'s';
+  const text=e.n||e.i||e.t;
+  const who=e.n?null:(e.i?'윤호':e.s);
+  const nm=$('nm');
+  if(who){nm.hidden=false;$('nmt').textContent=who;nm.style.setProperty('--nc',NC[who]||'var(--c-etc)')}else nm.hidden=true;
+  const t=$('txt');t.className='txt '+kind;
+  if(fresh)S.log.push({s:who||'',t:text});
+  if(S.log.length>300)S.log.shift();
+  $('nx').hidden=true;
+  type(t,text,instant);
+  if(fresh&&lineCount%14===0)store.set('auto',snap());
+}
+function type(el,text,instant){
+  clearInterval(typing);typing=null;
+  const sp=SPD[cfg.speed];
+  if(instant||sp===0||skipOn){el.textContent=text;done();return}
+  let i=0;el.textContent='';
+  typing=setInterval(()=>{i+=1;el.textContent=text.slice(0,i);if(i>=text.length){clearInterval(typing);typing=null;done()}},sp);
+  el._full=text;
+}
+function finishTyping(){if(!typing)return;clearInterval(typing);typing=null;const el=$('txt');const e=S.last;el.textContent=e.n||e.i||e.t;done()}
+function done(){
+  $('nx').hidden=false;
+  if(autoOn){clearTimeout(autoT);autoT=setTimeout(advance,cfg.auto)}
+}
+function overlayOpen(){return !!$('layer').firstChild}
+function advance(){
+  if(!S||overlayOpen())return;
+  if(typing){finishTyping();return}
+  const l=S.last;if(!l||l.c||l.end||l.ending)return;
+  run();
+}
+function renderCard(c){
+  const d=document.createElement('div');d.className='card';
+  d.innerHTML=`<div class="k"></div><h2></h2><p></p>`;
+  d.children[0].textContent=c[0];d.children[1].textContent=c[1];d.children[2].textContent=c[2]||'';
+  d.addEventListener('click',()=>{if(S.last===S.last&&S.last.card)run()});
+  $('stage').appendChild(d);
+  $('game').classList.add('cardon');
+  $('txt').textContent='';$('nm').hidden=true;$('nx').hidden=true;
+  stopAutoSkip(true);
+}
+function renderChoices(e){
+  $('txt').textContent='';$('nm').hidden=true;$('nx').hidden=true;
+  stopAutoSkip(true);
+  const w=document.createElement('div');w.className='choices';
+  if(e.q){const q=document.createElement('div');q.className='q';q.textContent=e.q;w.appendChild(q)}
+  e.c.forEach((o,i)=>{const b=document.createElement('button');b.className='choice';b.textContent=o.t;b.addEventListener('click',ev=>{ev.stopPropagation();pick(o)});w.appendChild(b)});
+  $('stage').appendChild(w);
+  w.querySelector('.choice').focus({preventScroll:true});
+}
+function pick(o){
+  S.log.push({s:'선택',t:o.t});
+  if(o.fx)applyFx(o.fx);
+  if(o.flag)S.flags[o.flag]=1;
+  clearStage();
+  S.pc=LBL[S.ch][o.go];
+  run();
+}
+function memo(){
+  const r=S.rel,L=[];
+  L.push(r.jongho>=2?`종호는 윤호를 '신경 쓰이는 세입자'쯤으로 다시 적어 두었다. 아직 이름 붙일 만한 사이는 아니다.`:r.jongho>=1?`종호는 윤호에 대한 평가를 보류했다. 물어보지 않는 대신, 계속 보고 있다.`:`종호의 눈은 여전히 날카롭다. 윤호는 아직 '대충은 아는 사람'에게 읽히고 있다.`);
+  L.push(r.seonghwa>=1?`성화는 윤호의 새 주소를 기억했다. 그것이 걱정인지 관리인지는 아직 윤호도 모른다.`:`성화는 윤호의 새 주소를 알게 됐다. 이유는 묻지 않았다.`);
+  L.push(r.mask>=3?`오늘 윤호는 자주 웃었다. 웃지 않는 얼굴을 본 사람은 아직 없다.`:`윤호는 오늘 몇 번, 꾸미지 않은 얼굴로 말했다.`);
+  return L;
+}
+function renderEnding(a){
+  stopAutoSkip(true);
+  const ps=a[2].split('||');
+  const d=document.createElement('div');d.className='endcard';
+  d.innerHTML='<div class="in"><div class="kicker" style="font-size:.78rem;letter-spacing:.28em;color:var(--lamp)"></div><h2></h2><div class="memo">'+ps.map(()=>'<p></p>').join('')+'</div><div class="btnrow"><button class="btn" id="eMenu">메뉴로</button></div></div>';
+  d.querySelector('.kicker').textContent=a[0];d.querySelector('h2').textContent=a[1];
+  d.querySelectorAll('.memo p').forEach((p,i)=>p.textContent=ps[i]);
+  $('stage').appendChild(d);$('eMenu').onclick=toMenu;
+  const g=store.get('ends',[]);if(!g.includes(a[0])){g.push(a[0]);store.set('ends',g)}
+}
+function renderEnd(){
+  stopAutoSkip(true);
+  const d=document.createElement('div');d.className='endcard';
+  const ms=memo().map(t=>`<p style="margin:0"></p>`).join('');
+  d.innerHTML=`<div class="in"><div class="kicker" style="font-size:.78rem;letter-spacing:.28em;color:var(--lamp)">CHAPTER 01 COMPLETE</div><h2>새로운 방</h2><div class="memo">${ms}</div><p class="note">다음 이야기, CHAPTER 02 — 에이스는 준비 중입니다. 지금의 선택과 관계는 저장 데이터에 그대로 이어집니다.</p><div class="btnrow"><button class="btn" id="eSave">저장하기</button><button class="btn" id="eMenu">메뉴로</button></div></div>`;
+  d.querySelectorAll('.memo p').forEach((p,i)=>p.textContent=memo()[i]);
+  $('stage').appendChild(d);
+  $('eSave').onclick=()=>openSlots('save');$('eMenu').onclick=toMenu;
+  const c=store.get('cleared',[]);if(!c.includes(S.ch)){c.push(S.ch);store.set('cleared',c)}
+}
+
+/* ---------- auto / skip ---------- */
+function stopAutoSkip(quiet){autoOn=false;skipOn=false;clearTimeout(autoT);clearInterval(skipT);$('tAuto').classList.remove('on');$('tSkip').classList.remove('on')}
+$('tAuto').onclick=()=>{if(!S)return;const on=!autoOn;stopAutoSkip();autoOn=on;$('tAuto').classList.toggle('on',on);if(on&&!typing)done()};
+$('tSkip').onclick=()=>{if(!S)return;const on=!skipOn;stopAutoSkip();skipOn=on;$('tSkip').classList.toggle('on',on);
+  if(on)skipT=setInterval(()=>{if(overlayOpen())return;if(typing)finishTyping();const l=S.last;if(!l||l.c||l.end||l.card){stopAutoSkip();return}if(S.pc<seenMax())run();else stopAutoSkip()},70)};
+
+/* ---------- screens ---------- */
+function toGame(){$('menu').hidden=true;$('game').hidden=false}
+function toMenu(){closeLayer();stopAutoSkip();clearInterval(typing);typing=null;$('game').hidden=true;$('menu').hidden=false;S=S;setMenuBg();refreshMenu()}
+function setMenuBg(){const s=S;S=null;setBg('street');S=s}
+function refreshMenu(){$('mCont').disabled=!store.get('auto',null)}
+function startNew(){S=freshState();lineCount=0;toGame();clearStage();run()}
+function loadState(st){S=JSON.parse(JSON.stringify(st));lineCount=0;closeLayer();toGame();stopAutoSkip();clearStage();setBg(S.bg||'street');const l=S.last;if(l)show(l,true);else run()}
+
+/* ---------- layer (modals) ---------- */
+function closeLayer(){$('layer').innerHTML=''}
+function modal(title,build){
+  closeLayer();
+  const m=document.createElement('div');m.className='modal';
+  m.innerHTML=`<div class="panel" role="dialog" aria-modal="true"><header><h3></h3><button class="x" aria-label="닫기">×</button></header><div class="body"></div></div>`;
+  m.querySelector('h3').textContent=title;
+  m.querySelector('.x').onclick=closeLayer;
+  m.addEventListener('click',e=>{if(e.target===m)closeLayer()});
+  build(m.querySelector('.body'));
+  $('layer').appendChild(m);
+  m.querySelector('.x').focus();
+}
+function openLog(){modal('로그',b=>{const lg=S?S.log:[];if(!lg.length){b.textContent='아직 기록이 없습니다.';return}lg.forEach(x=>{const d=document.createElement('div');d.className='logline';if(x.s){const n=document.createElement('b');n.textContent=x.s;d.appendChild(n)}d.appendChild(document.createTextNode(x.t));b.appendChild(d)});setTimeout(()=>b.scrollTop=b.scrollHeight,0)})}
+function openSlots(mode){
+  if(mode==='save'&&!S)return;
+  modal(mode==='save'?'저장':'불러오기',b=>{
+    const slots=store.get('slots',{});
+    const mk=(id,label)=>{
+      const v=slots[id];const bt=document.createElement('button');bt.className='slot';
+      const info=v?`${CHTITLE[v.st.ch]||''} · ${v.when}`:'비어 있음';
+      bt.innerHTML=`<span><strong></strong><small></small></span><span style="color:var(--lamp);font-size:.85rem"></span>`;
+      bt.querySelector('strong').textContent=label;bt.querySelector('small').textContent=info+(v&&v.snip?` · ${v.snip}`:'');
+      bt.lastChild.textContent=mode==='save'?'저장':(v?'불러오기':'');
+      bt.onclick=()=>{
+        if(mode==='save'){const l=S.log[S.log.length-1];slots[id]={st:snap(),when:new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}),snip:l?l.t.slice(0,26):''};store.set('slots',slots);openSlots('save')}
+        else if(v)loadState(v.st);
+      };
+      b.appendChild(bt);
+    };
+    for(let i=1;i<=8;i++)mk('s'+i,'슬롯 '+i);
+    if(mode==='load'){const a=store.get('auto',null);if(a){const bt=document.createElement('button');bt.className='slot';bt.innerHTML=`<span><strong>자동 저장</strong><small></small></span><span style="color:var(--lamp);font-size:.85rem">불러오기</span>`;bt.querySelector('small').textContent=CHTITLE[a.ch]||'';bt.onclick=()=>loadState(a);b.insertBefore(bt,b.firstChild)}}
+  });
+}
+function openSettings(){
+  modal('설정',b=>{
+    b.innerHTML=`<div class="set"><label for="sSpeed">텍스트 속도</label><select id="sSpeed"><option value="0">느리게</option><option value="1">보통</option><option value="2">빠르게</option><option value="3">즉시</option></select></div>
+    <div class="set"><label for="sAuto">자동 진행 대기 시간 <span id="vAuto"></span></label><input type="range" id="sAuto" min="800" max="5000" step="200"></div>
+    <div class="set"><label for="sSize">글자 크기 <span id="vSize"></span></label><input type="range" id="sSize" min="85" max="140" step="5"></div>`;
+    const sp=b.querySelector('#sSpeed'),au=b.querySelector('#sAuto'),sz=b.querySelector('#sSize');
+    sp.value=cfg.speed;au.value=cfg.auto;sz.value=cfg.size;
+    const lab=()=>{b.querySelector('#vAuto').textContent=(au.value/1000).toFixed(1)+'초';b.querySelector('#vSize').textContent=sz.value+'%'};lab();
+    sp.onchange=()=>{cfg.speed=+sp.value;applyCfg()};au.oninput=()=>{cfg.auto=+au.value;lab();applyCfg()};sz.oninput=()=>{cfg.size=+sz.value;lab();applyCfg()};
+  });
+}
+function openGallery(){
+  modal('갤러리',b=>{
+    const u=store.get('bgs',[]);
+    const p=document.createElement('p');p.className='note';p.textContent=`배경 ${u.filter(k=>BGN[k]).length} / ${Object.keys(BGN).length} 수집. 장면에서 한 번 이상 본 배경이 열립니다.`;b.appendChild(p);
+    const g=document.createElement('div');g.className='gal';
+    Object.keys(BGN).forEach(k=>{const f=document.createElement('figure');const t=document.createElement('div');t.className='th';
+      if(u.includes(k))t.innerHTML=svgBg(k);else t.textContent='?';
+      const c=document.createElement('figcaption');c.textContent=u.includes(k)?BGN[k]:'미공개';f.appendChild(t);f.appendChild(c);g.appendChild(f)});
+    b.appendChild(g);
+  });
+}
+const ENDS=[
+ ['김홍중 루트',['다시 시작','지금의 우리','그때처럼']],
+ ['박성화 루트',['너만은','밤이 끝나면','선을 넘지 못해서','같은 밤']],
+ ['강여상 루트',['돌아갈 곳','우리답게','너무 늦게','룸메이트']],
+ ['최산 루트',['네가 선택한 삶','천천히','그만해']],
+ ['송민기 루트',['오래된 사람','여전히 우리','친구로','모르는 사람']],
+ ['정우영 루트',['1위','라이벌','패배']],
+ ['최종호 루트',['같은 집','옆집 사람','계약 종료']],
+ ['단독 루트',['정윤호','새로운 시작','오늘도 밤은 온다']],
+ ['특수 엔딩',['ALL RELATIONSHIP','LONELY BAD','DREAM','NIGHT']]];
+function openEndings(){
+  modal('엔딩 리스트',b=>{
+    const got=store.get('ends',[]);const tot=ENDS.reduce((a,x)=>a+x[1].length,0);
+    const p=document.createElement('p');p.className='note';p.textContent=`엔딩 ${got.length} / ${tot}. 개인 루트는 CHAPTER 이십칠 이후 열립니다. 제목은 도달하면 공개됩니다.`;b.appendChild(p);
+    ENDS.forEach(([r,es])=>{const d=document.createElement('div');d.className='route';const h=document.createElement('h4');h.textContent=r;const ul=document.createElement('ul');
+      es.forEach(e=>{const li=document.createElement('li');const k=r+'/'+e;if(got.includes(k)){li.className='got';li.textContent=e}else li.textContent='???';ul.appendChild(li)});
+      d.appendChild(h);d.appendChild(ul);b.appendChild(d)});
+  });
+}
+
+/* ---------- wiring ---------- */
+$('mStart').onclick=startNew;
+$('mCont').onclick=()=>{const a=store.get('auto',null);if(a)loadState(a)};
+$('mSet').onclick=openSettings;$('mGal').onclick=openGallery;$('mEnd').onclick=openEndings;
+$('tSet').onclick=openSettings;
+$('tb').addEventListener('click',advance);
+$('stage').addEventListener('click',e=>{if(e.target.id==='stage')advance()});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){if(overlayOpen())closeLayer();return}
+  if(!S||$('game').hidden||overlayOpen())return;
+  if(e.key===' '||e.key==='Enter'){if(document.activeElement&&document.activeElement.tagName==='BUTTON')return;e.preventDefault();advance()}
+  if(S.last&&S.last.c&&/^[1-4]$/.test(e.key)){const o=S.last.c[+e.key-1];if(o)pick(o)}
+});
+setBg('street');refreshMenu();
+</script>
+
+</body></html>
