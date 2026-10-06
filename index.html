@@ -182,7 +182,7 @@ function skyline(r,y,minH,maxH,fill,lit,litC,st){let x=-20,o='';while(x<1620){co
   if(lit>0){for(let wy=y-h+14;wy<y-10;wy+=st){for(let wx=x+8;wx<x+w-14;wx+=st){if(r()<lit)o+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${(st*.45).toFixed(0)}" height="${(st*.55).toFixed(0)}" fill="${litC}" opacity="${(.45+r()*.55).toFixed(2)}"/>`}}}
   x+=w+r()*8}return o}
 function svgBg(key){
-  if(IMAGE_BG[key]) return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><image href="./images/${IMAGE_BG[key]}" x="0" y="0" width="1600" height="900" preserveAspectRatio="xMidYMid slice"/></svg>`;
+  if(IMAGE_BG[key]) return `<img src="./images/${IMAGE_BG[key]}" alt="${key}" style="width:100%;height:100%;display:block;object-fit:cover;object-position:center;" loading="eager" decoding="async">`;
   const r=mul(hs(key)),p='g'+(uid++),W=1600,H=900;let d='',b='';
   const blur=`<filter id="${p}b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>`;
   if(key==='street'){
