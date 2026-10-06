@@ -212,7 +212,10 @@ const NUMBERED_BG_FILES={
   hospital:'9.png',
   pharmacy:'10.png',
   school:'11.png',
-  rooftop:'12.png'
+  rooftop:'12.png',
+  /* 스토리의 'alley'는 가게를 빠져나온 뒤의 좁은 골목 장면이다.
+     현재 실제 업로드된 사진 중 골목/거리 계열인 6.png를 연결한다. */
+  alley:'6.png'
 };
 for(const k in NUMBERED_BG_FILES) IMAGE_BG[k]=NUMBERED_BG_FILES[k];
 
@@ -303,9 +306,57 @@ const L=n=>({L:n}),GO=n=>({go:n}),BG=k=>({bg:k}),CUT=k=>({cut:k}),FX=o=>({fx:o})
 const SPK={Y:'윤호',HJ:'홍중',SH:'성화',YS:'여상',SA:'산',MG:'민기',WY:'우영',J:'종호',ZZ:'작은 남자'};
 let UID=0;
 function fxp(s){const o={};(s||'').replace(/([a-z]+)([+-]\d+)/g,(m,k,v)=>{o[k]=(o[k]||0)+ +v});return o}
+function naturalDialogue(who,t){
+  let s=String(t).trim();
+
+  /* 문어체·도치형 표현을 실제 대화에 가까운 문장으로 정리한다. */
+  const common=[
+    [/\b알겠습니다\b/g,'알겠어요'],
+    [/\b모르겠습니다\b/g,'모르겠어요'],
+    [/\b괜찮습니다\b/g,'괜찮아요'],
+    [/\b없습니다\b/g,'없어요'],
+    [/\b있습니다\b/g,'있어요'],
+    [/\b됩니다\b/g,'돼요'],
+    [/\b합니다\b/g,'해요'],
+    [/\b했습니다\b/g,'했어요'],
+    [/\b하겠습니다\b/g,'할게요'],
+    [/\b가겠습니다\b/g,'갈게요'],
+    [/\b보겠습니다\b/g,'볼게요'],
+    [/\b생각합니다\b/g,'생각해요'],
+    [/\b기억하겠습니다\b/g,'기억해 둘게요'],
+    [/\b확인합시다\b/g,'확인해 봐요'],
+    [/\b기다려 봅시다\b/g,'조금만 더 기다려 봐요'],
+    [/\b가 봅시다\b/g,'가 보죠']
+  ];
+  for(const [re,v] of common)s=s.replace(re,v);
+
+  /* 자주 반복되는 설명형·도치형 문장을 회화 순서로 바꾼다. */
+  const natural=[
+    ['이제 우리가 직접 빛을 만들 수 있다는 거네요.','이제 우리 손으로 빛을 만들 수 있네요.'],
+    ['사람을 이끄는 게 이렇게 어려운 줄은 몰랐어요.','사람들을 이끄는 게 이렇게 어려운 줄은 몰랐어요.'],
+    ['그래서 더 실수하면 안 된다고 생각해요.','그래서 더 실수하면 안 될 것 같아요.'],
+    ['그래서 더 실수하면 안 된다고 생각합니다.','그래서 더 실수하면 안 될 것 같아요.'],
+    ['이 상황에서 자기 몫을 줄이는 사람은 기억해 두겠습니다.','이런 상황에서도 자기 몫을 줄이는 사람은 기억해 둘게요.'],
+    ['지금 중요한 건','지금은'],
+    ['지금 필요한 건','지금은'],
+    ['제가 걱정하는 건','저는'],
+    ['내가 걱정하는 건','난'],
+    ['우리가 생각해야 하는 건','일단'],
+    ['문제는','문제는']
+  ];
+  for(const [a,b] of natural)s=s.replaceAll(a,b);
+
+  /* 홍중·성화처럼 존댓말을 쓰는 인물은 지나치게 보고서 같은 종결을 피한다. */
+  if(who==='홍중'||who==='성화'||who==='여상'||who==='종호'){
+    s=s.replace(/(해야|해야겠|필요하|괜찮|맞|좋|가능하|위험하|확실하)(다|습니다)([.!?])/g,'$1요$3');
+  }
+
+  return s;
+}
 function ln(s,lab){
-  s=s.trim();const m=s.match(/^(\S+) ?([\s\S]*)$/);const c=m[1],t=m[2];
-  if(c==='N')return N(t);if(c==='I')return I(t);
+  s=s.trim();const m=s.match(/^(\S+) ?([\s\S]*)$/);const c=m[1],raw=m[2];
+  const t=SPK[c]?naturalDialogue(SPK[c],raw):c[0]==='@'?naturalDialogue(c.slice(1),raw):raw;
+  if(c==='N')return N(raw);if(c==='I')return I(raw);
   if(SPK[c])return SP(SPK[c],t);
   if(c[0]==='@')return SP(c.slice(1),t);
   if(c==='BG')return BG(t);
