@@ -217,20 +217,20 @@ function svgBg(key){
   }
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><defs>${d}</defs>${b}</svg>`;
 }
-const IMAGE_BG={building:'3.png',hall:'4.png',room:'6.png',room_night:'7.png',street:'16.png',host_exterior:'17.png',host_entry:'18.png',bar:'19.png',bar_table:'20.png',bar_counter:'21.png',host_corridor:'22.png',backroom:'23.png',back_exit:'24.png',dawn:'25.png'};
+const IMAGE_BG={building:'3.png',hall:'4.png',room:'6.png',room_night:'7.png',street:'16.png',host_exterior:'17.png',host_entry:'18.png',bar:'19.png',bar_table:'20.png',bar_counter:'21.png',host_corridor:'22.png',backroom:'23.png',back_exit:'24.png',dawn:'25.png',cut37:'37.png',cut38:'38.png',cut39:'39.png',cut40:'40.png',cut41:'41.png'};
 const BGN={building:'삼호빌딩 앞',hall:'계단과 복도',room:'301호, 낮',room_night:'301호, 밤',street:'서울 도심 번화가',host_exterior:'앙코르 외관',host_entry:'앙코르 입구',bar:'앙코르 메인 홀',bar_table:'앙코르 테이블',bar_counter:'앙코르 바 카운터',host_corridor:'앙코르 안쪽 복도',backroom:'직원용 백룸',back_exit:'앙코르 뒷골목',dawn:'새벽 거리'};
 let bgFlip=false;
 function setBg(k,instant){
   if(S)S.bg=k;
   const a=document.getElementById('bgA'),b=document.getElementById('bgB'),cur=bgFlip?b:a,nxt=bgFlip?a:b;
   nxt.innerHTML=svgBg(k);nxt.style.opacity=1;cur.style.opacity=0;bgFlip=!bgFlip;
-  const u=store.get('bgs',[]);if(!u.includes(k)){u.push(k);store.set('bgs',u)}
+  const u=store.get('bgs',[]);if(BGN[k]&&!u.includes(k)){u.push(k);store.set('bgs',u)}
 }
 
 /* ---------- script helpers ---------- */
 const N=t=>({n:t}),I=t=>({i:t}),SP=(s,t)=>({s,t});
 const Y=t=>SP('윤호',t),J=t=>SP('종호',t),SH=t=>SP('성화',t),IM=t=>SP('임 대표',t),HS=t=>SP('한 실장',t),DH=t=>SP('동혁',t),P1=t=>SP('선수',t);
-const L=n=>({L:n}),GO=n=>({go:n}),BG=k=>({bg:k}),FX=o=>({fx:o}),FL=f=>({flag:f}),IF=(f,go)=>({if:f,go}),CH=(q,c)=>({q,c});
+const L=n=>({L:n}),GO=n=>({go:n}),BG=k=>({bg:k}),CUT=k=>({cut:k}),FX=o=>({fx:o}),FL=f=>({flag:f}),IF=(f,go)=>({if:f,go}),CH=(q,c)=>({q,c});
 
 /* ---------- CHAPTER 01 ---------- */
 const CH1=[
@@ -539,6 +539,7 @@ L('g1e'),
 N(`윤호는 현관 옆 구석에 쪼그려 앉아 박스에서 테이프를 떼어내기 시작했다. 종호는 팔짱을 끼고 지켜보다가, 몇 초 뒤 장갑 한 켤레를 던졌다.`),
 J(`맨손으로 하면 손 베여요.`),
 N(`정확하고 무뚝뚝한 친절이었다.`),
+CUT(37),
 IF('formal','gf'),
 Y(`종호야, 비닐은 이쪽이지?`),
 J(`네, 그쪽이요.`),
@@ -1162,6 +1163,7 @@ SH 습관은 고치면 되는 거다.
 - 고치는 법을 모르겠어요|honest+2,seonghwa+1||SH 나도 모른다. 같이 몰라보자.
 - 웃음이 나오는 걸 어떡해요|mask+1||SH ...그럼 웃어라.
 BG street
+CUT(38)
 N 차에서 내리자 성화는 골목 모퉁이의 길고양이에게 사료를 부어주고 있었다. 고양이는 익숙하게 성화의 발목에 몸을 비볐다.
 SH 이름은 없다. 이름 붙이면 정이 든다.
 Y 벌써 든 것 같은데요.
@@ -1450,6 +1452,7 @@ SN 가만있어라.
 Y 산아, 내려줘...
 SN 병원. 오늘은 안 놓는다.
 N 응급실 대기석에서 산은 윤호의 손목을 쥔 채 놓지 않았다. 수액이 한 방울씩 떨어졌다.
+CUT(40)
 ? 윤호는
 - 이제 알겠다, 네가 왜 화났는지|san+2,honest+1||SN 알았으면 됐다. 자라.
 - 별일 아니야. 감기야|san-1,mask+1||SN 감기가 이 정도면 네가 문제지.
@@ -2018,6 +2021,7 @@ N 윤호는 샌드위치를 쥔 손을 멈췄다.
 N 홍중이 안경을 벗었다. 얼굴이 가까웠다.
 ? 윤호는
 - 먼저 홍중의 손을 잡는다|rs+2||N 손이 따뜻했다. 오래전 연습실에서 처음 잡았던 온도와 같았다.
+CUT(39)
 - 천천히 하자고 말한다|rs+1||HJ 천천히. 좋아. 네 속도로.
 - 눈을 피한다|rs-1||HJ 괜찮아. 기다릴게.
 N 두 사람은 한참 말 없이 강을 보았다. 이름이 필요한 시간이 천천히 흘러갔다.
@@ -2084,6 +2088,7 @@ N 윤호는 얼굴이 붉어지는 걸 막지 못했다.
 - 형이 저한테 해 준 건 다 기억해요|rs+1,honest+1||SH 기억하지 마라. 쑥스럽다.
 - 아직 잘 모르겠어요. 시간 주세요|rs-1,honest+1||SH 시간은 많다. 기다린다.
 N 성화는 윤호의 손을 잡았다. 손바닥이 거칠고 따뜻했다. 아침 해가 주차장에 쏟아졌다.
+CUT(41)
 > END
 `;
 RT[30].seonghwa=`
@@ -2617,6 +2622,7 @@ function run(){
     if(e.if!==undefined){if(S.flags[e.if])S.pc=LBL[S.ch][e.go];continue}
     if(e.go){S.pc=LBL[S.ch][e.go];continue}
     if(e.bg){setBg(e.bg);continue}
+    if(e.cut){setBg('cut'+e.cut);continue}
     if(e.fx){applyFx(e.fx);continue}
     if(e.flag){S.flags[e.flag]=1;continue}
     show(e);return;
