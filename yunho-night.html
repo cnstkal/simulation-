@@ -4157,10 +4157,7 @@ const ENDS=[...ENDING_LIBRARY.map(a=>{
 
 function viewEnding(a){
   closeLayer();
-  stopAutoSkip(true);
-  toGame();
-  clearStage();
-  renderEnding(a,true);
+  startEndingReplay(a);
 }
 
 function openEndings(){
