@@ -15,6 +15,7 @@
   --fs:1;
   color-scheme:dark;
 }
+*,*::before,*::after{letter-spacing:-.02em!important}
 [hidden],#menu[hidden],#game[hidden],#layer[hidden]{display:none!important}
 button{touch-action:manipulation;-webkit-appearance:none;appearance:none}
 html,body{height:100%}
@@ -30,7 +31,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 /* menu */
 #menu{position:absolute;inset:0;z-index:10;display:flex;flex-direction:column;justify-content:flex-end;padding:24px 20px 32px 48px;pointer-events:auto}
 #menu button{position:relative;z-index:11;pointer-events:auto;touch-action:manipulation}
-#menu .menuwrap{position:relative;max-width:520px;display:flex;flex-direction:column;gap:28px}
+#menu .menuwrap{position:relative;flex:none;max-width:520px;display:flex;flex-direction:column;gap:28px}
 .kicker{font-size:.78rem;letter-spacing:.28em;color:var(--lamp);text-transform:uppercase}
 .title{font-family:var(--serif);font-weight:700;font-size:clamp(3rem,13vw,6.2rem);line-height:1.02;letter-spacing:.04em;text-wrap:balance}
 .title small{display:block;font-size:clamp(1rem,3.6vw,1.35rem);font-weight:400;letter-spacing:.12em;color:var(--lamp2);margin-top:14px}
@@ -47,6 +48,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .tools button.on{background:var(--lamp);color:#1a1208;border-color:var(--lamp)}
 .tools button:hover{border-color:var(--lamp)}
 .stage{position:absolute;inset:0;z-index:2}
+#game.cardon .tbwrap{display:none}
 .tbwrap{position:absolute;left:0;right:0;bottom:0;padding:0 16px 18px;display:flex;justify-content:center;z-index:3;pointer-events:none}
 .tb{position:relative;flex:1;min-width:0;max-width:940px;min-height:calc(7.2em * var(--fs));background:var(--veil);border:1px solid var(--line);border-radius:10px;padding:26px 22px 24px;backdrop-filter:blur(6px);pointer-events:auto;cursor:pointer}
 .name{position:absolute;left:18px;top:-15px;display:flex;align-items:center;gap:8px;background:var(--ink2);border:1px solid var(--line);border-radius:6px;padding:4px 12px;font-size:.88rem;font-weight:700;letter-spacing:.06em}
@@ -57,7 +59,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .txt.i{color:var(--lamp2);font-style:italic}
 .nextmark{position:absolute;right:16px;bottom:10px;width:10px;height:10px;border-right:2px solid var(--lamp);border-bottom:2px solid var(--lamp);transform:rotate(45deg);animation:bob 1.2s infinite}
 @keyframes bob{50%{transform:rotate(45deg) translate(3px,3px)}}
-.choices{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;padding:64px 16px 230px;background:linear-gradient(to top,rgba(5,6,12,.78),rgba(5,6,12,.45));align-items:center;overflow:auto}
+.choices{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;justify-content:center;gap:10px;padding:64px 16px;background:linear-gradient(to top,rgba(5,6,12,.78),rgba(5,6,12,.45));align-items:center;overflow:auto}
 .choices .q{font-size:.8rem;letter-spacing:.2em;color:var(--lamp);margin-bottom:4px;max-width:760px;width:100%}
 .choice{width:100%;max-width:760px;text-align:left;padding:16px 20px;font-family:var(--serif);font-size:calc(1.05rem * var(--fs));line-height:1.6;background:rgba(15,19,36,.92);border:1px solid rgba(233,166,92,.5);border-radius:8px;transition:background .18s,border-color .18s,transform .18s}
 .choice:hover{background:rgba(233,166,92,.16);border-color:var(--lamp);transform:translateX(6px)}
@@ -108,16 +110,16 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   .kicker{font-size:.64rem;letter-spacing:.16em;line-height:1.5}
   .title{font-size:clamp(2.7rem,15vw,4.2rem);letter-spacing:.02em}
   .title small{font-size:.9rem;letter-spacing:.08em;margin-top:10px}
-  .menulist{grid-template-columns:1fr;gap:0;max-width:none;width:100%}
-  .menulist button{padding:14px 4px;font-size:.95rem;min-height:48px}
+  .menulist{grid-template-columns:1fr;gap:0;max-width:none;width:100%;flex:none;align-content:start;grid-auto-rows:min-content}
+  .menulist button{padding:14px 4px;font-size:.95rem;min-height:48px;height:auto;align-self:start}
   .fine{font-size:.7rem;line-height:1.65;max-width:none}
   .tools{padding:calc(8px + env(safe-area-inset-top,0px)) 8px 8px;gap:4px;justify-content:flex-start}
   .tools button{padding:8px 9px;font-size:.72rem;min-height:38px}
-  .tbwrap{padding:0 10px calc(10px + env(safe-area-inset-bottom,0px))}
-  .tb{max-height:48vh;min-height:0;padding:22px 15px 17px;border-radius:9px}
+  .tbwrap{padding:0 10px calc(130px + env(safe-area-inset-bottom,0px))}
+  .tb{max-height:48vh;min-height:112px;padding:22px 15px 17px;border-radius:9px}
   .name{left:12px;top:-13px;padding:3px 9px;font-size:.78rem}
   .txt{font-size:calc(.98rem * var(--fs));line-height:1.75;min-height:0}
-  .choices{padding:60px 10px calc(150px + env(safe-area-inset-bottom,0px));justify-content:flex-end;overflow-y:auto}
+  .choices{padding:160px 12px calc(335px + env(safe-area-inset-bottom,0px));justify-content:center;overflow-y:auto}
   .choices .q{font-size:.68rem;letter-spacing:.14em}
   .choice{max-width:none;padding:13px 14px;font-size:calc(.94rem * var(--fs));line-height:1.5;border-radius:8px;min-height:48px}
   .gal{grid-template-columns:1fr 1fr;gap:8px}
@@ -146,7 +148,6 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
       <nav class="menulist" aria-label="메인 메뉴">
         <button id="mStart">게임 시작</button>
         <button id="mCont">이어하기</button>
-        <button id="mLoad">불러오기</button>
         <button id="mSet">설정</button>
         <button id="mGal">갤러리</button>
         <button id="mEnd">엔딩 리스트</button>
@@ -157,8 +158,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
   <section id="game" hidden>
     <div class="tools" id="tools">
-      <button id="tLog">로그</button><button id="tAuto">자동</button><button id="tSkip">스킵</button>
-      <button id="tSave">저장</button><button id="tLoad">불러오기</button><button id="tSet">설정</button><button id="tMenu">메뉴</button>
+      <button id="tAuto">자동</button><button id="tSkip">스킵</button>
+      <button id="tSet">설정</button>
     </div>
     <div class="stage" id="stage"></div>
     <div class="tbwrap"><div class="tb" id="tb">
@@ -2693,6 +2694,7 @@ function ln(s,lab){
   if(SPK[c])return SP(SPK[c],t);
   if(c[0]==='@')return SP(c.slice(1),t);
   if(c==='BG')return BG(t);
+  {const cm=s.match(/^CUT\(?\s*(\d+)\s*\)?,?$/);if(cm)return CUT(+cm[1])}
   if(c==='#')return L(lab(t));
   if(c==='>')return GO(lab(t));
   if(c==='$')return FX(fxp(t));
@@ -2709,7 +2711,9 @@ function P(text,pre){
   const lab=x=>x==='END'?'r_end':pre+x,out=[];
   const Ls=text.split('\n').map(x=>x.trim()).filter(x=>x);
   for(let i=0;i<Ls.length;i++){const s=Ls[i];
-    if(s[0]==='?'){const op=[];while(Ls[i+1]&&Ls[i+1][0]==='-')op.push(Ls[++i].slice(1).trim().split('|').map(x=>x.trim()));
+    if(s[0]==='?'){const op=[];while(Ls[i+1]&&(Ls[i+1][0]==='-'||(/^CUT\(\d+\)$/.test(Ls[i+1])&&op.length&&Ls[i+2]&&Ls[i+2][0]==='-'))){
+      if(Ls[i+1][0]==='-')op.push(Ls[++i].slice(1).trim().split('|').map(x=>x.trim()));
+      else{const o=op[op.length-1];while(o.length<4)o.push('');o[3]=(o[3]?o[3]+'//':'')+Ls[++i]}}
       const id=pre+'q'+(UID++),jn=id+'j';
       out.push(CH(s.slice(1).trim(),op.map((o,k)=>({t:o[0],go:id+k,fx:fxp(o[1]),flag:o[2]||undefined}))));
       op.forEach((o,k)=>{out.push(L(id+k));(o[3]||'').split('//').forEach(x=>{if(x.trim())out.push(ln(x,lab))});out.push(GO(jn))});
@@ -2765,6 +2769,7 @@ function applyFx(o){for(const k in o)S.rel[k]=(S.rel[k]||0)+o[k]}
 function clearStage(){$('stage').innerHTML=''}
 function show(e,instant){
   S.last=e;
+  $('game').classList.remove('cardon');
   const fresh=!instant;
   if(fresh){markSeen();lineCount++}
   clearTimeout(autoT);
@@ -2811,6 +2816,7 @@ function renderCard(c){
   d.children[0].textContent=c[0];d.children[1].textContent=c[1];d.children[2].textContent=c[2]||'';
   d.addEventListener('click',()=>{if(S.last===S.last&&S.last.card)run()});
   $('stage').appendChild(d);
+  $('game').classList.add('cardon');
   $('txt').textContent='';$('nm').hidden=true;$('nx').hidden=true;
   stopAutoSkip(true);
 }
@@ -2952,9 +2958,8 @@ function openEndings(){
 /* ---------- wiring ---------- */
 $('mStart').onclick=startNew;
 $('mCont').onclick=()=>{const a=store.get('auto',null);if(a)loadState(a)};
-$('mLoad').onclick=()=>openSlots('load');
 $('mSet').onclick=openSettings;$('mGal').onclick=openGallery;$('mEnd').onclick=openEndings;
-$('tLog').onclick=openLog;$('tSave').onclick=()=>openSlots('save');$('tLoad').onclick=()=>openSlots('load');$('tSet').onclick=openSettings;$('tMenu').onclick=toMenu;
+$('tSet').onclick=openSettings;
 $('tb').addEventListener('click',advance);
 $('stage').addEventListener('click',e=>{if(e.target.id==='stage')advance()});
 document.addEventListener('keydown',e=>{
