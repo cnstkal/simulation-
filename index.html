@@ -15,7 +15,10 @@
   --fs:1;
   color-scheme:dark;
 }
+[hidden],#menu[hidden],#game[hidden],#layer[hidden]{display:none!important}
+button{touch-action:manipulation;-webkit-appearance:none;appearance:none}
 html,body{height:100%}
+@supports(height:100dvh){html,body,#app{height:100dvh}}
 body{background:var(--ink);color:var(--paper);font-family:var(--sans);overflow:hidden;-webkit-tap-highlight-color:transparent}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
@@ -33,7 +36,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .title small{display:block;font-size:clamp(1rem,3.6vw,1.35rem);font-weight:400;letter-spacing:.12em;color:var(--lamp2);margin-top:14px}
 .menulist{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;max-width:420px;border-top:1px solid var(--line)}
 .menulist button{text-align:left;padding:13px 2px;border-bottom:1px solid var(--line);font-size:1rem;letter-spacing:.06em;transition:color .2s,padding-left .2s}
-.menulist button:hover:not(:disabled){color:var(--lamp);padding-left:8px}
+@media (hover:hover){.menulist button:hover:not(:disabled){color:var(--lamp);padding-left:8px}}
 .menulist button:disabled{color:var(--mute);opacity:.5;cursor:default}
 .fine{font-size:.75rem;color:var(--mute);line-height:1.7;max-width:420px}
 
@@ -182,8 +185,8 @@ function RG(id,c,o=1){return `<radialGradient id="${id}"><stop offset="0" stop-c
 function skyline(r,y,minH,maxH,fill,lit,litC,st){let x=-20,o='';while(x<1620){const w=60+r()*110,h=minH+r()*(maxH-minH);o+=`<rect x="${x.toFixed(0)}" y="${(y-h).toFixed(0)}" width="${w.toFixed(0)}" height="${(h+900-y).toFixed(0)}" fill="${fill}"/>`;
   if(lit>0){for(let wy=y-h+14;wy<y-10;wy+=st){for(let wx=x+8;wx<x+w-14;wx+=st){if(r()<lit)o+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${(st*.45).toFixed(0)}" height="${(st*.55).toFixed(0)}" fill="${litC}" opacity="${(.45+r()*.55).toFixed(2)}"/>`}}}
   x+=w+r()*8}return o}
-function svgBg(key){
-  if(IMAGE_BG[key]) return `<img src="./images/${IMAGE_BG[key]}" alt="${key}" style="width:100%;height:100%;display:block;object-fit:cover;object-position:center;" loading="eager" decoding="async">`;
+function svgBg(key,fb){
+  if(!fb&&IMAGE_BG[key]) return `<img src="${IMAGE_BASE}${IMAGE_BG[key]}" alt="${key}" style="width:100%;height:100%;display:block;object-fit:cover;object-position:center;" decoding="async" onerror="this.onerror=null;this.parentNode.innerHTML=svgBg('${key}',true)">`;
   const r=mul(hs(key)),p='g'+(uid++),W=1600,H=900;let d='',b='';
   const blur=`<filter id="${p}b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>`;
   if(key==='street'){
@@ -245,6 +248,8 @@ function svgBg(key){
   }
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><defs>${d}</defs>${b}</svg>`;
 }
+/* 사진이 들어있는 폴더/주소. 폰에서 쓰려면 호스팅한 주소로 바꾸세요. 예: 'https://res.cloudinary.com/계정/image/upload/' */
+const IMAGE_BASE='./images/';
 const IMAGE_BG={building:'3.png',hall:'4.png',room:'6.png',room_night:'7.png',street:'16.png',host_exterior:'17.png',host_entry:'18.png',bar:'19.png',bar_table:'20.png',bar_counter:'21.png',host_corridor:'22.png',backroom:'23.png',back_exit:'24.png',dawn:'25.png',cut37:'37.png',cut38:'38.png',cut39:'39.png',cut40:'40.png',cut41:'41.png',cut42:'42.png',cut43:'43.png',cut44:'44.png',cut45:'45.png',cut46:'46.png',cut47:'47.png',cut48:'48.png'};
 const BGN={building:'3호 빌딩 앞',hall:'계단과 복도',room:'301호, 낮',room_night:'301호, 밤',street:'서울 도심 번화가',host_exterior:'앙코르 외관',host_entry:'앙코르 입구',bar:'앙코르 메인 홀',bar_table:'앙코르 테이블',bar_counter:'앙코르 바 카운터',host_corridor:'앙코르 안쪽 복도',backroom:'직원용 백룸',back_exit:'앙코르 뒷골목',dawn:'새벽 거리'};
 let bgFlip=false;
