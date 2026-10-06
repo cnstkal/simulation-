@@ -4029,10 +4029,17 @@ function show(e,instant){
   const fresh=!instant;
   if(fresh){markSeen();lineCount++}
   clearTimeout(autoT);
-  if(e.card){clearStage();renderCard(e.card);if(fresh)store.set('auto',snap());return}
-  if(e.ending){clearStage();renderEnding(e.ending);store.set('auto',snap());return}
-  if(e.end){clearStage();renderEnd();store.set('auto',snap());return}
-  if(e.c){clearStage();$('tbwrap').classList.add('choice-open');renderChoices(e);if(fresh)store.set('auto',snap());return}
+  if(e.card){clearStage();renderCard(e.card);if(fresh&&!S.replay)store.set('auto',snap());return}
+  if(e.ending){clearStage();renderEnding(e.ending);if(!S.replay)store.set('auto',snap());else S.replay=false;return}
+  if(e.end){clearStage();renderEnd();if(!S.replay)store.set('auto',snap());else S.replay=false;return}
+  if(e.c){
+    if(S.replay){
+      const idx=S.replayChoices[S.ch+':'+(S.pc-1)],o=e.c[idx==null?0:idx];
+      if(o.fx)applyFx(o.fx);if(o.flag)S.flags[o.flag]=1;
+      S.pc=LBL[S.ch][o.go];continue;
+    }
+    clearStage();$('tbwrap').classList.add('choice-open');renderChoices(e);if(fresh)store.set('auto',snap());return;
+  }
   clearStage();
   const kind=e.n?'n':e.i?'i':'s';
   const text=e.n||e.i||e.t;
