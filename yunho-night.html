@@ -100,7 +100,12 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .gal .th{aspect-ratio:16/9;border-radius:6px;overflow:hidden;background:var(--ink);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--mute);max-width:100%}
 .gal .th svg{width:100%;height:100%;display:block}
 .gal figcaption{font-size:.8rem;color:var(--mute)}
-.route{margin-bottom:16px}
+.ending-pick{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;padding:9px 11px;background:transparent;border:1px solid var(--line);border-radius:6px;color:var(--mute);font:inherit;cursor:pointer}
+.ending-pick:hover,.ending-pick:focus-visible{border-color:var(--lamp);color:var(--lamp2);outline:none}
+.ending-pick.got{border-color:rgba(214,174,94,.55);color:var(--lamp2)}
+.ending-pick .etitle{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ending-pick .estate{flex:none;font-size:.72rem;letter-spacing:.04em;color:var(--lamp)}
+.ending-preview-note{font-size:.78rem;color:var(--mute);line-height:1.6;margin:-4px 0 14px}\n.route{margin-bottom:16px}
 .route h4{margin:0 0 6px;font-family:var(--serif);font-size:1.02rem}
 .route ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 .route li{padding:5px 11px;border:1px dashed var(--line);border-radius:5px;font-size:.82rem;color:var(--mute)}
@@ -3917,6 +3922,20 @@ for(const n of [28,29,30]){const a=[{favgo:'r'}];
 
 const LBL={};for(const k in SCRIPTS){LBL[k]={};SCRIPTS[k].forEach((e,i)=>{if(e.L)LBL[k][e.L]=i})}
 
+/* ---------- ending library ---------- */
+/* 실제 스토리에서 생성된 모든 엔딩을 도감으로 수집한다. */
+const ENDING_LIBRARY=[];
+const ENDING_SEEN=new Set();
+for(const ch of Object.keys(SCRIPTS)){
+  for(const e of SCRIPTS[ch]){
+    if(e.ending && e.ending[0] && !ENDING_SEEN.has(e.ending[0])){
+      ENDING_SEEN.add(e.ending[0]);
+      ENDING_LIBRARY.push(e.ending);
+    }
+  }
+}
+
+
 /* ---------- engine ---------- */
 const $=id=>document.getElementById(id);
 const NC={'윤호':'var(--c-yunho)','종호':'var(--c-jongho)','성화':'var(--c-seonghwa)','홍중':'#f2c46d','여상':'#b9d98a','산':'#8fb5e8','민기':'#c9a0e0','우영':'#ff9f68','임 대표':'#d4c5a0','한 실장':'#a8b5c8','동혁':'#9fc5c0'};
@@ -4038,10 +4057,12 @@ function renderEnding(a){
   stopAutoSkip(true);
   const ps=a[2].split('||');
   const d=document.createElement('div');d.className='endcard';
-  d.innerHTML='<div class="in"><div class="kicker" style="font-size:.78rem;letter-spacing:.28em;color:var(--lamp)"></div><h2></h2><div class="memo">'+ps.map(()=>'<p></p>').join('')+'</div><div class="btnrow"><button class="btn" id="eMenu">메뉴로</button></div></div>';
+  d.innerHTML='<div class="in"><div class="kicker" style="font-size:.78rem;letter-spacing:.28em;color:var(--lamp)"></div><h2></h2><div class="memo">'+ps.map(()=>'<p></p>').join('')+'</div><div class="btnrow"><button class="btn" id="eList">엔딩 리스트</button><button class="btn" id="eMenu">메뉴로</button></div></div>';
   d.querySelector('.kicker').textContent=a[0];d.querySelector('h2').textContent=a[1];
   d.querySelectorAll('.memo p').forEach((p,i)=>p.textContent=ps[i]);
-  $('stage').appendChild(d);$('eMenu').onclick=toMenu;
+  $('stage').appendChild(d);
+  $('eList').onclick=openEndings;
+  $('eMenu').onclick=toMenu;
   const g=store.get('ends',[]);if(!g.includes(a[0])){g.push(a[0]);store.set('ends',g)}
 }
 function renderEnd(){
@@ -4125,25 +4146,59 @@ function openGallery(){
     b.appendChild(g);
   });
 }
-const ENDS=[
- ['김홍중 루트',['다시 시작','지금의 우리','그때처럼']],
- ['박성화 루트',['너만은','밤이 끝나면','선을 넘지 못해서','같은 밤']],
- ['강여상 루트',['돌아갈 곳','우리답게','너무 늦게','룸메이트']],
- ['최산 루트',['네가 선택한 삶','천천히','그만해']],
- ['송민기 루트',['오래된 사람','여전히 우리','친구로','모르는 사람']],
- ['정우영 루트',['1위','라이벌','패배']],
- ['최종호 루트',['같은 집','옆집 사람','계약 종료']],
- ['단독 루트',['정윤호','새로운 시작','오늘도 밤은 온다']],
- ['특수 엔딩',['ALL RELATIONSHIP','LONELY BAD','DREAM','NIGHT']]];
+const ENDS=[...ENDING_LIBRARY.map(a=>{
+  const p=a[0].split('/');
+  return [p[0],p[1]||a[0]];
+}).reduce((groups,item)=>{
+  const g=groups.find(x=>x[0]===item[0]);
+  if(g)g[1].push(item[1]);else groups.push([item[0],[item[1]]]);
+  return groups;
+},[])];
+
+function viewEnding(a){
+  closeLayer();
+  stopAutoSkip(true);
+  toGame();
+  clearStage();
+  renderEnding(a,true);
+}
+
 function openEndings(){
   modal('엔딩 리스트',b=>{
-    const got=store.get('ends',[]);const tot=ENDS.reduce((a,x)=>a+x[1].length,0);
-    const p=document.createElement('p');p.className='note';p.textContent=`엔딩 ${got.length} / ${tot}. 개인 루트는 CHAPTER 이십칠 이후 열립니다. 제목은 도달하면 공개됩니다.`;b.appendChild(p);
-    ENDS.forEach(([r,es])=>{const d=document.createElement('div');d.className='route';const h=document.createElement('h4');h.textContent=r;const ul=document.createElement('ul');
-      es.forEach(e=>{const li=document.createElement('li');const k=r+'/'+e;if(got.includes(k)){li.className='got';li.textContent=e}else li.textContent='???';ul.appendChild(li)});
-      d.appendChild(h);d.appendChild(ul);b.appendChild(d)});
+    const got=store.get('ends',[]);
+    const tot=ENDING_LIBRARY.length;
+    const p=document.createElement('p');
+    p.className='ending-preview-note';
+    p.textContent=`엔딩 ${got.length} / ${tot} · 원하는 엔딩을 누르면 바로 볼 수 있습니다. 미획득 엔딩도 미리볼 수 있습니다.`;
+    b.appendChild(p);
+
+    const groups={};
+    ENDING_LIBRARY.forEach(a=>{
+      const route=a[0].split('/')[0]||'기타';
+      (groups[route]||(groups[route]=[])).push(a);
+    });
+
+    Object.entries(groups).forEach(([route,items])=>{
+      const d=document.createElement('div');d.className='route';
+      const h=document.createElement('h4');h.textContent=route;
+      const ul=document.createElement('ul');ul.style.listStyle='none';ul.style.margin='0';ul.style.padding='0';ul.style.display='grid';ul.style.gap='6px';
+
+      items.forEach(a=>{
+        const bt=document.createElement('button');
+        bt.type='button';
+        bt.className='ending-pick'+(got.includes(a[0])?' got':'');
+        const title=document.createElement('span');title.className='etitle';title.textContent=a[1];
+        const state=document.createElement('span');state.className='estate';state.textContent=got.includes(a[0])?'✓ 완료':'보기';
+        bt.appendChild(title);bt.appendChild(state);
+        bt.onclick=()=>viewEnding(a);
+        const li=document.createElement('li');li.appendChild(bt);ul.appendChild(li);
+      });
+
+      d.appendChild(h);d.appendChild(ul);b.appendChild(d);
+    });
   });
 }
+
 
 /* ---------- wiring ---------- */
 $('mStart').onclick=startNew;
