@@ -173,6 +173,55 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   <div id="layer"></div>
 </div>
 
+<script type="text/plain" id="adult-hongjung">
+;;━━━━ [홍중 루트 · CHAPTER 29] 19세 이상 장면 ━━━━
+;;붙여넣기: 아래 빈 줄 자리에 한 줄에 한 문장씩. 줄 수 제한 없음.
+;;줄 앞 코드: N=서술  I=속마음  Y=윤호  HJ=홍중   (코드 없는 줄은 서술로 처리)
+
+;;━━━━ [홍중 루트] 여기까지 ━━━━
+</script>
+<script type="text/plain" id="adult-seonghwa">
+;;━━━━ [성화 루트 · CHAPTER 29] 19세 이상 장면 ━━━━
+;;붙여넣기: 아래 빈 줄 자리에 한 줄에 한 문장씩. 줄 수 제한 없음.
+;;줄 앞 코드: N=서술  I=속마음  Y=윤호  SH=성화   (코드 없는 줄은 서술로 처리)
+
+;;━━━━ [성화 루트] 여기까지 ━━━━
+</script>
+<script type="text/plain" id="adult-yeosang">
+;;━━━━ [여상 루트 · CHAPTER 29] 19세 이상 장면 ━━━━
+;;붙여넣기: 아래 빈 줄 자리에 한 줄에 한 문장씩. 줄 수 제한 없음.
+;;줄 앞 코드: N=서술  I=속마음  Y=윤호  YS=여상   (코드 없는 줄은 서술로 처리)
+
+;;━━━━ [여상 루트] 여기까지 ━━━━
+</script>
+<script type="text/plain" id="adult-san">
+;;━━━━ [산 루트 · CHAPTER 29] 19세 이상 장면 ━━━━
+;;붙여넣기: 아래 빈 줄 자리에 한 줄에 한 문장씩. 줄 수 제한 없음.
+;;줄 앞 코드: N=서술  I=속마음  Y=윤호  SN=산   (코드 없는 줄은 서술로 처리)
+
+;;━━━━ [산 루트] 여기까지 ━━━━
+</script>
+<script type="text/plain" id="adult-mingi">
+;;━━━━ [민기 루트 · CHAPTER 29] 19세 이상 장면 ━━━━
+;;붙여넣기: 아래 빈 줄 자리에 한 줄에 한 문장씩. 줄 수 제한 없음.
+;;줄 앞 코드: N=서술  I=속마음  Y=윤호  MG=민기   (코드 없는 줄은 서술로 처리)
+
+;;━━━━ [민기 루트] 여기까지 ━━━━
+</script>
+<script type="text/plain" id="adult-wooyoung">
+;;━━━━ [우영 루트 · CHAPTER 29] 19세 이상 장면 ━━━━
+;;붙여넣기: 아래 빈 줄 자리에 한 줄에 한 문장씩. 줄 수 제한 없음.
+;;줄 앞 코드: N=서술  I=속마음  Y=윤호  WY=우영   (코드 없는 줄은 서술로 처리)
+
+;;━━━━ [우영 루트] 여기까지 ━━━━
+</script>
+<script type="text/plain" id="adult-jongho">
+;;━━━━ [종호 루트 · CHAPTER 29] 19세 이상 장면 ━━━━
+;;붙여넣기: 아래 빈 줄 자리에 한 줄에 한 문장씩. 줄 수 제한 없음.
+;;줄 앞 코드: N=서술  I=속마음  Y=윤호  J=종호   (코드 없는 줄은 서술로 처리)
+
+;;━━━━ [종호 루트] 여기까지 ━━━━
+</script>
 <script>
 /* ---------- storage ---------- */
 const store={mem:{},
@@ -2161,6 +2210,12 @@ CUT(39)
 - 천천히 하자고 말한다|rs+1||HJ 천천히. 좋아. 네 속도로.
 - 눈을 피한다|rs-1||HJ 괜찮아. 기다릴게.
 N 두 사람은 한참 말 없이 강을 보았다. 이름이 필요한 시간이 천천히 흘러갔다.
+? 이어지는 장면은 19세 이상 전용입니다. 보시겠어요?
+- 19세 이상입니다. 장면을 본다|||> adult_scn
+- 넘어간다|||> adult_aft
+# adult_scn
+@@ADULT hongjung
+# adult_aft
 > END
 `;
 RT[30].hongjung=`
@@ -2225,6 +2280,12 @@ N 윤호는 얼굴이 붉어지는 걸 막지 못했다.
 - 아직 잘 모르겠어요. 시간 주세요|rs-1,honest+1||SH 시간은 많다. 기다린다.
 N 성화는 윤호의 손을 잡았다. 손바닥이 거칠고 따뜻했다. 아침 해가 주차장에 쏟아졌다.
 CUT(41)
+? 이어지는 장면은 19세 이상 전용입니다. 보시겠어요?
+- 19세 이상입니다. 장면을 본다|||> adult_scn
+- 넘어간다|||> adult_aft
+# adult_scn
+@@ADULT seonghwa
+# adult_aft
 > END
 `;
 RT[30].seonghwa=`
@@ -2289,6 +2350,12 @@ N 윤호의 숟가락이 떨렸다.
 - 나 같은 사람이 괜찮을까|rs+1,honest+1||YS 너 같은 사람이 아니라 윤호잖아.
 - 웃음으로 대답을 미룬다|rs-2,mask+1||YS 웃지 마. 오늘은 안 해도 돼.
 N 여상은 윤호의 손등에 손을 얹었다. 국물이 식어 가는데 둘은 한참 움직이지 않았다.
+? 이어지는 장면은 19세 이상 전용입니다. 보시겠어요?
+- 19세 이상입니다. 장면을 본다|||> adult_scn
+- 넘어간다|||> adult_aft
+# adult_scn
+@@ADULT yeosang
+# adult_aft
 > END
 `;
 RT[30].yeosang=`
@@ -2358,6 +2425,12 @@ SN 모르는 척해도 된다. 근데 알고 있다는 건 알아라.
 - 시간을 줘. 천천히 갈게|rs+1,honest+1||SN 천천히 가자. 나는 느려도 안 놓는다.
 - 대답 대신 어깨에 기댄다|rs+1||SN 어깨 아프니까 오래는 안 된다.
 N 산의 어깨는 넓고 단단했고, 윤호가 기대자 처음으로 조금 떨렸다.
+? 이어지는 장면은 19세 이상 전용입니다. 보시겠어요?
+- 19세 이상입니다. 장면을 본다|||> adult_scn
+- 넘어간다|||> adult_aft
+# adult_scn
+@@ADULT san
+# adult_aft
 > END
 `;
 RT[30].san=`
@@ -2417,6 +2490,12 @@ MG 나는 열여덟 때부터 네가 좋았다. 그걸 몰랐던 게 아니라 �
 - 나도 이제 인정할게|rs+2||N 민기가 코를 훌쩍였다. 불꽃 때문이라고 우겼다.
 - 고마워. 이제 천천히 알아가 보자|rs+1||MG 천천히 해라. 대신 도망가지 마라.
 - 대답을 미룬다|rs-1||MG 알았다. 기다릴게. 근데 오래는 안 된다.
+? 이어지는 장면은 19세 이상 전용입니다. 보시겠어요?
+- 19세 이상입니다. 장면을 본다|||> adult_scn
+- 넘어간다|||> adult_aft
+# adult_scn
+@@ADULT mingi
+# adult_aft
 > END
 `;
 RT[30].mingi=`
@@ -2488,6 +2567,12 @@ N 말이 끝나자 우영은 귀까지 빨개졌다.
 - 나도 널 좋아해. 그게 어떤 좋아함인지 같이 알아보자|rs+2,honest+2||WY ...같이는 좀 싫은데. 그래, 같이.
 - 고마워. 근데 아직은 잘 모르겠어|rs+1,honest+1||WY 알았다. 천천히 알아라. 나 기다리는 거 싫어하는데.
 - 장난으로 받아친다|rs-2,mask+1||WY 장난 아니야, 이 새끼야.
+? 이어지는 장면은 19세 이상 전용입니다. 보시겠어요?
+- 19세 이상입니다. 장면을 본다|||> adult_scn
+- 넘어간다|||> adult_aft
+# adult_scn
+@@ADULT wooyoung
+# adult_aft
 > END
 `;
 RT[30].wooyoung=`
@@ -2553,6 +2638,12 @@ N 윤호는 컵을 쥔 채 웃음이 터졌다. 눈가가 뜨거웠다.
 - 나도. 종호야, 나도야|rs+2,honest+2||J 그럼 월세는 안 받을래요. 아니, 받을게요. 근데 마음만큼 받을게요.
 - 시간을 조금 줘. 진심이야|rs+1,honest+1||J 시간은 줄게요. 거짓말은 안 할 거죠.
 - 웃음으로 얼버무린다|rs-2,mask+1||J 거짓말은 싫어하는데... 이건 괜찮아요. 지금은.
+? 이어지는 장면은 19세 이상 전용입니다. 보시겠어요?
+- 19세 이상입니다. 장면을 본다|||> adult_scn
+- 넘어간다|||> adult_aft
+# adult_scn
+@@ADULT jongho
+# adult_aft
 > END
 `;
 RT[30].jongho=`
@@ -2710,9 +2801,16 @@ function ln(s,lab){
   if(c==='E'){const i1=t.indexOf('|'),i2=t.indexOf('|',i1+1);return {ending:[t.slice(0,i1).trim(),t.slice(i1+1,i2).trim(),t.slice(i2+1).trim()]}}
   throw new Error('bad line: '+s);
 }
+/* 19세 이상 장면 슬롯: <script type="text/plain" id="adult-키"> 안의 줄을 읽어옴. 코드 없는 줄은 자동으로 서술(N) 처리 */
+function adultLines(k){const el=document.getElementById('adult-'+k);if(!el)return[];
+  return el.textContent.split('\n').map(x=>x.trim()).filter(x=>x&&x.slice(0,2)!==';;').map(x=>{
+    x=x.replace(/^([A-Z]{1,2})\s*[:：]\s*/,(m,c)=>(SPK[c]||c==='N'||c==='I')?c+' ':m);
+    const c=x.split(/\s/)[0];
+    if(c==='N'||c==='I'||c==='BG'||c==='E'||SPK[c]||/^CUT/.test(c)||'@#>$!^%*?-'.includes(c[0]))return x;
+    return 'N '+x})}
 function P(text,pre){
   const lab=x=>x==='END'?'r_end':pre+x,out=[];
-  const Ls=text.split('\n').map(x=>x.trim()).filter(x=>x);
+  const Ls=[];text.split('\n').map(x=>x.trim()).filter(x=>x&&x.slice(0,2)!==';;').forEach(x=>{const m=x.match(/^@@ADULT (\w+)$/);if(m)Ls.push(...adultLines(m[1]));else Ls.push(x)});
   for(let i=0;i<Ls.length;i++){const s=Ls[i];
     if(s[0]==='?'){const op=[];while(Ls[i+1]&&(Ls[i+1][0]==='-'||(/^CUT\(\d+\)$/.test(Ls[i+1])&&op.length&&Ls[i+2]&&Ls[i+2][0]==='-'))){
       if(Ls[i+1][0]==='-')op.push(Ls[++i].slice(1).trim().split('|').map(x=>x.trim()));
