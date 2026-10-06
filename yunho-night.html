@@ -3951,51 +3951,77 @@ function seenMax(){return (store.get('seen',{})[S.ch]||0)}
 function markSeen(){const s=store.get('seen',{});if((s[S.ch]||0)<S.pc){s[S.ch]=S.pc;store.set('seen',s)}}
 
 function endingRouteKey(a){
-  const route=a[0].split('/')[0];
-  for(const ch of [28,29,30]) for(const k in RTT[ch]) if(RTT[ch][k]===route) return {ch,k};
-  return null;
+  const route=(a[0]||'').split('/')[0];
+  const routes={
+    '김홍중 루트':{ch:28,k:'hongjung'},
+    '박성화 루트':{ch:28,k:'seonghwa'},
+    '강여상 루트':{ch:28,k:'yeosang'},
+    '최산 루트':{ch:28,k:'san'},
+    '송민기 루트':{ch:28,k:'mingi'},
+    '정우영 루트':{ch:28,k:'wooyoung'},
+    '최종호 루트':{ch:28,k:'jongho'},
+    '단독 루트':{ch:30,k:'none'},
+    '특수 엔딩':{ch:30,k:'none'}
+  };
+  return routes[route]||null;
 }
 function endingClone(o){return JSON.parse(JSON.stringify(o||{}))}
 function endingApplyFx(rel,fx){
   const r=endingClone(rel);for(const k in (fx||{}))r[k]=(r[k]||0)+fx[k];return r;
 }
-function endingStateKey(pc,rel,flags){return pc+'|'+JSON.stringify(rel)+'|'+JSON.stringify(flags)}
+function endingStateKey(pc,rel,flags,kind){return pc+'|'+JSON.stringify(rel)+'|'+JSON.stringify(flags)+'|'+(kind||'')}
 function findEndingReplay(a){
   const rk=endingRouteKey(a);if(!rk)return null;
   const sc=SCRIPTS[rk.ch],start=LBL[rk.ch]['r_'+rk.k];if(start==null)return null;
   const seen=new Set();
-  function dfs(pc,rel,flags,path,depth){
+  const KINDS=['lonely','all','dream','night','solo'];
+  function dfs(pc,rel,flags,kind,path,depth){
     if(depth>1500||pc<0||pc>=sc.length)return null;
-    const e=sc[pc],key=endingStateKey(pc,rel,flags);if(seen.has(key))return null;seen.add(key);
+    const e=sc[pc],key=endingStateKey(pc,rel,flags,kind);if(seen.has(key))return null;seen.add(key);
     if(e.ending)return e.ending[0]===a[0]?path:null;
     if(e.end)return null;
-    if(e.L)return dfs(pc+1,rel,flags,path,depth+1);
+    if(e.L)return dfs(pc+1,rel,flags,kind,path,depth+1);
     if(e.card||e.bg||e.cut||e.fx||e.flag){
       const nr=e.fx?endingApplyFx(rel,e.fx):endingClone(rel),nf=endingClone(flags);if(e.flag)nf[e.flag]=1;
-      return dfs(pc+1,nr,nf,path,depth+1);
+      return dfs(pc+1,nr,nf,kind,path,depth+1);
     }
-    if(e.go){const np=LBL[rk.ch][e.go];return np==null?null:dfs(np,rel,flags,path,depth+1)}
-    if(e.if!==undefined){const np=flags[e.if]?LBL[rk.ch][e.go]:pc+1;return np==null?null:dfs(np,rel,flags,path,depth+1)}
-    if(e.ge){const np=(rel[e.ge[0]]||0)>=e.ge[1]?LBL[rk.ch][e.ge[2]]:pc+1;return np==null?null:dfs(np,rel,flags,path,depth+1)}
+    if(e.solo){
+      const r=rel;let tot=0,hi=0;
+      for(const x of KEYS){tot+=r[x]||0;if((r[x]||0)>=3)hi++}
+      const d=(r.dream||0)-(r.night||0);
+      const nk=d>=3?'dream':-d>=3?'night':hi>=4?'all':tot<8?'lonely':'solo';
+      return dfs(pc+1,rel,flags,nk,path,depth+1);
+    }
+    if(e.kgo){
+      for(const nk of (kind?[kind]:KINDS)){
+        const np=LBL[rk.ch][e.kgo+'_'+nk];if(np==null)continue;
+        const ans=dfs(np,rel,flags,nk,path,depth+1);if(ans)return ans;
+      }
+      return null;
+    }
+    if(e.go){const np=LBL[rk.ch][e.go];return np==null?null:dfs(np,rel,flags,kind,path,depth+1)}
+    if(e.if!==undefined){const np=flags[e.if]?LBL[rk.ch][e.go]:pc+1;return np==null?null:dfs(np,rel,flags,kind,path,depth+1)}
+    if(e.ge){const np=(rel[e.ge[0]]||0)>=e.ge[1]?LBL[rk.ch][e.ge[2]]:pc+1;return np==null?null:dfs(np,rel,flags,kind,path,depth+1)}
     if(e.c){
       for(let i=0;i<e.c.length;i++){
         const o=e.c[i],np=LBL[rk.ch][o.go];if(np==null)continue;
         const nr=endingApplyFx(rel,o.fx),nf=endingClone(flags);if(o.flag)nf[o.flag]=1;
-        const ans=dfs(np,nr,nf,path.concat([[pc,i]]),depth+1);if(ans)return ans;
+        const ans=dfs(np,nr,nf,kind,path.concat([[pc,i]]),depth+1);if(ans)return ans;
       }
       return null;
     }
-    return dfs(pc+1,rel,flags,path,depth+1);
+    return dfs(pc+1,rel,flags,kind,path,depth+1);
   }
-  const path=dfs(start,{}, {},[],0);if(!path)return null;
+  const path=dfs(start,{}, {},null,[],0);if(!path)return null;
   const choices={};path.forEach(([pc,i])=>choices[rk.ch+':'+pc]=i);
   return {ch:rk.ch,pc:start,choices};
 }
 function startEndingReplay(a){
-  const r=findEndingReplay(a),rk=endingRouteKey(a);if(!rk)return;
+  const rk=endingRouteKey(a);if(!rk)return;
+  const r=findEndingReplay(a);
   S=freshState();S.ch=r?r.ch:rk.ch;S.pc=r?r.pc:(LBL[S.ch]['r_'+rk.k]||0);
   S.replay=true;S.replayTarget=a[0];S.replayChoices=r?r.choices:{};
-  lineCount=0;toGame();stopAutoSkip();clearStage();run();
+  lineCount=0;closeLayer();toGame();stopAutoSkip();clearStage();run();
 }
 
 function run(){
