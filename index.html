@@ -155,6 +155,7 @@ function skyline(r,y,minH,maxH,fill,lit,litC,st){let x=-20,o='';while(x<1620){co
   if(lit>0){for(let wy=y-h+14;wy<y-10;wy+=st){for(let wx=x+8;wx<x+w-14;wx+=st){if(r()<lit)o+=`<rect x="${wx.toFixed(0)}" y="${wy.toFixed(0)}" width="${(st*.45).toFixed(0)}" height="${(st*.55).toFixed(0)}" fill="${litC}" opacity="${(.45+r()*.55).toFixed(2)}"/>`}}}
   x+=w+r()*8}return o}
 function svgBg(key){
+  if(IMAGE_BG[key]) return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><image href="./images/${IMAGE_BG[key]}" x="0" y="0" width="1600" height="900" preserveAspectRatio="xMidYMid slice"/></svg>`;
   const r=mul(hs(key)),p='g'+(uid++),W=1600,H=900;let d='',b='';
   const blur=`<filter id="${p}b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>`;
   if(key==='street'){
@@ -216,7 +217,8 @@ function svgBg(key){
   }
   return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${key}"><defs>${d}</defs>${b}</svg>`;
 }
-const BGN={building:'삼호빌딩 앞',hall:'계단과 복도',room:'301호, 낮',room_night:'301호, 밤',street:'앙코르 골목',backroom:'대기실',bar:'홀',dawn:'새벽 거리'};
+const IMAGE_BG={building:'3.png',hall:'4.png',room:'6.png',room_night:'7.png',street:'16.png',host_exterior:'17.png',host_entry:'18.png',bar:'19.png',bar_table:'20.png',bar_counter:'21.png',host_corridor:'22.png',backroom:'23.png',back_exit:'24.png',dawn:'25.png'};
+const BGN={building:'삼호빌딩 앞',hall:'계단과 복도',room:'301호, 낮',room_night:'301호, 밤',street:'서울 도심 번화가',host_exterior:'앙코르 외관',host_entry:'앙코르 입구',bar:'앙코르 메인 홀',bar_table:'앙코르 테이블',bar_counter:'앙코르 바 카운터',host_corridor:'앙코르 안쪽 복도',backroom:'직원용 백룸',back_exit:'앙코르 뒷골목',dawn:'새벽 거리'};
 let bgFlip=false;
 function setBg(k,instant){
   if(S)S.bg=k;
@@ -374,13 +376,16 @@ N(`거울 앞에서 스위치를 올렸다. 이번에는 꺼내 쓰기 위한 �
 N(`현관을 나서자 계단참이 조용했다. 윤호는 발뒤꿈치부터 내려놓으며 내려갔다.`),
 
 BG('street'),
+BG('host_exterior'),
 N(`번화가 한복판은 아니었다. 그 바깥, 간판들이 한 겹 덜 번쩍이는 골목. 지하로 내려가는 계단 끝에 검은 문이 있고, 문 옆에 은색 글씨로 작게 적혀 있었다.`),
 N(`클럽 앙코르. 남성 전용, 예약제.`),
+BG('host_entry'),
 DH(`형, 오셨어요! 오늘 예약판 보셨죠?`),
 Y(`아직. 몇 개야?`),
 DH(`열한 개요.`),
 Y(`열한 개면 평소 정도지.`),
 DH(`형한테 평소가 다른 형들한테는 신기록이에요.`),
+BG('host_corridor'),
 BG('backroom'),
 N(`대기실은 영업 전 특유의 소란으로 가득했다. 거울 앞에서 넥타이를 고쳐 매는 선수들, 얼음을 씹는 소리, 누군가의 향수와 헤어스프레이 냄새가 뒤섞인 공기.`),
 P1(`윤호 형 왔다. 형, 오늘 임 대표님 오시는 날이죠?`),
@@ -398,9 +403,11 @@ N(`윤호는 어깨를 으쓱했다. 이런 소리를 들을 때 어떤 표정�
 BG('bar'),
 N(`아홉 시. 홀의 조명이 한 단계 낮아졌다.`),
 N(`윤호는 홀에 서자마자 달라졌다. 걸음이 느려지고, 목소리가 반 톤 내려가고, 눈은 방 안의 테이블을 한 번에 훑었다. 누가 웃고 있고, 누가 웃는 척하고 있고, 누가 오늘 누군가에게 기대고 싶은지.`),
+BG('bar_table'),
 N(`첫 번째 테이블은 생일 파티였다. 삼십 대 초반 남자 넷, 이미 한 병을 비운 상태. 윤호는 앉자마자 잔을 들었다.`),
 Y(`오늘 주인공이 누구세요? 저한테 말도 안 하고 한 살 드시면 안 되죠.`),
 N(`웃음이 터졌다. 사 분 뒤, 테이블의 분위기는 윤호의 손안에 있었다.`),
+BG('bar_counter'),
 N(`두 번째 테이블은 반대였다. 혼자 온 손님이 말없이 얼음만 돌리고 있었다. 윤호는 잔을 권하지 않았다. 옆에 앉아서, 그냥 옆에 있었다. 이십 분 뒤, 그 손님이 먼저 입을 열었다.`),
 N(`두 사람이 같은 사람에게 접대받았다는 걸 알아볼 사람은 없었다. 윤호는 테이블마다 다른 사람이었고, 그게 이 가게에서 그가 가진 가장 큰 재능이었다.`),
 N(`아홉 시 반, 임 대표가 들어왔다. 마흔하나. 회사를 세 개째 굴리는 사람. 보통은 들어서자마자 웃으며 농담부터 던지는데, 오늘은 달랐다.`),
@@ -486,6 +493,7 @@ SH(`신입 얘기는 들었냐.`),
 Y(`한 실장님이 말씀하셨어요. 입이 험하다고.`),
 SH(`말만 험하면 다행이고.`),
 N(`성화는 더 설명하지 않고 가게 안쪽으로 걸어갔다.`),
+BG('back_exit'),
 
 BG('dawn'),
 N(`택시에서 내린 건 다섯 시 오십 분이었다.`),
